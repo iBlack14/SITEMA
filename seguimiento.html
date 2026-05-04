@@ -1,0 +1,1083 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Seguimiento de Expediente - Mesa de Partes Virtual</title>
+    <style>
+        :root {
+            --gold-primary: #d4af37;
+            --gold-dark: #c49a2d;
+            --black-primary: #1a1a1a;
+            --silver-primary: #C0C0C0;
+            --silver-dark: #A0A0A0;
+            --white-primary: #ffffff;
+            --bg-light: #f8f9fa;
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Segoe UI', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg-light);
+            min-height: 100vh;
+            padding: 20px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            background: var(--white-primary);
+            border-radius: 12px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            overflow: hidden;
+            border: 1px solid var(--silver-dark);
+        }
+
+        .header {
+            background: linear-gradient(135deg, var(--silver-primary) 0%, #f0f0f0 50%, var(--silver-primary) 100%);
+            padding: 40px 20px;
+            text-align: center;
+            border-bottom: 4px solid var(--gold-primary);
+            position: relative;
+        }
+
+        .header h1 {
+            color: var(--black-primary);
+            font-size: 26px;
+            margin-bottom: 10px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 1px;
+        }
+
+        .header p {
+            color: #444;
+            font-size: 14px;
+            font-weight: 500;
+        }
+
+        .btn-login-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            background: var(--black-primary);
+            color: var(--gold-primary);
+            border: 1px solid var(--gold-primary);
+            padding: 10px 20px;
+            border-radius: 6px;
+            font-size: 13px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s;
+        }
+
+        .btn-login-header:hover {
+            background: var(--gold-primary);
+            color: var(--black-primary);
+            transform: translateY(-2px);
+        }
+
+        .user-info-header {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+            background: var(--black-primary);
+            padding: 8px 15px;
+            border-radius: 8px;
+            border: 1px solid var(--gold-primary);
+        }
+
+        .user-info-header .user-name {
+            color: var(--gold-primary);
+            font-weight: 600;
+            font-size: 14px;
+        }
+
+        .btn-logout-small {
+            background: #cc0000;
+            color: white;
+            border: none;
+            padding: 5px 12px;
+            border-radius: 5px;
+            font-size: 11px;
+            font-weight: 600;
+            cursor: pointer;
+        }
+
+        .search-section {
+            padding: 40px;
+            background: var(--white-primary);
+        }
+
+        .tabs {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 30px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .tab {
+            padding: 12px 25px;
+            background: #f5f5f5;
+            border: none;
+            color: #666;
+            font-size: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            border-radius: 8px 8px 0 0;
+            transition: all 0.3s;
+        }
+
+        .tab.active {
+            background: var(--black-primary);
+            color: var(--gold-primary);
+            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+        }
+
+        .tab:hover:not(.active) {
+            background: #ebebeb;
+            color: var(--black-primary);
+        }
+
+        .tab-content {
+            display: none;
+        }
+
+        .tab-content.active {
+            display: block;
+        }
+
+        .search-form {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .form-group {
+            flex: 1;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 8px;
+            color: #333;
+            font-weight: 500;
+            font-size: 14px;
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 12px 15px;
+            border: 2px solid #e0e0e0;
+            border-radius: 8px;
+            font-size: 14px;
+            transition: border-color 0.3s;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: #d4af37;
+            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+        }
+
+        .btn-search {
+            background: var(--gold-primary);
+            color: var(--black-primary);
+            border: none;
+            padding: 12px 30px;
+            border-radius: 8px;
+            font-weight: 700;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            cursor: pointer;
+            transition: all 0.3s;
+            margin-top: 25px;
+        }
+
+        .btn-search:hover {
+            background: var(--gold-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+        }
+
+        .qr-scanner-container {
+            background: #f9f9f9;
+            padding: 35px;
+            border-radius: 12px;
+            border: 1px dashed var(--silver-dark);
+            text-align: center;
+        }
+
+        #qr-reader {
+            max-width: 500px;
+            margin: 25px auto;
+            border: 2px solid var(--silver-primary) !important;
+            border-radius: 12px;
+            overflow: hidden;
+        }
+
+        .btn-start-scan {
+            background: #28a745;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+        }
+
+        .btn-stop-scan {
+            background: #dc3545;
+            color: white;
+            border: none;
+            padding: 15px 40px;
+            border-radius: 8px;
+            font-size: 16px;
+            font-weight: 600;
+            cursor: pointer;
+            margin: 10px;
+            display: none;
+        }
+
+        .results-section {
+            background: linear-gradient(to bottom, #f5f5f5 0%, #e8e8e8 100%);
+            padding: 40px;
+            border-radius: 0 0 15px 15px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            display: none;
+            border: 2px solid #d4af37;
+            border-top: none;
+        }
+
+        .results-section.show {
+            display: block;
+        }
+
+        .expediente-card {
+            border: 2px solid #d4af37;
+            border-radius: 10px;
+            padding: 25px;
+            margin-bottom: 20px;
+            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
+            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        }
+
+        .expediente-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 2px solid #e0e0e0;
+        }
+
+        .expediente-numero {
+            font-size: 24px;
+            font-weight: 700;
+            color: #d4af37;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
+        }
+
+        .expediente-estado {
+            padding: 8px 20px;
+            border-radius: 20px;
+            font-size: 14px;
+            font-weight: 600;
+        }
+
+        .estado-registrado {
+            background: linear-gradient(135deg, #d4af37 0%, #f0d060 100%);
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        .estado-proceso {
+            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
+            color: #1a1a1a;
+            font-weight: 700;
+        }
+
+        .estado-resuelto {
+            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
+            color: #ffffff;
+            font-weight: 700;
+        }
+
+        .info-grid {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 15px;
+            margin-bottom: 20px;
+        }
+
+        .info-item {
+            padding: 12px;
+            background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 6px;
+            border-left: 3px solid #d4af37;
+        }
+
+        .info-label {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
+
+        .info-value {
+            font-size: 15px;
+            color: #333;
+            font-weight: 500;
+        }
+
+        .timeline {
+            margin-top: 30px;
+        }
+
+        .timeline-title {
+            font-size: 18px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 20px;
+        }
+
+        .timeline-item {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            position: relative;
+        }
+
+        .timeline-item:not(:last-child)::before {
+            content: '';
+            position: absolute;
+            left: 19px;
+            top: 40px;
+            width: 2px;
+            height: calc(100% + 10px);
+            background: #e0e0e0;
+        }
+
+        .timeline-dot {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, #d4af37 0%, #f0d060 100%);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: #1a1a1a;
+            font-weight: bold;
+            flex-shrink: 0;
+            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+        }
+
+        .timeline-content {
+            flex: 1;
+            padding: 15px;
+            background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
+            border-radius: 8px;
+            border-left: 3px solid #c0c0c0;
+        }
+
+        .timeline-date {
+            font-size: 12px;
+            color: #666;
+            margin-bottom: 5px;
+        }
+
+        .timeline-action {
+            font-size: 15px;
+            font-weight: 600;
+            color: #333;
+            margin-bottom: 5px;
+        }
+
+        .timeline-description {
+            font-size: 14px;
+            color: #666;
+        }
+
+        .no-results {
+            text-align: center;
+            padding: 40px;
+            color: #666;
+        }
+
+        .no-results-icon {
+            font-size: 64px;
+            margin-bottom: 20px;
+        }
+
+        .loading {
+            text-align: center;
+            padding: 40px;
+        }
+
+        .spinner {
+            border: 4px solid #f3f3f3;
+            border-top: 4px solid #d4af37;
+            border-radius: 50%;
+            width: 50px;
+            height: 50px;
+            animation: spin 1s linear infinite;
+            margin: 0 auto 20px;
+        }
+
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        .login-inline {
+            background: linear-gradient(to bottom, #f5f5f5 0%, #e8e8e8 100%);
+            padding: 40px;
+            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            border-left: 2px solid #d4af37;
+            border-right: 2px solid #d4af37;
+        }
+
+        .login-inline-content {
+            max-width: 400px;
+            margin: 0 auto;
+            text-align: center;
+        }
+
+        .login-inline h3 {
+            color: #1a1a1a;
+            margin-bottom: 10px;
+            font-size: 24px;
+        }
+
+        @media (max-width: 768px) {
+            .info-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .search-form {
+                flex-direction: column;
+            }
+
+            .btn-search {
+                margin-top: 0;
+            }
+
+            .tabs {
+                flex-direction: column;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <!-- Header -->
+        <div class="header">
+            <h1>🔍 Seguimiento de Expediente</h1>
+            <p>Consulta el estado de tu solicitud en tiempo real</p>
+        </div>
+
+        <!-- Login Inline (se muestra cuando no hay sesión) -->
+        <div id="login-inline-section" class="login-inline" style="display: none;">
+            <div class="login-inline-content">
+                <h3>🔐 Iniciar Sesión</h3>
+                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Ingresa tus credenciales para ver tu expediente</p>
+                <form id="login-inline-form" onsubmit="loginInline(event)">
+                    <div class="form-group">
+                        <label for="username-inline">Usuario</label>
+                        <input type="text" id="username-inline" placeholder="Tu usuario" required>
+                    </div>
+                    <div class="form-group">
+                        <label for="password-inline">Contraseña</label>
+                        <input type="password" id="password-inline" placeholder="Tu contraseña" required>
+                    </div>
+                    <button type="submit" class="btn-search" style="width: 100%; margin-top: 10px;">
+                        🔓 Acceder
+                    </button>
+                </form>
+            </div>
+        </div>
+
+        <!-- Search Section -->
+        <div class="search-section">
+            <!-- Tabs -->
+            <div class="tabs">
+                <button class="tab active" onclick="switchTab('manual')">
+                    📝 Búsqueda Manual
+                </button>
+                <button class="tab" onclick="switchTab('qr')">
+                    📷 Escanear QR
+                </button>
+            </div>
+
+            <!-- Tab: Búsqueda Manual -->
+            <div id="tab-manual" class="tab-content active">
+                <form class="search-form" onsubmit="buscarExpediente(event)">
+                    <div class="form-group">
+                        <label for="codigo-mpv">Código TMARC</label>
+                        <input 
+                            type="text" 
+                            id="codigo-mpv" 
+                            placeholder="TMARC-0001-2025"
+                            pattern="TMARC-\d{4}-\d{4}"
+                        >
+                    </div>
+                    <div class="form-group">
+                        <label for="razon">Razón</label>
+                        <input 
+                            type="text" 
+                            id="razon" 
+                            placeholder="Nombre del solicitante"
+                        >
+                    </div>
+                    <button type="submit" class="btn-search">
+                        🔍 Buscar
+                    </button>
+                </form>
+                <p style="color: #666; font-size: 13px; margin-top: 10px;">
+                    💡 Ingresa el código TMARC o el nombre del solicitante para buscar tu expediente
+                </p>
+            </div>
+
+            <!-- Tab: Escanear QR -->
+            <div id="tab-qr" class="tab-content">
+                <div class="qr-scanner-container">
+                    <h3 style="margin-bottom: 15px;">Escanea o sube el código QR de tu cargo</h3>
+                    
+                    <!-- Opción 1: Escanear con cámara -->
+                    <div style="margin-bottom: 20px;">
+                        <h4 style="color: #667eea; margin-bottom: 10px;">📷 Opción 1: Escanear con cámara</h4>
+                        <div id="qr-reader"></div>
+                        <button class="btn-start-scan" onclick="iniciarEscaneo()">
+                            📷 Iniciar Escaneo
+                        </button>
+                        <button class="btn-stop-scan" onclick="detenerEscaneo()">
+                            ⏹️ Detener Escaneo
+                        </button>
+                    </div>
+
+                    <!-- Separador -->
+                    <div style="text-align: center; margin: 20px 0; color: #999;">
+                        ───── O ─────
+                    </div>
+
+                    <!-- Opción 2: Subir imagen -->
+                    <div>
+                        <h4 style="color: #667eea; margin-bottom: 10px;">📤 Opción 2: Subir imagen del QR</h4>
+                        <input 
+                            type="file" 
+                            id="qr-file-input" 
+                            accept="image/*" 
+                            style="display: none;"
+                            onchange="procesarImagenQR(event)"
+                        >
+                        <button 
+                            class="btn-start-scan" 
+                            onclick="document.getElementById('qr-file-input').click()"
+                            style="background: #28a745;">
+                            📤 Subir Imagen QR
+                        </button>
+                        <div id="qr-file-result" style="margin-top: 15px; color: #666; font-size: 14px;"></div>
+                    </div>
+
+                    <p style="color: #666; font-size: 13px; margin-top: 20px;">
+                        💡 Puedes escanear directamente con la cámara o subir una foto del QR
+                    </p>
+                </div>
+            </div>
+        </div>
+
+        <!-- Results Section -->
+        <div id="results-section" class="results-section">
+            <!-- Los resultados se cargarán aquí dinámicamente -->
+        </div>
+    </div>
+
+    <!-- QR Scanner Library -->
+    <script src="https://unpkg.com/html5-qrcode"></script>
+
+    <script>
+        let html5QrCode = null;
+        let codigoPendiente = null; // Guardar código para después del login
+
+        // Login inline
+        async function loginInline(event) {
+            event.preventDefault();
+            
+            const username = document.getElementById('username-inline').value.trim();
+            const password = document.getElementById('password-inline').value;
+            const loginBtn = event.target.querySelector('button[type="submit"]');
+            
+            if (!username || !password) {
+                alert('Por favor, completa todos los campos');
+                return;
+            }
+            
+            // Mostrar loading
+            loginBtn.disabled = true;
+            loginBtn.innerHTML = '⏳ Iniciando sesión...';
+            
+            try {
+                const response = await fetch('/api/auth/login', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json'
+                    },
+                    body: JSON.stringify({ usernameOEmail: username, password })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok && data.success) {
+                    // Guardar token y usuario
+                    sessionStorage.setItem('authToken', data.data.token);
+                    sessionStorage.setItem('user', JSON.stringify(data.data.usuario));
+                    sessionStorage.setItem('userId', data.data.usuario.id.toString());
+                    
+                    // Ocultar formulario de login
+                    document.getElementById('login-inline-section').style.display = 'none';
+                    
+                    // Mostrar sección de búsqueda
+                    document.querySelector('.search-section').style.display = 'block';
+                    
+                    // Si hay código pendiente, buscarlo automáticamente
+                    if (codigoPendiente) {
+                        buscarPorCodigo(codigoPendiente);
+                    }
+                } else {
+                    alert(data.message || 'Usuario o contraseña incorrectos');
+                    loginBtn.disabled = false;
+                    loginBtn.innerHTML = '🔓 Acceder';
+                }
+            } catch (error) {
+                console.error('Error en login:', error);
+                alert('Error de conexión. Intenta nuevamente.');
+                loginBtn.disabled = false;
+                loginBtn.innerHTML = '🔓 Acceder';
+            }
+        }
+        
+        // Buscar automáticamente si viene código en la URL
+        window.addEventListener('DOMContentLoaded', () => {
+            const urlParams = new URLSearchParams(window.location.search);
+            const codigo = urlParams.get('codigo');
+            const token = sessionStorage.getItem('authToken') || localStorage.getItem('token');
+            
+            // Si hay código en la URL
+            if (codigo) {
+                codigoPendiente = codigo; // Guardar para después del login
+                document.getElementById('codigo-mpv').value = codigo;
+                
+                // Si ya tiene sesión, buscar inmediatamente
+                if (token) {
+                    console.log('✅ Sesión activa detectada, buscando expediente...');
+                    buscarPorCodigo(codigo);
+                } else {
+                    // Sin sesión: mostrar formulario de login inline
+                    console.log('🔐 Sin sesión, mostrando formulario de login...');
+                    document.getElementById('login-inline-section').style.display = 'block';
+                    document.querySelector('.search-section').style.display = 'none';
+                }
+            }
+        });
+
+        // Cambiar entre tabs
+        function switchTab(tabName) {
+            // Actualizar tabs
+            document.querySelectorAll('.tab').forEach(tab => {
+                tab.classList.remove('active');
+            });
+            event.target.classList.add('active');
+
+            // Actualizar contenido
+            document.querySelectorAll('.tab-content').forEach(content => {
+                content.classList.remove('active');
+            });
+            document.getElementById(`tab-${tabName}`).classList.add('active');
+
+            // Detener escaneo si se cambia de tab
+            if (tabName === 'manual' && html5QrCode) {
+                detenerEscaneo();
+            }
+        }
+
+        // Iniciar escaneo QR
+        function iniciarEscaneo() {
+            const btnStart = document.querySelector('.btn-start-scan');
+            const btnStop = document.querySelector('.btn-stop-scan');
+
+            html5QrCode = new Html5Qrcode("qr-reader");
+
+            html5QrCode.start(
+                { facingMode: "environment" },
+                {
+                    fps: 10,
+                    qrbox: { width: 250, height: 250 }
+                },
+                (decodedText) => {
+                    console.log('QR detectado:', decodedText);
+                    
+                    // Extraer código del expediente de la URL (formato TMARC-0001-2025)
+                    const match = decodedText.match(/TMARC-\d{4}-\d{4}/);
+                    if (match) {
+                        detenerEscaneo();
+                        buscarPorCodigo(match[0]);
+                    } else {
+                        alert('QR no válido. Debe contener un código de expediente TMARC.');
+                    }
+                },
+                (errorMessage) => {
+                    // Error de escaneo (normal, se ignora)
+                }
+            ).then(() => {
+                btnStart.style.display = 'none';
+                btnStop.style.display = 'inline-block';
+            }).catch((err) => {
+                console.error('Error iniciando cámara:', err);
+                alert('No se pudo acceder a la cámara. Verifica los permisos.');
+            });
+        }
+
+        // Detener escaneo QR
+        function detenerEscaneo() {
+            if (html5QrCode) {
+                html5QrCode.stop().then(() => {
+                    document.querySelector('.btn-start-scan').style.display = 'inline-block';
+                    document.querySelector('.btn-stop-scan').style.display = 'none';
+                }).catch((err) => {
+                    console.error('Error deteniendo cámara:', err);
+                });
+            }
+        }
+
+        // Procesar imagen QR subida
+        async function procesarImagenQR(event) {
+            const file = event.target.files[0];
+            const resultDiv = document.getElementById('qr-file-result');
+
+            if (!file) {
+                return;
+            }
+
+            resultDiv.innerHTML = '⏳ Procesando imagen...';
+
+            try {
+                // Crear instancia de Html5Qrcode para procesar archivo
+                const html5QrCodeScanner = new Html5Qrcode("qr-reader");
+                
+                // Escanear el archivo
+                const decodedText = await html5QrCodeScanner.scanFile(file, true);
+                
+                console.log('QR detectado en imagen:', decodedText);
+                resultDiv.innerHTML = '✅ QR detectado correctamente';
+
+                // Extraer código del expediente (formato TMARC-0001-2025)
+                const match = decodedText.match(/TMARC-\d{4}-\d{4}/);
+                if (match) {
+                    await buscarPorCodigo(match[0]);
+                } else {
+                    resultDiv.innerHTML = '❌ QR no válido. Debe contener un código de expediente TMARC.';
+                }
+
+            } catch (error) {
+                console.error('Error procesando imagen:', error);
+                resultDiv.innerHTML = '❌ No se pudo leer el QR de la imagen. Intenta con otra foto más clara.';
+            }
+
+            // Limpiar input
+            event.target.value = '';
+        }
+
+        // Buscar expediente (formulario)
+        async function buscarExpediente(event) {
+            event.preventDefault();
+            
+            const codigoMPV = document.getElementById('codigo-mpv').value.trim();
+            const razon = document.getElementById('razon').value.trim();
+
+            if (!codigoMPV && !razon) {
+                alert('Por favor, ingresa al menos un criterio de búsqueda');
+                return;
+            }
+
+            if (codigoMPV) {
+                await buscarPorCodigo(codigoMPV);
+            } else {
+                await buscarPorRazon(razon);
+            }
+        }
+
+        // Buscar por código (con sesión normal)
+        async function buscarPorCodigo(codigo) {
+            mostrarCargando();
+
+            try {
+                // Obtener token (sessionStorage primero, localStorage como fallback)
+                const token = sessionStorage.getItem('authToken') || localStorage.getItem('token');
+                
+                if (!token) {
+                    // Sin token: mostrar formulario de login inline
+                    codigoPendiente = codigo; // Guardar código para después del login
+                    document.getElementById('login-inline-section').style.display = 'block';
+                    document.querySelector('.search-section').style.display = 'none';
+                    document.getElementById('results-section').style.display = 'none';
+                    return;
+                }
+                
+                // Hacer request con token en header
+                const response = await fetch(`/api/mesa-partes/seguimiento/${codigo}`, {
+                    headers: {
+                        'Authorization': `Bearer ${token}`
+                    }
+                });
+                
+                if (response.status === 401) {
+                    // Token inválido o expirado
+                    sessionStorage.removeItem('authToken');
+                    sessionStorage.removeItem('user');
+                    sessionStorage.removeItem('userId');
+                    localStorage.removeItem('token');
+                    localStorage.removeItem('usuario');
+                    
+                    // Mostrar formulario de login inline
+                    codigoPendiente = codigo;
+                    document.getElementById('login-inline-section').style.display = 'block';
+                    document.querySelector('.search-section').style.display = 'none';
+                    document.getElementById('results-section').style.display = 'none';
+                    
+                    // Mostrar mensaje de sesión expirada en el formulario
+                    const loginSection = document.getElementById('login-inline-section');
+                    const mensaje = loginSection.querySelector('p');
+                    mensaje.innerHTML = '⏰ Tu sesión ha expirado. Por favor, inicia sesión nuevamente.';
+                    mensaje.style.color = '#d4af37';
+                    return;
+                }
+                
+                if (response.status === 403) {
+                    // Sin permisos
+                    mostrarSinPermisos();
+                    return;
+                }
+                
+                if (!response.ok) {
+                    throw new Error('Expediente no encontrado');
+                }
+
+                const data = await response.json();
+                mostrarResultados(data);
+
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarSinResultados();
+            }
+        }
+        
+        // Mostrar sin permisos
+        function mostrarSinPermisos() {
+            const resultsSection = document.getElementById('results-section');
+            resultsSection.className = 'results-section show';
+            resultsSection.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">🔒</div>
+                    <h3>Acceso Denegado</h3>
+                    <p>No tienes permiso para ver este expediente.</p>
+                    <p style="font-size: 13px; color: #666; margin-top: 10px;">
+                        Solo puedes ver tus propios expedientes.
+                    </p>
+                </div>
+            `;
+        }
+
+        // Buscar por razón social
+        async function buscarPorRazon(razon) {
+            mostrarCargando();
+
+            try {
+                const response = await fetch(`/api/mesa-partes/buscar?razon=${encodeURIComponent(razon)}`);
+                
+                if (!response.ok) {
+                    throw new Error('No se encontraron expedientes');
+                }
+
+                const data = await response.json();
+                
+                if (data.length === 0) {
+                    mostrarSinResultados();
+                } else if (data.length === 1) {
+                    mostrarResultados(data[0]);
+                } else {
+                    mostrarMultiplesResultados(data);
+                }
+
+            } catch (error) {
+                console.error('Error:', error);
+                mostrarSinResultados();
+            }
+        }
+
+        // Mostrar loading
+        function mostrarCargando() {
+            const resultsSection = document.getElementById('results-section');
+            resultsSection.className = 'results-section show';
+            resultsSection.innerHTML = `
+                <div class="loading">
+                    <div class="spinner"></div>
+                    <p>Buscando expediente...</p>
+                </div>
+            `;
+        }
+
+        // Mostrar sin resultados
+        function mostrarSinResultados() {
+            const resultsSection = document.getElementById('results-section');
+            resultsSection.className = 'results-section show';
+            resultsSection.innerHTML = `
+                <div class="no-results">
+                    <div class="no-results-icon">📋</div>
+                    <h3>No se encontró el expediente</h3>
+                    <p>Verifica que el código o nombre sea correcto</p>
+                </div>
+            `;
+        }
+
+        // Mostrar resultados
+        function mostrarResultados(expediente) {
+            console.log('📋 Datos del expediente recibidos:', expediente);
+            console.log('📅 Fecha de registro:', expediente.fecha_registro);
+            
+            const resultsSection = document.getElementById('results-section');
+            resultsSection.className = 'results-section show';
+
+            const estadoClass = {
+                'registrado': 'estado-registrado',
+                'en_proceso': 'estado-proceso',
+                'resuelto': 'estado-resuelto'
+            }[expediente.estado] || 'estado-registrado';
+
+            const estadoTexto = {
+                'registrado': 'Registrado',
+                'en_proceso': 'En Proceso',
+                'resuelto': 'Resuelto'
+            }[expediente.estado] || 'Registrado';
+
+            resultsSection.innerHTML = `
+                <div class="expediente-card">
+                    <div class="expediente-header">
+                        <div>
+                            <div class="expediente-numero">${expediente.numero_registro}</div>
+                            <div style="font-size: 12px; color: #666; margin-top: 5px;">
+                                ${expediente.tipo === 'solicitud' ? '📋 Solicitud' : '📄 Mesa de Partes'}
+                            </div>
+                        </div>
+                        <div class="expediente-estado ${estadoClass}">${estadoTexto}</div>
+                    </div>
+
+                    <div class="info-grid">
+                        <div class="info-item">
+                            <div class="info-label">Solicitante</div>
+                            <div class="info-value">${expediente.demandante?.nombre || 'No especificado'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Fecha de Registro</div>
+                            <div class="info-value">${formatearFecha(expediente.fecha_registro || expediente.fecha_presentacion)}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Tipo de Servicio</div>
+                            <div class="info-value">${expediente.tipo_presentacion || 'Arbitraje'}</div>
+                        </div>
+                        <div class="info-item">
+                            <div class="info-label">Total de Folios</div>
+                            <div class="info-value">${expediente.documentos?.length || 0}</div>
+                        </div>
+                    </div>
+
+                    ${expediente.sumilla ? `
+                    <div class="info-item" style="margin-top: 15px;">
+                        <div class="info-label">Sumilla</div>
+                        <div class="info-value">${expediente.sumilla}</div>
+                    </div>
+                    ` : ''}
+
+                    <div class="timeline">
+                        <div class="timeline-title">📊 Historial de Movimientos</div>
+                        ${generarTimeline(expediente)}
+                    </div>
+                </div>
+            `;
+        }
+
+        // Generar timeline
+        function generarTimeline(expediente) {
+            // TODO: Cuando tengas un sistema de seguimiento real, usa esos datos
+            // Por ahora, mostramos el registro inicial
+            return `
+                <div class="timeline-item">
+                    <div class="timeline-dot">1</div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">${formatearFecha(expediente.fecha_registro || expediente.fecha_presentacion)}</div>
+                        <div class="timeline-action">Solicitud Registrada</div>
+                        <div class="timeline-description">
+                            Su solicitud ha sido recibida y registrada en el sistema.
+                        </div>
+                    </div>
+                </div>
+                <div class="timeline-item">
+                    <div class="timeline-dot">2</div>
+                    <div class="timeline-content">
+                        <div class="timeline-date">Pendiente</div>
+                        <div class="timeline-action">En Revisión</div>
+                        <div class="timeline-description">
+                            Su expediente está siendo revisado por el área correspondiente.
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        // Formatear fecha
+        function formatearFecha(fecha) {
+            if (!fecha) return 'No especificada';
+            const date = new Date(fecha);
+            return date.toLocaleDateString('es-ES', {
+                year: 'numeric',
+                month: 'long',
+                day: 'numeric',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+        }
+
+        // Mostrar múltiples resultados
+        function mostrarMultiplesResultados(expedientes) {
+            const resultsSection = document.getElementById('results-section');
+            resultsSection.className = 'results-section show';
+
+            let html = '<h3 style="margin-bottom: 20px;">Se encontraron múltiples expedientes:</h3>';
+            
+            expedientes.forEach(exp => {
+                html += `
+                    <div class="expediente-card" style="cursor: pointer;" onclick="buscarPorCodigo('${exp.numero_registro}')">
+                        <div class="expediente-header">
+                            <div class="expediente-numero">${exp.numero_registro}</div>
+                            <div class="info-value">${formatearFecha(exp.fecha_registro || exp.fecha_presentacion)}</div>
+                        </div>
+                        <p>${exp.demandante?.nombre || 'No especificado'}</p>
+                    </div>
+                `;
+            });
+
+            resultsSection.innerHTML = html;
+        }
+    </script>
+</body>
+</html>

@@ -1,0 +1,2005 @@
+<!DOCTYPE html>
+<html lang="es">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Formulario de Solicitud - Estilo Personalizado</title>
+
+  <style>
+    :root {
+      /* Colores institucionales */
+      --gold-primary: #d4af37;
+      --gold-dark: #c49a2d;
+      --gold-light: #e5c158;
+      --black-primary: #000000;
+      --black-soft: #1a1a1a;
+      --black-gray: #2d2d2d;
+      --silver-primary: #C0C0C0;
+      --silver-dark: #A0A0A0;
+      --white-primary: #ffffff;
+
+      /* Variables de uso */
+      --bg-dark: #1a1a1a;
+      --bg-medium: #2d2d2d;
+      --bg-light: #f5f5f5;
+      --accent-gold: #d4af37;
+      --text-light: #333333;
+      --text-white: #ffffff;
+      --text-grey: #666666;
+      --border-color: #d4af37;
+      --error-red: #ff4d4d;
+      --header-gold: #d4af37;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      margin: 0;
+      padding: 20px;
+      background: #f8f9fa;
+      color: var(--text-light);
+      min-height: 100vh;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      box-sizing: border-box;
+    }
+
+    .container {
+      background-color: var(--white-primary);
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.1);
+      width: 100%;
+      max-width: 900px;
+      overflow: hidden;
+      border: 2px solid var(--silver-dark);
+    }
+
+    .header {
+      background: var(--silver-primary);
+      color: var(--black-soft);
+      padding: 20px 30px;
+      font-size: 1.5em;
+      font-weight: 600;
+      border-bottom: 3px solid var(--silver-dark);
+      letter-spacing: 0.5px;
+    }
+
+    .form-content {
+      padding: 30px;
+    }
+
+    .form-section {
+      margin-bottom: 30px;
+      border-bottom: 1px solid #e9ecef;
+      padding-bottom: 25px;
+    }
+
+    .form-section:last-child {
+      border-bottom: none;
+      padding-bottom: 0;
+      margin-bottom: 0;
+    }
+
+    .form-section-title {
+      color: var(--black-soft);
+      font-size: 1.1em;
+      font-weight: 600;
+      margin-bottom: 20px;
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      border-left: 4px solid var(--silver-dark);
+      padding-left: 12px;
+    }
+
+    .form-section-title::before {
+      content: '▼';
+      margin-right: 10px;
+      font-size: 0.8em;
+      color: var(--text-grey);
+      transition: transform 0.3s ease;
+    }
+
+    .form-section.collapsed .form-section-title::before {
+      transform: rotate(-90deg);
+    }
+
+    .form-section.collapsed .form-group,
+    .form-section.collapsed .email-section,
+    .form-section.collapsed .file-upload-area {
+      display: none;
+    }
+
+
+    .form-group {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+      gap: 20px 25px;
+    }
+
+    .form-item.full-width {
+      grid-column: 1 / -1;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 8px;
+      font-size: 0.9em;
+      color: var(--text-light);
+      font-weight: 400;
+    }
+
+    .helper-text {
+      font-size: 0.8em;
+      color: var(--text-grey);
+      margin-top: 5px;
+      font-style: italic;
+    }
+
+    .form-input,
+    .form-select {
+      width: 100%;
+      padding: 10px 14px;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+      background-color: var(--white-primary);
+      color: var(--text-light);
+      font-size: 0.95em;
+      box-sizing: border-box;
+      transition: all 0.3s ease;
+    }
+
+    .form-input:focus,
+    .form-select:focus {
+      border-color: var(--silver-dark);
+      outline: none;
+      box-shadow: 0 0 0 2px rgba(160, 160, 160, 0.15);
+    }
+
+    .form-select {
+      -webkit-appearance: none;
+      appearance: none;
+      background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 24 24' fill='%23A0A0A0'%3E%3Cpath d='M7 10l5 5 5-5z'/%3E%3C/svg%3E");
+      background-repeat: no-repeat;
+      background-position: right 10px center;
+      background-size: 20px;
+      padding-right: 35px;
+    }
+
+    .radio-group {
+      display: flex;
+      gap: 20px;
+      align-items: center;
+      padding: 12px 0;
+    }
+
+    .radio-group label {
+      margin: 0;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      cursor: pointer;
+      color: var(--text-grey);
+    }
+
+    .radio-group input[type="radio"] {
+      accent-color: var(--silver-dark);
+      width: 18px;
+      height: 18px;
+    }
+
+    /* Estilos para la sección de agregar correos */
+    .email-section {
+      margin-top: 20px;
+    }
+
+    .email-add-group {
+      display: flex;
+      gap: 10px;
+    }
+
+    .email-add-group .form-input {
+      flex-grow: 1;
+    }
+
+    .btn-agregar {
+      padding: 8px 20px;
+      border: 1px solid var(--gold-primary);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      background-color: transparent;
+      color: var(--gold-primary);
+    }
+
+    .btn-agregar:hover {
+      background: var(--gold-primary);
+      color: white;
+    }
+
+    .dynamic-table {
+      margin-top: 15px;
+      width: 100%;
+      border-collapse: collapse;
+      background-color: var(--white-primary);
+      border-radius: 6px;
+      border: 1px solid #dee2e6;
+      overflow: hidden;
+    }
+
+    .dynamic-table th,
+    .dynamic-table td {
+      padding: 12px 15px;
+      text-align: left;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .dynamic-table th {
+      background-color: #f8f9fa;
+      color: var(--black-soft);
+      font-weight: 600;
+      font-size: 0.85em;
+      text-transform: uppercase;
+      border-bottom: 2px solid var(--silver-dark);
+    }
+
+    .dynamic-table tr:last-child td {
+      border-bottom: none;
+    }
+
+    .dynamic-table .remove-item {
+      color: var(--error-red);
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1.2em;
+    }
+
+    .dynamic-table .remove-item:hover {
+      color: #ff8c8c;
+    }
+
+    .dynamic-table .empty-row td {
+      text-align: center;
+      color: var(--text-grey);
+      font-style: italic;
+      padding: 20px;
+    }
+
+    /* Estilos para la sección de Anexos */
+    .btn-secondary {
+      padding: 8px 15px;
+      border: 1px solid var(--gold-primary);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      background-color: transparent;
+      color: var(--gold-primary);
+    }
+
+    .btn-secondary:hover {
+      background: var(--gold-primary);
+      color: white;
+    }
+
+    .file-upload-area {
+      margin-top: 15px;
+    }
+
+    .file-selector-group {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding: 12px;
+      background-color: #f8f9fa;
+      border: 1px solid #dee2e6;
+      border-radius: 6px;
+    }
+
+    .file-selector-group .btn-upload {
+      padding: 8px 15px;
+      border: 1px solid var(--gold-primary);
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 0.9em;
+      font-weight: 500;
+      transition: all 0.2s ease;
+      background-color: transparent;
+      color: var(--gold-primary);
+    }
+
+    .file-selector-group .btn-upload:hover {
+      background: var(--gold-primary);
+      color: white;
+    }
+
+    .file-selector-group #file-name-display {
+      color: var(--text-grey);
+      font-style: italic;
+    }
+
+    .file-list-table .form-input {
+      padding: 8px;
+      font-size: 0.9em;
+      max-width: 80px;
+    }
+
+    .total-size-container {
+      margin-top: 10px;
+      padding: 12px;
+      text-align: right;
+      background-color: #f8f9fa;
+      border-radius: 6px;
+      border: 1px solid #dee2e6;
+      font-weight: 600;
+      color: var(--text-light);
+    }
+
+    .final-actions {
+      margin-top: 30px;
+      padding-top: 20px;
+      border-top: 1px solid var(--border-color);
+      text-align: center;
+    }
+
+    .btn-submit {
+      padding: 14px 40px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1.1em;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      transition: all 0.3s ease;
+      background: linear-gradient(135deg, var(--gold-primary) 0%, var(--gold-dark) 100%);
+      color: white;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-submit::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-submit:hover::before {
+      left: 100%;
+    }
+
+    .btn-submit:hover {
+      background: linear-gradient(135deg, var(--gold-light) 0%, var(--gold-primary) 100%);
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px rgba(212, 175, 55, 0.5);
+    }
+
+    .btn-submit:active {
+      transform: translateY(0);
+      box-shadow: 0 2px 8px rgba(212, 175, 55, 0.3);
+    }
+
+    /* Estilos para el Modal de Confirmación */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.7);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      z-index: 1000;
+      backdrop-filter: blur(5px);
+      animation: fadeIn 0.3s ease-out;
+    }
+
+    .modal-overlay.active {
+      display: flex;
+    }
+
+    .modal-content {
+      background-color: var(--white-primary);
+      border-radius: 12px;
+      padding: 0;
+      max-width: 500px;
+      width: 90%;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      border: 2px solid var(--silver-dark);
+      overflow: hidden;
+      animation: slideIn 0.4s ease-out;
+      transform: scale(0.9);
+      animation-fill-mode: forwards;
+    }
+
+    .modal-header {
+      background-color: var(--silver-primary);
+      color: var(--black-soft);
+      padding: 20px;
+      text-align: center;
+      font-size: 1.3em;
+      font-weight: 600;
+      border-bottom: 3px solid var(--silver-dark);
+    }
+
+    .modal-body {
+      padding: 30px 25px;
+      text-align: center;
+      background: var(--white-primary);
+    }
+
+    .modal-info-grid {
+      background-color: #f8f9fa;
+      border-radius: 8px;
+      padding: 20px;
+      margin: 20px 0;
+      border: 1px solid #dee2e6;
+    }
+
+    .modal-info-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 8px 0;
+      border-bottom: 1px solid #dee2e6;
+    }
+
+    .modal-info-row:last-child {
+      border-bottom: none;
+    }
+
+    .modal-info-label {
+      color: var(--text-grey);
+      font-weight: 600;
+      font-size: 0.9em;
+    }
+
+    .modal-info-value {
+      color: var(--text-light);
+      font-weight: 500;
+    }
+
+    .modal-expediente {
+      color: var(--black-soft);
+      font-size: 1.2em;
+      font-weight: 700;
+      margin: 15px 0;
+    }
+
+    .modal-buttons {
+      display: flex;
+      gap: 15px;
+      justify-content: center;
+      margin-top: 25px;
+    }
+
+    .btn-modal {
+      padding: 12px 25px;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-size: 1em;
+      font-weight: 600;
+      transition: all 0.3s;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .btn-descargar {
+      background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+      color: white;
+      box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+    }
+
+    .btn-descargar::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: -100%;
+      width: 100%;
+      height: 100%;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      transition: left 0.5s;
+    }
+
+    .btn-descargar:hover::before {
+      left: 100%;
+    }
+
+    .btn-descargar:hover {
+      background: linear-gradient(135deg, var(--gold-light), var(--gold-primary));
+      transform: translateY(-2px);
+      box-shadow: 0 6px 16px rgba(212, 175, 55, 0.4);
+    }
+
+    .btn-cerrar {
+      background-color: #6c757d;
+      color: white;
+    }
+
+    .btn-cerrar:hover {
+      background-color: #5a6268;
+      transform: translateY(-2px);
+    }
+
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+      }
+
+      to {
+        opacity: 1;
+      }
+    }
+
+    @keyframes slideIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8) translateY(-20px);
+      }
+
+      to {
+        opacity: 1;
+        transform: scale(1) translateY(0);
+      }
+    }
+
+
+    /* ============================================
+           PANEL LATERAL DE NOTIFICACIÓN DE CREDENCIALES
+           ============================================ */
+    .credentials-sidebar {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 320px;
+      padding: 30px 25px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.95) 0%, rgba(26, 26, 26, 0.95) 100%);
+      backdrop-filter: blur(10px);
+      border-radius: 20px 0 0 20px;
+      border: 3px solid var(--gold-primary);
+      box-shadow: -10px 0 40px rgba(212, 175, 55, 0.4), inset 0 0 60px rgba(212, 175, 55, 0.1), 0 0 30px rgba(212, 175, 55, 0.3);
+      z-index: 999;
+      overflow: hidden;
+      animation: slideInRight 1s ease-out;
+    }
+
+
+
+    .credentials-sidebar-content {
+      position: relative;
+      z-index: 2;
+    }
+
+    /* Ícono principal animado */
+    .credentials-icon {
+      text-align: center;
+      margin-bottom: 20px;
+      position: relative;
+    }
+
+    .credentials-icon-main {
+      font-size: 60px;
+      display: inline-block;
+      animation: float 3s ease-in-out infinite, pulse 2s ease-in-out infinite;
+      filter: drop-shadow(0 5px 15px rgba(0, 0, 0, 0.3));
+    }
+
+    /* Partículas decorativas */
+    .particle {
+      position: absolute;
+      width: 8px;
+      height: 8px;
+      background: rgba(212, 175, 55, 0.8);
+      border-radius: 50%;
+      box-shadow: 0 0 10px rgba(212, 175, 55, 0.6);
+      animation: particleFloat 4s infinite ease-in-out;
+    }
+
+    .particle:nth-child(1) {
+      top: 20%;
+      left: 10%;
+      animation-delay: 0s;
+    }
+
+    .particle:nth-child(2) {
+      top: 60%;
+      left: 80%;
+      animation-delay: 1s;
+    }
+
+    .particle:nth-child(3) {
+      top: 40%;
+      left: 90%;
+      animation-delay: 2s;
+    }
+
+    .particle:nth-child(4) {
+      top: 80%;
+      left: 15%;
+      animation-delay: 1.5s;
+    }
+
+    /* Título */
+    .credentials-title {
+      color: var(--gold-primary);
+      font-size: 1.4em;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 15px;
+      text-shadow: 0 0 10px rgba(212, 175, 55, 0.5), 2px 2px 4px rgba(0, 0, 0, 0.5);
+      letter-spacing: 0.5px;
+    }
+
+    /* Mensaje */
+    .credentials-message {
+      color: rgba(255, 255, 255, 0.95);
+      font-size: 0.95em;
+      line-height: 1.6;
+      text-align: center;
+      margin-bottom: 20px;
+      text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.2);
+    }
+
+    /* Caja de información */
+    .credentials-info-box {
+      background: rgba(212, 175, 55, 0.1);
+      border: 2px solid var(--gold-primary);
+      border-radius: 12px;
+      padding: 15px;
+      margin-top: 15px;
+      backdrop-filter: blur(5px);
+      animation: glow 2s ease-in-out infinite;
+    }
+
+    .credentials-info-item {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      color: white;
+      font-size: 0.85em;
+      margin-bottom: 8px;
+    }
+
+    .credentials-info-item:last-child {
+      margin-bottom: 0;
+    }
+
+    .credentials-info-icon {
+      font-size: 1.2em;
+      animation: bounce 2s infinite;
+    }
+
+    /* Botón de cerrar */
+    .credentials-close-btn {
+      position: absolute;
+      top: 10px;
+      right: 10px;
+      width: 30px;
+      height: 30px;
+      background: rgba(212, 175, 55, 0.2);
+      border: 2px solid var(--gold-primary);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 10;
+      transition: all 0.3s ease;
+      font-size: 18px;
+      color: var(--gold-primary);
+      font-weight: bold;
+      line-height: 1;
+    }
+
+    .credentials-close-btn:hover {
+      background: var(--gold-primary);
+      color: black;
+      transform: rotate(90deg) scale(1.1);
+      box-shadow: 0 0 15px rgba(212, 175, 55, 0.6);
+    }
+
+    .credentials-sidebar.hidden {
+      transform: translateY(-50%) translateX(100%);
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    /* Botón flotante para reabrir */
+    .credentials-toggle-btn {
+      position: fixed;
+      right: 0;
+      top: 50%;
+      transform: translateY(-50%);
+      width: 50px;
+      height: 80px;
+      background: linear-gradient(135deg, rgba(0, 0, 0, 0.9), rgba(26, 26, 26, 0.9));
+      border: 2px solid var(--gold-primary);
+      border-right: none;
+      border-radius: 15px 0 0 15px;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      z-index: 998;
+      transition: all 0.3s ease;
+      box-shadow: -5px 0 20px rgba(212, 175, 55, 0.3);
+    }
+
+    .credentials-toggle-btn.show {
+      display: flex;
+    }
+
+    .credentials-toggle-btn:hover {
+      width: 60px;
+      background: linear-gradient(135deg, var(--gold-primary), var(--gold-dark));
+      box-shadow: -10px 0 30px rgba(212, 175, 55, 0.5);
+    }
+
+    .credentials-toggle-btn-icon {
+      font-size: 24px;
+      color: var(--gold-primary);
+      transition: color 0.3s ease;
+      animation: pulse 2s infinite;
+    }
+
+    .credentials-toggle-btn:hover .credentials-toggle-btn-icon {
+      color: black;
+    }
+
+    @media (max-width: 992px) {
+      .credentials-toggle-btn {
+        display: none !important;
+      }
+    }
+
+    /* Animaciones */
+    @keyframes slideInRight {
+      from {
+        transform: translateY(-50%) translateX(100%);
+        opacity: 0;
+      }
+
+      to {
+        transform: translateY(-50%) translateX(0);
+        opacity: 1;
+      }
+    }
+
+    @keyframes float {
+
+      0%,
+      100% {
+        transform: translateY(0px);
+      }
+
+      50% {
+        transform: translateY(-15px);
+      }
+    }
+
+    @keyframes pulse {
+
+      0%,
+      100% {
+        transform: scale(1);
+      }
+
+      50% {
+        transform: scale(1.1);
+      }
+    }
+
+
+
+    @keyframes particleFloat {
+
+      0%,
+      100% {
+        transform: translateY(0) translateX(0);
+        opacity: 0.3;
+      }
+
+      50% {
+        transform: translateY(-20px) translateX(10px);
+        opacity: 0.8;
+      }
+    }
+
+    @keyframes glow {
+
+      0%,
+      100% {
+        box-shadow: 0 0 10px rgba(212, 175, 55, 0.4);
+      }
+
+      50% {
+        box-shadow: 0 0 25px rgba(212, 175, 55, 0.8), 0 0 35px rgba(212, 175, 55, 0.4);
+      }
+    }
+
+    @keyframes bounce {
+
+      0%,
+      100% {
+        transform: translateY(0);
+      }
+
+      50% {
+        transform: translateY(-5px);
+      }
+    }
+
+    /* Responsive - Ocultar en pantallas pequeñas */
+    @media (max-width: 1200px) {
+      .credentials-sidebar {
+        width: 280px;
+        padding: 25px 20px;
+      }
+    }
+
+    @media (max-width: 992px) {
+      .credentials-sidebar {
+        display: none;
+      }
+    }
+  </style>
+</head>
+
+<body>
+  <div class="container">
+    <div class="header">NUEVA SOLICITUD</div>
+    <div class="form-content">
+      <form id="solicitudForm" novalidate>
+
+        <!-- 1) DEMANDANTE -->
+        <div class="form-section collapsed" id="sec-demandante">
+          <div class="form-section-title" data-step="1" aria-expanded="false">1. DATOS DEL DEMANDANTE</div>
+          <div class="content">
+            <div class="form-group">
+              <div class="form-item full-width">
+                <div class="radio-group">
+                  <label><input type="radio" name="tipo_persona_demandante" value="natural" checked> Persona
+                    Natural</label>
+                  <label><input type="radio" name="tipo_persona_demandante" value="juridica"> Persona Jurídica</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Persona NATURAL (DEMANDANTE) -->
+            <div id="natural_demandante">
+              <div class="form-group">
+                <div class="form-item">
+                  <label for="doc_tipo_demandante">Tipo de Documento</label>
+                  <select id="doc_tipo_demandante" class="form-select">
+                    <option>DNI</option>
+                    <option>RUC</option>
+                    <option>Pasaporte</option>
+                    <option>Carnet de Extranjería</option>
+                  </select>
+                </div>
+                <div class="form-item">
+                  <label for="doc_num_demandante">Número de Documento del Demandante</label>
+                  <input type="text" id="doc_num_demandante" class="form-input" required>
+                </div>
+                <div class="form-item">
+                  <label for="nombre_demandante">Nombres y Apellidos del Demandante</label>
+                  <input type="text" id="nombre_demandante" class="form-input" required>
+                </div>
+                <div class="form-item">
+                  <label for="celular_demandante">Celular del Demandante</label>
+                  <input type="tel" id="celular_demandante" class="form-input">
+                </div>
+
+                <div class="form-item full-width">
+                  <label>Domicilio del Demandante</label>
+                  <div class="form-group">
+                    <div class="form-item">
+                      <label for="tipo_via_demandante">Tipo de vía</label>
+                      <input type="text" id="tipo_via_demandante" class="form-input" placeholder="Ej: Av. Calle, Jr."
+                        required>
+                    </div>
+                    <div class="form-item">
+                      <label for="numero_demandante">Número</label>
+                      <input type="text" id="numero_demandante" class="form-input" required>
+                    </div>
+                    <div class="form-item">
+                      <label for="interior_demandante">Interior/Dpto.</label>
+                      <input type="text" id="interior_demandante" class="form-input">
+                    </div>
+                    <div class="form-item">
+                      <label for="urbanizacion_demandante">Urbanización/AAHH</label>
+                      <input type="text" id="urbanizacion_demandante" class="form-input">
+                    </div>
+                    <div class="form-item">
+                      <label for="distrito_demandante">Distrito</label>
+                      <input type="text" id="distrito_demandante" class="form-input" required>
+                    </div>
+                    <div class="form-item">
+                      <label for="provincia_demandante">Provincia</label>
+                      <input type="text" id="provincia_demandante" class="form-input" required>
+                    </div>
+                    <div class="form-item">
+                      <label for="departamento_demandante">Departamento</label>
+                      <input type="text" id="departamento_demandante" class="form-input" required>
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Persona JURÍDICA (DEMANDANTE) -->
+            <div id="juridica_demandante" style="display:none;">
+              <div class="form-group">
+                <div class="form-item">
+                  <label for="ruc_demandante">RUC</label>
+                  <input type="text" id="ruc_demandante" class="form-input" required>
+                </div>
+                <div class="form-item">
+                  <label for="razon_social_demandante">Razón Social</label>
+                  <input type="text" id="razon_social_demandante" class="form-input" required>
+                </div>
+                <div class="form-item">
+                  <label for="celular_demandante_juridica">Celular</label>
+                  <input type="tel" id="celular_demandante_juridica" class="form-input">
+                </div>
+                <div class="form-item full-width">
+                  <label for="enlace_mesa_partes_demandante">Enlace de Mesa de Partes (Opcional)</label>
+                  <input type="url" id="enlace_mesa_partes_demandante" class="form-input"
+                    placeholder="https://ejemplo.gob.pe/mesa-partes">
+                </div>
+              </div>
+
+              <div class="form-item full-width">
+                <label>Domicilio</label>
+                <div class="form-group">
+                  <div class="form-item">
+                    <label for="tipo_via_demandante_juridica">Tipo de vía</label>
+                    <input type="text" id="tipo_via_demandante_juridica" class="form-input"
+                      placeholder="Ej: Av. Calle, Jr." required>
+                  </div>
+                  <div class="form-item">
+                    <label for="numero_demandante_juridica">Número</label>
+                    <input type="text" id="numero_demandante_juridica" class="form-input" required>
+                  </div>
+                  <div class="form-item">
+                    <label for="interior_demandante_juridica">Interior/Dpto.</label>
+                    <input type="text" id="interior_demandante_juridica" class="form-input">
+                  </div>
+                  <div class="form-item">
+                    <label for="urbanizacion_demandante_juridica">Urbanización/AAHH</label>
+                    <input type="text" id="urbanizacion_demandante_juridica" class="form-input">
+                  </div>
+                  <div class="form-item">
+                    <label for="distrito_demandante_juridica">Distrito</label>
+                    <input type="text" id="distrito_demandante_juridica" class="form-input" required>
+                  </div>
+                  <div class="form-item">
+                    <label for="provincia_demandante_juridica">Provincia</label>
+                    <input type="text" id="provincia_demandante_juridica" class="form-input" required>
+                  </div>
+                  <div class="form-item">
+                    <label for="departamento_demandante_juridica">Departamento</label>
+                    <input type="text" id="departamento_demandante_juridica" class="form-input" required>
+                  </div>
+                </div>
+              </div>
+
+              <div class="email-section">
+                <label for="email_input_demandante_juridica">Correo</label>
+                <div class="email-add-group">
+                  <input type="email" id="email_input_demandante_juridica" class="form-input"
+                    placeholder="Ingrese un correo">
+                  <button type="button" class="btn-agregar" onclick="addEmailJuridica('demandante')">Agregar</button>
+                </div>
+                <table class="dynamic-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Correo</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="email_table_demandante_juridica">
+                    <tr class="empty-row">
+                      <td colspan="3">No se han agregado correos</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+
+              <div class="form-section-title" style="margin-top: 20px;">Datos Representante Legal</div>
+              <div class="form-group">
+                <div class="form-item">
+                  <label for="tipo_doc_facultativo_demandante">Seleccionar Tipo de Documento Facultativo</label>
+                  <select id="tipo_doc_facultativo_demandante" class="form-select">
+                    <option>Escritura Pública</option>
+                    <option>Otro</option>
+                  </select>
+                </div>
+                <div class="form-item">
+                  <label for="escritura_publica_demandante">Escritura Pública</label>
+                  <input type="text" id="escritura_publica_demandante" class="form-input">
+                </div>
+                <div class="form-item">
+                  <label for="codigo_doc_facultativo_demandante">Código del Documento Facultativo</label>
+                  <input type="text" id="codigo_doc_facultativo_demandante" class="form-input">
+                </div>
+                <div class="form-item">
+                  <label for="tipo_doc_representante_demandante">Tipo de Documento del Representante Legal</label>
+                  <select id="tipo_doc_representante_demandante" class="form-select">
+                    <option>DNI</option>
+                    <option>RUC</option>
+                    <option>Pasaporte</option>
+                    <option>Carnet de Extranjería</option>
+                  </select>
+                </div>
+                <div class="form-item">
+                  <label for="numero_doc_representante_demandante">Número de Documento del Representante Legal</label>
+                  <input type="text" id="numero_doc_representante_demandante" class="form-input" required>
+                </div>
+                <div class="form-item">
+                  <label for="nombres_representante_demandante">Nombres y Apellidos del Representante Legal</label>
+                  <input type="text" id="nombres_representante_demandante" class="form-input" required>
+                </div>
+                <div class="form-item">
+                  <label for="celular_representante_demandante">Celular del Representante Legal</label>
+                  <input type="tel" id="celular_representante_demandante" class="form-input">
+                </div>
+              </div>
+              <div class="email-section">
+                <label for="email_input_representante_demandante">Correo del Representante Legal</label>
+                <div class="email-add-group">
+                  <input type="email" id="email_input_representante_demandante" class="form-input"
+                    placeholder="Ingrese un correo">
+                  <button type="button" class="btn-agregar"
+                    onclick="addEmailRepresentante('demandante')">Agregar</button>
+                </div>
+                <table class="dynamic-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Correo</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="email_table_representante_demandante">
+                    <tr class="empty-row">
+                      <td colspan="3">No se han agregado correos</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <!-- Emails del demandante (genérico) -->
+            <div class="email-section">
+              <label for="email_input_demandante">Correo del Demandante</label>
+              <div class="email-add-group">
+                <input type="email" id="email_input_demandante" class="form-input" placeholder="Ingrese un correo">
+                <button type="button" class="btn-agregar" onclick="addEmail('demandante')">Agregar</button>
+              </div>
+              <table class="dynamic-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Correo</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="email_table_demandante">
+                  <tr class="empty-row">
+                    <td colspan="3">No se han agregado correos</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 2) DEMANDADO -->
+        <div class="form-section collapsed" id="sec-demandado">
+          <div class="form-section-title" data-step="2" aria-expanded="false">2. DATOS DEL DEMANDADO</div>
+          <div class="content">
+            <div class="form-group">
+              <div class="form-item full-width">
+                <div class="radio-group">
+                  <label><input type="radio" name="tipo_persona_demandado" value="natural" checked> Persona
+                    Natural</label>
+                  <label><input type="radio" name="tipo_persona_demandado" value="juridica"> Persona Jurídica</label>
+                </div>
+              </div>
+            </div>
+
+            <!-- Persona NATURAL (DEMANDADO) -->
+            <div id="natural_demandado">
+              <div class="form-group">
+                <div class="form-item">
+                  <label for="doc_tipo_demandado">Tipo de Documento</label>
+                  <select id="doc_tipo_demandado" class="form-select">
+                    <option>DNI</option>
+                    <option>RUC</option>
+                    <option>Pasaporte</option>
+                    <option>Carnet de Extranjería</option>
+                  </select>
+                </div>
+                <div class="form-item">
+                  <label for="doc_num_demandado">Número de Documento del Demandado</label>
+                  <input type="text" id="doc_num_demandado" class="form-input" required>
+                </div>
+                <div class="form-item">
+                  <label for="nombre_demandado">Nombres y Apellidos del Demandado</label>
+                  <input type="text" id="nombre_demandado" class="form-input" required>
+                </div>
+                <div class="form-item">
+                  <label for="celular_demandado">Celular del Demandado</label>
+                  <input type="tel" id="celular_demandado" class="form-input">
+                </div>
+
+                <div class="form-item full-width">
+                  <label>Domicilio del Demandado</label>
+                  <div class="form-group">
+                    <div class="form-item">
+                      <label for="tipo_via_demandado">Tipo de vía</label>
+                      <input type="text" id="tipo_via_demandado" class="form-input" placeholder="Ej: Av. Calle, Jr.">
+                    </div>
+                    <div class="form-item">
+                      <label for="numero_demandado">Número</label>
+                      <input type="text" id="numero_demandado" class="form-input">
+                    </div>
+                    <div class="form-item">
+                      <label for="interior_demandado">Interior/Dpto.</label>
+                      <input type="text" id="interior_demandado" class="form-input">
+                    </div>
+                    <div class="form-item">
+                      <label for="urbanizacion_demandado">Urbanización/AAHH</label>
+                      <input type="text" id="urbanizacion_demandado" class="form-input">
+                    </div>
+                    <div class="form-item">
+                      <label for="distrito_demandado">Distrito</label>
+                      <input type="text" id="distrito_demandado" class="form-input">
+                    </div>
+                    <div class="form-item">
+                      <label for="provincia_demandado">Provincia</label>
+                      <input type="text" id="provincia_demandado" class="form-input">
+                    </div>
+                    <div class="form-item">
+                      <label for="departamento_demandado">Departamento</label>
+                      <input type="text" id="departamento_demandado" class="form-input">
+                    </div>
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <!-- Persona JURÍDICA (DEMANDADO) -->
+            <div id="juridica_demandado" style="display:none;">
+              <div class="form-group">
+                <div class="form-item">
+                  <label for="ruc_demandado">RUC</label>
+                  <input type="text" id="ruc_demandado" class="form-input" required>
+                </div>
+                <div class="form-item">
+                  <label for="razon_social_demandado">Razón Social</label>
+                  <input type="text" id="razon_social_demandado" class="form-input" required>
+                </div>
+                <div class="form-item">
+                  <label for="celular_demandado_juridica">Celular</label>
+                  <input type="tel" id="celular_demandado_juridica" class="form-input">
+                </div>
+              </div>
+
+              <div class="form-item full-width">
+                <label>Domicilio</label>
+                <div class="form-group">
+                  <div class="form-item">
+                    <label for="tipo_via_demandado_juridica">Tipo de vía</label>
+                    <input type="text" id="tipo_via_demandado_juridica" class="form-input"
+                      placeholder="Ej: Av. Calle, Jr.">
+                  </div>
+                  <div class="form-item">
+                    <label for="numero_demandado_juridica">Número</label>
+                    <input type="text" id="numero_demandado_juridica" class="form-input">
+                  </div>
+                  <div class="form-item">
+                    <label for="interior_demandado_juridica">Interior/Dpto.</label>
+                    <input type="text" id="interior_demandado_juridica" class="form-input">
+                  </div>
+                  <div class="form-item">
+                    <label for="urbanizacion_demandado_juridica">Urbanización/AAHH</label>
+                    <input type="text" id="urbanizacion_demandado_juridica" class="form-input">
+                  </div>
+                  <div class="form-item">
+                    <label for="distrito_demandado_juridica">Distrito</label>
+                    <input type="text" id="distrito_demandado_juridica" class="form-input">
+                  </div>
+                  <div class="form-item">
+                    <label for="provincia_demandado_juridica">Provincia</label>
+                    <input type="text" id="provincia_demandado_juridica" class="form-input">
+                  </div>
+                  <div class="form-item">
+                    <label for="departamento_demandado_juridica">Departamento</label>
+                    <input type="text" id="departamento_demandado_juridica" class="form-input">
+                  </div>
+                </div>
+              </div>
+
+              <div class="email-section">
+                <label for="email_input_demandado_juridica">Correo</label>
+                <div class="email-add-group">
+                  <input type="email" id="email_input_demandado_juridica" class="form-input"
+                    placeholder="Ingrese un correo">
+                  <button type="button" class="btn-agregar" onclick="addEmailJuridica('demandado')">Agregar</button>
+                </div>
+                <table class="dynamic-table">
+                  <thead>
+                    <tr>
+                      <th>#</th>
+                      <th>Correo</th>
+                      <th>Acciones</th>
+                    </tr>
+                  </thead>
+                  <tbody id="email_table_demandado_juridica">
+                    <tr class="empty-row">
+                      <td colspan="3">No se han agregado correos</td>
+                    </tr>
+                  </tbody>
+                </table>
+              </div>
+            </div>
+
+            <div class="email-section">
+              <label for="email_input_demandado">Correo del Demandado</label>
+              <div class="email-add-group">
+                <input type="email" id="email_input_demandado" class="form-input" placeholder="Ingrese un correo">
+                <button type="button" class="btn-agregar" onclick="addEmail('demandado')">Agregar</button>
+              </div>
+              <table class="dynamic-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Correo</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="email_table_demandado">
+                  <tr class="empty-row">
+                    <td colspan="3">No se han agregado correos</td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+          </div>
+        </div>
+
+        <!-- 3) ANEXOS -->
+        <div class="form-section collapsed" id="sec-anexos">
+          <div class="form-section-title" data-step="3" aria-expanded="false">3. ANEXOS</div>
+          <div class="content">
+            <div class="file-upload-area">
+              <button type="button" class="btn-secondary">
+                <svg xmlns="http://www.w3.org/2000/svg" height="20px" viewBox="0 0 24 24" width="20px"
+                  fill="currentColor">
+                  <path d="M0 0h24v24H0V0z" fill="none" />
+                  <path
+                    d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z" />
+                </svg>
+                Ver Lista de Requisitos
+              </button>
+
+              <div class="form-group" style="margin-top:20px;">
+                <div class="form-item full-width">
+                  <label for="anexo_descripcion">Descripción del Documento Principal</label>
+                  <input type="text" id="anexo_descripcion" class="form-input" value="Solicitud de arbitraje">
+                </div>
+              </div>
+
+              <label>Documento (El archivo no debe exceder los 500 MB, máximo 10 archivos)</label>
+              <div class="file-selector-group">
+                <input type="file" id="file-upload-input" multiple hidden>
+                <button type="button" class="btn-upload"
+                  onclick="document.getElementById('file-upload-input').click()">Seleccionar archivo</button>
+                <span id="file-name-display">Ningún archivo seleccionado</span>
+              </div>
+              <div class="helper-text">Caracteres no permitidos: ! * ' ( ) ; : @ & = + $ , / ? % # [ ] | &lt;&gt; "
+              </div>
+
+              <table class="dynamic-table file-list-table">
+                <thead>
+                  <tr>
+                    <th>#</th>
+                    <th>Archivo</th>
+                    <th>Página Fin</th>
+                    <th>Descripción</th>
+                    <th>Folios</th>
+                    <th>Peso</th>
+                    <th>Acciones</th>
+                  </tr>
+                </thead>
+                <tbody id="anexos-table-body">
+                  <tr class="empty-row">
+                    <td colspan="7">No se han agregado archivos</td>
+                  </tr>
+                </tbody>
+              </table>
+
+              <div class="total-size-container">
+                Total: <span id="total-size-value">0</span> MB
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div class="final-actions">
+          <button type="submit" id="submit-button" class="btn-submit">Presentar Solicitud</button>
+        </div>
+      </form>
+    </div>
+  </div>
+
+
+
+  <script>window.module = window.module || { exports: {} };</script>
+
+  <!-- Script de conexión de datos -->
+  <script src="conexion-datos.js"></script>
+  <!-- Gestor de configuración SMTP -->
+  <script src="smtp-config-manager.js"></script>
+  <!-- Gestor de sincronización de usuarios -->
+  <script src="user-sync-manager.js"></script>
+
+  <script>
+    /* ===== Modal ===== */
+    (function crearModal() {
+      const html = `
+  <div class="modal-overlay" id="modalConfirmacion" style="display:none;">
+    <div class="modal-content">
+      <div class="modal-header">Cargo de Solicitud</div>
+      <div class="modal-body">
+        <div class="modal-info-grid">
+          <div class="modal-info-row"><span class="modal-info-label">Expediente:</span><span class="modal-info-value" id="modal-expediente">-</span></div>
+          <div class="modal-info-row"><span class="modal-info-label">Solicitante:</span><span class="modal-info-value" id="modal-solicitante">-</span></div>
+          <div class="modal-info-row"><span class="modal-info-label">Tipo de servicio:</span><span class="modal-info-value" id="modal-descripcion">-</span></div>
+          <div class="modal-info-row"><span class="modal-info-label">Fecha de presentación:</span><span class="modal-info-value" id="modal-fecha">-</span></div>
+          <div class="modal-info-row"><span class="modal-info-label">Total de folios:</span><span class="modal-info-value" id="modal-folios">-</span></div>
+        </div>
+        <div class="modal-expediente">Su solicitud ha sido registrada exitosamente</div>
+        <div class="modal-buttons">
+          <button class="btn-modal btn-descargar" onclick="descargarCargoProfesional()" title="Descargar cargo en formato PNG">
+             Descargar Cargo 
+          </button>
+          <button class="btn-modal btn-cerrar" onclick="document.getElementById('modalConfirmacion').style.display='none'">
+            Cerrar
+          </button>
+        </div>
+      </div>
+    </div>
+  </div>`;
+      document.body.insertAdjacentHTML('beforeend', html);
+    })();
+
+    /* ===== Helpers ===== */
+    const $ = s => document.querySelector(s);
+    const $$ = s => Array.from(document.querySelectorAll(s));
+    const V = id => (document.getElementById(id)?.value ?? '').trim();
+
+    function setEnabled(containerId, on) {
+      const container = document.getElementById(containerId);
+      if (!container) return;
+
+      container.querySelectorAll('input, select, textarea')
+        .forEach(el => {
+          el.disabled = !on;
+          // Solo aplicar required si está habilitado
+          if (on && el.dataset.required === 'true') {
+            el.setAttribute('required', '');
+          } else {
+            el.removeAttribute('required');
+          }
+        });
+    }
+
+    /* ===== Accordion (un solo manejador) ===== */
+    function collapseAll() {
+      $$('.form-section').forEach(s => s.classList.add('collapsed'));
+      $$('.form-section-title').forEach(t => t.setAttribute('aria-expanded', 'false'));
+    }
+    document.addEventListener('click', (e) => {
+      const title = e.target.closest('.form-section-title');
+      if (!title) return;
+      const sec = title.parentElement;
+      const willOpen = sec.classList.contains('collapsed');
+      collapseAll();
+      if (willOpen) {
+        sec.classList.remove('collapsed');
+        title.setAttribute('aria-expanded', 'true');
+      }
+    });
+    window.addEventListener('load', collapseAll);
+
+    /* ===== Toggle Natural/Jurídica con (des)activación de campos ===== */
+    function wirePersonaToggle(name, naturalId, juridicaId) {
+      // Marcar campos requeridos en setup
+      const markRequired = (containerId) => {
+        document.querySelectorAll(`#${containerId} input[required], #${containerId} select[required]`)
+          .forEach(el => el.dataset.required = 'true');
+      };
+
+      markRequired(naturalId);
+      markRequired(juridicaId);
+
+      const apply = (val) => {
+        const j = (val === 'juridica');
+        document.getElementById(naturalId).style.display = j ? 'none' : 'block';
+        document.getElementById(juridicaId).style.display = j ? 'block' : 'none';
+        setEnabled(naturalId, !j);
+        setEnabled(juridicaId, j);
+      };
+
+      $$(`input[name="${name}"]`).forEach(r => {
+        r.addEventListener('change', () => apply(r.value));
+        if (r.checked) apply(r.value);
+      });
+    }
+
+    wirePersonaToggle('tipo_persona_demandante', 'natural_demandante', 'juridica_demandante');
+    wirePersonaToggle('tipo_persona_demandado', 'natural_demandado', 'juridica_demandado');
+
+    /* ===== Emails dinámicos (incluye wrappers que te faltaban) ===== */
+    let emailCounters = { demandante: 1, demandado: 1, demandante_juridica: 1, demandado_juridica: 1, representante_demandante: 1 };
+    window.addEmail = function (type) {
+      const input = document.getElementById(`email_input_${type}`);
+      const tbody = document.getElementById(`email_table_${type}`);
+      const email = (input?.value || '').trim();
+      if (!/^\S+@\S+\.\S+$/.test(email)) { alert('Correo inválido'); return; }
+      if (tbody.querySelector('.empty-row')) tbody.innerHTML = '';
+      const tr = tbody.insertRow();
+      tr.innerHTML = `<td>${emailCounters[type]++}</td><td>${email}</td><td><span class="remove-item" onclick="removeRow(this,'${type}')">✖</span></td>`;
+      input.value = '';
+    };
+    window.addEmailJuridica = (rol) => addEmail(`${rol}_juridica`);
+    window.addEmailRepresentante = (rol) => addEmail(`representante_${rol}`);
+    window.removeRow = function (el, type) {
+      const tb = el.closest('tbody');
+      el.closest('tr').remove();
+      if (tb.rows.length === 0) {
+        emailCounters[type] = 1;
+        tb.innerHTML = `<tr class="empty-row"><td colspan="3">No se han agregado correos</td></tr>`;
+      } else {
+        emailCounters[type] = 1;
+        tb.querySelectorAll('tr').forEach(r => r.cells[0].textContent = emailCounters[type]++);
+      }
+    };
+
+    /* ===== Archivos (sin recursión) ===== */
+    const fileInput = document.getElementById('file-upload-input');
+    const fileNameDisplay = document.getElementById('file-name-display');
+    const anexosTableBody = document.getElementById('anexos-table-body');
+    const totalSizeValue = document.getElementById('total-size-value');
+    let uploadedFiles = [];
+
+    fileInput?.addEventListener('change', () => {
+      const newFiles = Array.from(fileInput.files);
+      if (uploadedFiles.length + newFiles.length > 10) { alert('Máximo 10 archivos.'); fileInput.value = ''; return; }
+      uploadedFiles.push(...newFiles);
+      updateFileDisplay();
+      renderFilesTable();
+      fileInput.value = '';
+    });
+
+    function updateFileDisplay() {
+      if (uploadedFiles.length === 0) fileNameDisplay.textContent = 'Ningún archivo seleccionado';
+      else if (uploadedFiles.length === 1) fileNameDisplay.textContent = uploadedFiles[0].name;
+      else fileNameDisplay.textContent = `${uploadedFiles.length} archivos seleccionados`;
+    }
+
+    function renderFilesTable() {
+      if (uploadedFiles.length === 0) {
+        anexosTableBody.innerHTML = `<tr class="empty-row"><td colspan="7">No se han agregado archivos</td></tr>`;
+        totalSizeValue.textContent = '0';
+        return; // << NO RECURSIVO
+      }
+      anexosTableBody.innerHTML = '';
+      let total = 0;
+      uploadedFiles.forEach((file, i) => {
+        total += file.size;
+        const tr = anexosTableBody.insertRow();
+        tr.innerHTML = `
+      <td>${i + 1}</td>
+      <td>${file.name}</td>
+      <td><input type="number" class="form-input" min="1"></td>
+      <td><input type="text" class="form-input"></td>
+      <td><input type="number" class="form-input" min="1"></td>
+      <td>${(file.size / 1024 / 1024).toFixed(2)}</td>
+      <td><span class="remove-item" onclick="removeFile(${i})">✖</span></td>`;
+      });
+      totalSizeValue.textContent = (total / 1024 / 1024).toFixed(2);
+    }
+    window.removeFile = function (i) { uploadedFiles.splice(i, 1); updateFileDisplay(); renderFilesTable(); };
+
+
+
+
+    async function subirAnexosAlExpediente(expIdVisible) {
+      if (!Array.isArray(uploadedFiles) || uploadedFiles.length === 0) return;
+
+      const fd = new FormData();
+      uploadedFiles.forEach((file) => fd.append('anexos', file, file.name));
+
+      // metadatos opcionales
+      const filas = document.querySelectorAll('#anexos-table-body tr:not(.empty-row)');
+      const metas = [];
+      filas.forEach((tr) => {
+        metas.push({
+          pagina_fin: tr.querySelector('td:nth-child(3) input')?.value || '',
+          descripcion: tr.querySelector('td:nth-child(4) input')?.value || '',
+          folios: tr.querySelector('td:nth-child(5) input')?.value || ''
+        });
+      });
+      fd.append('metadatos', JSON.stringify(metas));
+
+      const url = `/api/expedientes/${encodeURIComponent(expIdVisible)}/documentos`;
+      const res = await fetch(url, { method: 'POST', body: fd });
+
+      const data = await res.json().catch(() => ({}));
+      if (!res.ok || data?.success === false) {
+        throw new Error(data?.message || `Error subiendo documentos (HTTP ${res.status})`);
+      }
+      return data; // <- JSON del backend
+    }
+
+
+
+
+
+
+
+
+    /* ===== Construir domicilio (corrige id inexistente) ===== */
+    function buildDomicilio(rol) { // 'demandante' | 'demandado'
+      const esJur = document.querySelector(`input[name="tipo_persona_${rol}"][value="juridica"]`)?.checked;
+      const suf = esJur ? `${rol}_juridica` : `${rol}`;
+      const parts = [
+        V(`tipo_via_${suf}`),
+        V(`numero_${suf}`),
+        V(`interior_${suf}`),
+        V(`urbanizacion_${suf}`),
+        V(`distrito_${suf}`),
+        V(`provincia_${suf}`),
+        V(`departamento_${suf}`)
+      ].filter(Boolean);
+      return parts.join(' - ');
+    }
+
+    /* ===== Obtener nombre completo según tipo de persona ===== */
+    function getNombreCompleto(rol) { // 'demandante' | 'demandado'
+      const esJur = document.querySelector(`input[name="tipo_persona_${rol}"][value="juridica"]`)?.checked;
+      if (esJur) {
+        return V(`razon_social_${rol}`);
+      } else {
+        return V(`nombre_${rol}`);
+      }
+    }
+
+
+    function getPrimerCorreoDemandante() {
+      // Intentar obtener correo de la tabla de emails del demandante
+      const esJur = document.querySelector('input[name="tipo_persona_demandante"][value="juridica"]')?.checked;
+
+      // Si es persona jurídica, verificar tabla de correos jurídica primero
+      if (esJur) {
+        const tdsJur = Array.from(document.querySelectorAll('#email_table_demandante_juridica tr:not(.empty-row) td:nth-child(2)'));
+        if (tdsJur.length > 0) return (tdsJur[0]?.textContent || '').trim();
+
+        const emailJurInput = (document.getElementById('email_input_demandante_juridica')?.value || '').trim();
+        if (emailJurInput) return emailJurInput;
+      }
+
+      // Fallback: tabla de emails genérica o input
+      const tds = Array.from(document.querySelectorAll('#email_table_demandante tr:not(.empty-row) td:nth-child(2)'));
+      if (tds.length > 0) return (tds[0]?.textContent || '').trim();
+
+      return (document.getElementById('email_input_demandante')?.value || '').trim();
+    }
+
+    // --- Funciones de email y registro (movidas a módulos) ---
+    // Las funciones antiguas fueron eliminadas y reemplazadas por módulos mejorados
+
+
+
+
+
+    /* ===== Submit ===== */
+    const form = document.getElementById('solicitudForm');
+    form?.addEventListener('submit', async (e) => {
+      e.preventDefault();
+
+      if (uploadedFiles.length === 0) { alert('Debe adjuntar al menos un archivo.'); return; }
+
+      // 1) Tomamos el primer correo del demandante (tablas o input)
+      const emailDemandante = getPrimerCorreoDemandante();
+      if (!/^\S+@\S+\.\S+$/.test(emailDemandante)) {
+        alert('Debe ingresar al menos un correo válido para el demandante.');
+        return;
+      }
+
+      // 2) Obtener nombre completo (Natural o Jurídica)
+      const nombreCompleto = getNombreCompleto('demandante');
+
+      if (!nombreCompleto) {
+        alert('Debe ingresar el nombre o razón social del demandante.');
+        return;
+      }
+
+      // 3) Armamos el payload para Mesa de Partes
+      const mesaPartesData = {
+        tipo_presentacion: 'Arbitraje',
+        materia: 'Arbitraje entre Privados',
+        sumilla: V('anexo_descripcion') || 'Solicitud de arbitraje entre privados',
+        cuantia: V('cuantia') || null,
+
+        // Datos del demandante (JSON)
+        demandante: {
+          tipo_persona: document.querySelector('input[name="tipo_persona_demandante"]:checked')?.value || 'natural',
+          nombre: nombreCompleto,
+          documento_tipo: V('doc_tipo_demandante') || V('tipo_doc_representante_demandante'),
+          documento_numero: V('doc_num_demandante') || V('numero_doc_representante_demandante'),
+          correo: emailDemandante,
+          telefono: V('celular_demandante') || V('celular_demandante_juridica'),
+          domicilio: buildDomicilio('demandante'),
+          ruc: V('ruc_demandante') || null
+        },
+
+        // Datos del demandado (JSON)
+        demandado: {
+          tipo_persona: document.querySelector('input[name="tipo_persona_demandado"]:checked')?.value || 'natural',
+          nombre: getNombreCompleto('demandado'),
+          documento_tipo: V('doc_tipo_demandado') || V('tipo_doc_representante_demandado'),
+          documento_numero: V('doc_num_demandado') || V('numero_doc_representante_demandado'),
+          domicilio: buildDomicilio('demandado'),
+          ruc: V('ruc_demandado') || null
+        }
+      };
+
+      // Mantener expedienteData para compatibilidad con email
+      const expedienteData = {
+        presentante: nombreCompleto,
+        demandante: nombreCompleto,
+        demandado: getNombreCompleto('demandado'),
+        correo: emailDemandante,
+        telefono: V('celular_demandante') || V('celular_demandante_juridica')
+      };
+
+      if (!window.conexionDatos) { alert('Error: Sistema de conexión no disponible.'); return; }
+
+      const btn = document.getElementById('submit-button');
+      const originalText = btn.textContent;
+      btn.disabled = true; btn.textContent = 'Procesando solicitud...';
+
+      try {
+        // Generar credenciales
+        const cred = generarCredencialesAmigables(nombreCompleto, emailDemandante);
+
+
+        // 4) Registrar/actualizar usuario (NO bloquear si ya existe)
+        const reg = await window.registrarUsuarioMejorado(cred, expedienteData);
+        if (!reg.success) {
+          console.warn('⚠️ Aviso registro usuario:', reg.message || reg);
+        }
+
+        // Verificar que tenemos un usuario_id válido
+        let usuarioId = reg.usuario?.id;
+        if (!usuarioId) {
+          console.error('❌ No se obtuvo usuario_id del registro:', reg);
+          throw new Error('No se pudo crear el usuario. Por favor, intente nuevamente.');
+        }
+
+        console.log('✅ Usuario registrado con ID:', usuarioId);
+
+        // 5) Crear presentación en Mesa de Partes con archivos
+        const formData = new FormData();
+
+        // Agregar datos de la presentación
+        formData.append('usuario_id', usuarioId);
+        formData.append('tipo_presentacion', mesaPartesData.tipo_presentacion);
+        formData.append('materia', mesaPartesData.materia);
+        formData.append('sumilla', mesaPartesData.sumilla);
+        if (mesaPartesData.cuantia) formData.append('cuantia', mesaPartesData.cuantia);
+
+        // Agregar demandante y demandado como JSON
+        formData.append('demandante', JSON.stringify(mesaPartesData.demandante));
+        formData.append('demandado', JSON.stringify(mesaPartesData.demandado));
+
+        // Agregar archivos
+        uploadedFiles.forEach(file => {
+          formData.append('documentos', file);
+        });
+
+        console.log('📤 Enviando presentación a Mesa de Partes...');
+        console.log('📦 Archivos a enviar:', uploadedFiles.length);
+        console.log('👤 Usuario ID:', usuarioId);
+
+        let response;
+        try {
+          response = await fetch('/api/mesa-partes', {
+            method: 'POST',
+            body: formData
+          });
+        } catch (fetchError) {
+          console.error('❌ Error de conexión:', fetchError);
+          throw new Error('No se pudo conectar con el servidor. Verifique que el servidor esté corriendo en http://localhost:3002');
+        }
+
+        if (!response.ok) {
+          let errorData;
+          try {
+            errorData = await response.json();
+          } catch (e) {
+            throw new Error(`Error del servidor (${response.status}): ${response.statusText}`);
+          }
+          throw new Error(errorData.error || 'Error al crear presentación');
+        }
+
+        const resultado = await response.json();
+        console.log('✅ Presentación creada:', resultado);
+
+        const expId = resultado.numero_registro; // TMARC-0001-2025
+        const tokenSeguimiento = resultado.token_seguimiento; // Token temporal para QR
+
+        if (!expId) {
+          console.error('Sin número de registro', resultado);
+          alert('No recibimos el número de registro.');
+          return;
+        }
+
+        // Guardar token en variable global para usarlo en el cargo
+        window.tokenSeguimientoActual = tokenSeguimiento;
+
+        // 6) Enviar correo desde el BACKEND (SMTP real)
+        await window.enviarEmailMejorado(cred, expId, usuarioId);
+
+
+
+        // 7) Mostrar modal
+        let totalFolios = uploadedFiles.length;
+
+        const fecha = new Date().toLocaleString('es-PE');
+        document.getElementById('modal-expediente').textContent = resultado?.numero_registro || resultado?.data?.numero_registro || '—';
+        document.getElementById('modal-solicitante').textContent = expedienteData.presentante || '—';
+        document.getElementById('modal-descripcion').textContent = V('anexo_descripcion') || 'Solicitud de arbitraje entre privados';
+        document.getElementById('modal-fecha').textContent = fecha;
+        document.getElementById('modal-folios').textContent = totalFolios;
+        document.getElementById('modalConfirmacion').style.display = 'flex';
+
+        console.log('✅ Proceso completado exitosamente');
+      } catch (err) {
+        console.error(err);
+        alert('Error al registrar el expediente: ' + (err.message || err));
+      } finally {
+        btn.disabled = false; btn.textContent = originalText;
+      }
+    });
+
+
+
+
+
+
+    // Exponer funciones necesarias al global
+    window.getPrimerCorreoDemandante = getPrimerCorreoDemandante;
+
+
+  </script>
+
+  <!-- ========== LIBRERÍAS EXTERNAS ========== -->
+  <!-- QR Code Generator -->
+  <script src="https://cdn.jsdelivr.net/npm/qrcodejs@1.0.0/qrcode.min.js"></script>
+  <!-- html2canvas para generar imágenes -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+  <!-- html2pdf para generar PDF (incluye html2canvas pero cargamos por separado) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/html2pdf.js/0.10.1/html2pdf.bundle.min.js"></script>
+
+  <!-- ========== NUEVOS MÓDULOS (NO ROMPE CÓDIGO EXISTENTE) ========== -->
+  <script src="assets/js/registro-usuario.js"></script>
+  <script src="assets/js/email-service.js"></script>
+  <script src="assets/js/cargo-generator.js"></script>
+
+  <!-- Funciones mejoradas que usan los nuevos módulos -->
+  <script>
+    /**
+     * Generar credenciales usando el módulo RegistroUsuario
+     */
+    function generarCredencialesAmigables(nombre, email) {
+      if (!window.RegistroUsuario) {
+        throw new Error('Módulo RegistroUsuario no cargado');
+      }
+      return window.RegistroUsuario.generarCredenciales(nombre, email);
+    }
+
+    /**
+     * Registrar usuario usando el módulo RegistroUsuario
+     */
+    async function registrarUsuarioMejorado(credenciales, expedienteData) {
+      if (!window.RegistroUsuario) {
+        throw new Error('Módulo RegistroUsuario no cargado');
+      }
+      return await window.RegistroUsuario.registrarUsuario(credenciales, {
+        telefono: expedienteData.telefono
+      });
+    }
+
+    /**
+     * Enviar email con template profesional usando EmailService
+     */
+    async function enviarEmailMejorado(credenciales, numeroExpediente, idUsuario) {
+      if (!window.EmailService) {
+        throw new Error('Módulo EmailService no cargado');
+      }
+      return await window.EmailService.enviarCredenciales(credenciales, {
+        numeroExpediente: numeroExpediente,
+        idUsuario: idUsuario,
+        urlLogin: window.location.origin + '/login.html'
+      });
+    }
+
+    /**
+     * Descargar cargo profesional en formato PNG
+     */
+    function descargarCargoProfesional() {
+      if (!window.CargoGenerator) {
+        alert('Error: Módulo CargoGenerator no cargado');
+        return;
+      }
+
+      const datos = {
+        expediente: (document.getElementById('modal-expediente')?.textContent || '').trim(),
+        solicitante: (document.getElementById('modal-solicitante')?.textContent || '').trim(),
+        fecha: (document.getElementById('modal-fecha')?.textContent || '').trim(),
+        folios: (document.getElementById('modal-folios')?.textContent || '').trim(),
+        descripcion: document.getElementById('anexo_descripcion')?.value || 'Solicitud de arbitraje entre privados',
+        token: window.tokenSeguimientoActual // Pasar token para el QR
+      };
+
+      window.CargoGenerator.descargar(datos);
+    }
+
+    /**
+     * Imprimir cargo directamente
+     */
+    function imprimirCargo() {
+      if (!window.CargoGenerator) {
+        alert('Error: Módulo CargoGenerator no cargado');
+        return;
+      }
+
+      const datos = {
+        expediente: (document.getElementById('modal-expediente')?.textContent || '').trim(),
+        solicitante: (document.getElementById('modal-solicitante')?.textContent || '').trim(),
+        fecha: (document.getElementById('modal-fecha')?.textContent || '').trim(),
+        folios: (document.getElementById('modal-folios')?.textContent || '').trim(),
+        descripcion: document.getElementById('anexo_descripcion')?.value || 'Solicitud de arbitraje entre privados'
+      };
+
+      window.CargoGenerator.imprimir(datos);
+    }
+
+    // Exponer funciones mejoradas al global
+    window.generarCredencialesAmigables = generarCredencialesAmigables;
+    window.registrarUsuarioMejorado = registrarUsuarioMejorado;
+    window.enviarEmailMejorado = enviarEmailMejorado;
+    window.descargarCargoProfesional = descargarCargoProfesional;
+    window.imprimirCargo = imprimirCargo;
+
+    console.log('✅ Módulos de registro mejorados cargados');
+    console.log('📦 RegistroUsuario disponible:', !!window.RegistroUsuario);
+    console.log('📧 EmailService disponible:', !!window.EmailService);
+    console.log('📄 CargoGenerator disponible:', !!window.CargoGenerator);
+  </script>
+
+  <!-- Panel Lateral de Notificación de Credenciales -->
+  <script>
+    // Función para cerrar el panel lateral
+    function closeCredentialsSidebar() {
+      const sidebar = document.querySelector('.credentials-sidebar');
+      const toggleBtn = document.querySelector('.credentials-toggle-btn');
+      if (sidebar) {
+        sidebar.classList.add('hidden');
+        // Guardar en localStorage para que permanezca cerrado
+        localStorage.setItem('credentialsSidebarClosed', 'true');
+      }
+      if (toggleBtn) {
+        toggleBtn.classList.add('show');
+      }
+    }
+
+    // Función para abrir el panel lateral
+    function openCredentialsSidebar() {
+      const sidebar = document.querySelector('.credentials-sidebar');
+      const toggleBtn = document.querySelector('.credentials-toggle-btn');
+      if (sidebar) {
+        sidebar.classList.remove('hidden');
+        // Guardar en localStorage para que permanezca abierto
+        localStorage.setItem('credentialsSidebarClosed', 'false');
+      }
+      if (toggleBtn) {
+        toggleBtn.classList.remove('show');
+      }
+    }
+
+    // Verificar si el panel debe estar cerrado al cargar la página
+    document.addEventListener('DOMContentLoaded', function () {
+      const isClosed = localStorage.getItem('credentialsSidebarClosed');
+      const sidebar = document.querySelector('.credentials-sidebar');
+      const toggleBtn = document.querySelector('.credentials-toggle-btn');
+
+      if (isClosed === 'true') {
+        if (sidebar) {
+          sidebar.classList.add('hidden');
+        }
+        if (toggleBtn) {
+          toggleBtn.classList.add('show');
+        }
+      }
+    });
+  </script>
+
+  <!-- Botón flotante para reabrir el panel -->
+  <div class="credentials-toggle-btn" onclick="openCredentialsSidebar()" title="Mostrar información de credenciales">
+    <div class="credentials-toggle-btn-icon">📧</div>
+  </div>
+
+  <div class="credentials-sidebar">
+    <!-- Botón de cerrar -->
+    <div class="credentials-close-btn" onclick="closeCredentialsSidebar()" title="Cerrar">×</div>
+    <!-- Partículas decorativas -->
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+    <div class="particle"></div>
+
+    <div class="credentials-sidebar-content">
+      <!-- Ícono principal -->
+      <div class="credentials-icon">
+        <div class="credentials-icon-main">📧</div>
+      </div>
+
+      <!-- Título -->
+      <div class="credentials-title">¡Importante!</div>
+
+      <!-- Mensaje principal -->
+      <div class="credentials-message">
+        Tus <strong>credenciales de acceso</strong> serán enviadas automáticamente a tu correo electrónico
+      </div>
+
+      <!-- Caja de información -->
+      <div class="credentials-info-box">
+        <div class="credentials-info-item">
+          <span class="credentials-info-icon">✉️</span>
+          <span>Revisa tu bandeja de entrada</span>
+        </div>
+        <div class="credentials-info-item">
+          <span class="credentials-info-icon">⚠️</span>
+          <span>Verifica carpeta de spam</span>
+        </div>
+        <div class="credentials-info-item">
+          <span class="credentials-info-icon">🔐</span>
+          <span>Guarda tus credenciales</span>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>
