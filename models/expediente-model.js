@@ -179,8 +179,14 @@ class ExpedienteModel {
                 'cuantia', 'moneda', 'sumilla', 'tipo_presentante', 'presentante',
                 'documento_identidad', 'correo', 'telefono', 'domicilio',
                 'colegiatura', 'colegio_abogados', 'casilla_electronica',
-                'estado', 'observaciones'
+                'estado', 'observaciones',
+                // Campos CEJ (ya existen en la tabla BD)
+                'organo_jurisdiccional', 'distrito_judicial', 'juez',
+                'especialista_legal', 'etapa_procesal', 'ubicacion',
+                'fecha_inicio', 'fecha_conclusion', 'motivo_conclusion',
+                'casilla_fisica', 'oficina_casilla', 'indeterminado'
             ];
+
 
             let sql = 'UPDATE expedientes SET ';
             let params = [];

@@ -103,6 +103,7 @@ const mesaPartesRoutes = require('./mesa-partes');
 const casillaElectronicaRoutes = require('./casilla-electronica');
 const estadisticasRoutes = require('./estadisticas');
 const configuracionRoutes = require('./configuracion');
+const actosRoutes = require('./actos-procesales');
 
 // Usar rutas modulares
 router.use('/auth', authRoutes);
@@ -114,6 +115,16 @@ router.use('/mesa-partes', mesaPartesRoutes);
 router.use('/casilla-electronica', casillaElectronicaRoutes);
 router.use('/estadisticas', estadisticasRoutes);
 router.use('/configuracion', configuracionRoutes);
+
+// Rutas de seguimiento unificado y actos procesales
+// GET  /api/seguimiento/:codigo   → búsqueda completa en expedientes/mesa_partes/solicitudes
+// GET  /api/expedientes/:id/actos → timeline de actos
+// POST /api/expedientes/:id/actos → crear acto
+// PUT  /api/actos/:id             → editar acto
+// DELETE /api/actos/:id           → eliminar acto
+// GET/POST /api/expedientes/:id/notificaciones-procesales
+// PUT/DELETE /api/notificaciones-procesales/:id
+router.use('/', actosRoutes);
 
 // Mantener algunos endpoints legacy que podrían estar siendo usados
 // Estos serán migrados gradualmente a los módulos específicos
