@@ -3,939 +3,424 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Seguimiento de Expediente - Mesa de Partes Virtual</title>
+    <title>TMARC | Seguimiento Judicial Inteligente</title>
+    <!-- Google Fonts: Outfit for titles, Inter for body -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
     <style>
         :root {
-            --gold-primary: #d4af37;
-            --gold-dark: #c49a2d;
-            --black-primary: #1a1a1a;
-            --silver-primary: #C0C0C0;
-            --silver-dark: #A0A0A0;
-            --white-primary: #ffffff;
-            --bg-light: #f8f9fa;
+            --primary: #D4AF37;
+            --primary-dark: #C49A2D;
+            --surface: #1A1A1A;
+            --background: #0D0D0D;
+            --text-main: #FFFFFF;
+            --text-muted: #A0A0A0;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(212, 175, 55, 0.2);
+            --success: #4CAF50;
+            --info: #2196F3;
+            --warning: #FF9800;
         }
 
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', sans-serif;
         }
 
         body {
-            background-color: var(--bg-light);
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-main);
             min-height: 100vh;
-            padding: 20px;
+            padding: 40px 20px;
+            background-image: radial-gradient(circle at top right, rgba(212,175,55,0.05), transparent),
+                              radial-gradient(circle at bottom left, rgba(212,175,55,0.05), transparent);
         }
 
         .container {
-            max-width: 900px;
+            max-width: 1000px;
             margin: 0 auto;
-            background: var(--white-primary);
-            border-radius: 12px;
-            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
-            overflow: hidden;
-            border: 1px solid var(--silver-dark);
+            position: relative;
+            z-index: 1;
         }
 
         .header {
-            background: linear-gradient(135deg, var(--silver-primary) 0%, #f0f0f0 50%, var(--silver-primary) 100%);
-            padding: 40px 20px;
             text-align: center;
-            border-bottom: 4px solid var(--gold-primary);
-            position: relative;
+            margin-bottom: 50px;
+            animation: fadeInDown 1s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         .header h1 {
-            color: var(--black-primary);
-            font-size: 26px;
-            margin-bottom: 10px;
-            font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 1px;
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(28px, 5vw, 42px);
+            font-weight: 800;
+            background: linear-gradient(135deg, #FFF 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
+            letter-spacing: -0.5px;
         }
 
         .header p {
-            color: #444;
-            font-size: 14px;
-            font-weight: 500;
+            color: var(--text-muted);
+            font-size: 16px;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        .btn-login-header {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            background: var(--black-primary);
-            color: var(--gold-primary);
-            border: 1px solid var(--gold-primary);
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 13px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: all 0.3s;
-        }
-
-        .btn-login-header:hover {
-            background: var(--gold-primary);
-            color: var(--black-primary);
-            transform: translateY(-2px);
-        }
-
-        .user-info-header {
-            position: absolute;
-            top: 20px;
-            right: 20px;
-            display: flex;
-            align-items: center;
-            gap: 10px;
-            background: var(--black-primary);
-            padding: 8px 15px;
-            border-radius: 8px;
-            border: 1px solid var(--gold-primary);
-        }
-
-        .user-info-header .user-name {
-            color: var(--gold-primary);
-            font-weight: 600;
-            font-size: 14px;
-        }
-
-        .btn-logout-small {
-            background: #cc0000;
-            color: white;
-            border: none;
-            padding: 5px 12px;
-            border-radius: 5px;
-            font-size: 11px;
-            font-weight: 600;
-            cursor: pointer;
-        }
-
+        /* Search Section - Refined Glassmorphism */
         .search-section {
-            padding: 40px;
-            background: var(--white-primary);
+            background: rgba(30, 30, 30, 0.6);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 32px;
+            padding: 48px;
+            box-shadow: 0 40px 80px rgba(0,0,0,0.5);
+            margin-bottom: 40px;
+            transition: all 0.4s ease;
         }
 
         .tabs {
             display: flex;
-            gap: 10px;
-            margin-bottom: 30px;
-            border-bottom: 1px solid #eee;
+            gap: 16px;
+            margin-bottom: 32px;
+            border-bottom: 1px solid rgba(255,255,255,0.05);
+            padding-bottom: 8px;
         }
 
         .tab {
-            padding: 12px 25px;
-            background: #f5f5f5;
+            padding: 12px 24px;
+            background: transparent;
             border: none;
-            color: #666;
-            font-size: 15px;
+            color: var(--text-muted);
+            font-size: 14px;
             font-weight: 600;
             cursor: pointer;
-            border-radius: 8px 8px 0 0;
+            border-radius: 12px;
             transition: all 0.3s;
         }
 
         .tab.active {
-            background: var(--black-primary);
-            color: var(--gold-primary);
-            box-shadow: 0 -4px 10px rgba(0,0,0,0.05);
+            color: var(--primary);
+            background: rgba(212, 175, 55, 0.1);
         }
 
-        .tab:hover:not(.active) {
-            background: #ebebeb;
-            color: var(--black-primary);
+        .search-group {
+            position: relative;
+            margin-bottom: 24px;
         }
 
-        .tab-content {
-            display: none;
-        }
-
-        .tab-content.active {
-            display: block;
-        }
-
-        .search-form {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .form-group {
-            flex: 1;
-        }
-
-        .form-group label {
-            display: block;
-            margin-bottom: 8px;
-            color: #333;
-            font-weight: 500;
-            font-size: 14px;
-        }
-
-        .form-group input {
+        .search-input {
             width: 100%;
-            padding: 12px 15px;
-            border: 2px solid #e0e0e0;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: border-color 0.3s;
+            background: rgba(255,255,255,0.03);
+            border: 1px solid rgba(255,255,255,0.1);
+            padding: 18px 24px;
+            border-radius: 16px;
+            color: #FFF;
+            font-size: 16px;
+            transition: all 0.3s;
+            outline: none;
         }
 
-        .form-group input:focus {
-            outline: none;
-            border-color: #d4af37;
-            box-shadow: 0 0 8px rgba(212, 175, 55, 0.3);
+        .search-input:focus {
+            border-color: var(--primary);
+            background: rgba(212, 175, 55, 0.05);
+            box-shadow: 0 0 20px rgba(212, 175, 55, 0.1);
         }
 
         .btn-search {
-            background: var(--gold-primary);
-            color: var(--black-primary);
+            width: 100%;
+            background: var(--primary);
+            color: #000;
             border: none;
-            padding: 12px 30px;
-            border-radius: 8px;
+            padding: 18px;
+            border-radius: 16px;
             font-weight: 700;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
+            font-size: 16px;
             cursor: pointer;
             transition: all 0.3s;
-            margin-top: 25px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 12px;
         }
 
         .btn-search:hover {
-            background: var(--gold-dark);
+            background: var(--primary-dark);
             transform: translateY(-2px);
-            box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+            box-shadow: 0 10px 20px rgba(212, 175, 55, 0.3);
         }
 
-        .qr-scanner-container {
-            background: #f9f9f9;
-            padding: 35px;
-            border-radius: 12px;
-            border: 1px dashed var(--silver-dark);
-            text-align: center;
-        }
-
-        #qr-reader {
-            max-width: 500px;
-            margin: 25px auto;
-            border: 2px solid var(--silver-primary) !important;
-            border-radius: 12px;
-            overflow: hidden;
-        }
-
-        .btn-start-scan {
-            background: #28a745;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 10px;
-        }
-
-        .btn-stop-scan {
-            background: #dc3545;
-            color: white;
-            border: none;
-            padding: 15px 40px;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            margin: 10px;
-            display: none;
-        }
-
+        /* Results Display (CEJ Style) */
         .results-section {
-            background: linear-gradient(to bottom, #f5f5f5 0%, #e8e8e8 100%);
-            padding: 40px;
-            border-radius: 0 0 15px 15px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
+            opacity: 0;
+            transform: translateY(20px);
+            transition: all 0.5s ease;
             display: none;
-            border: 2px solid #d4af37;
-            border-top: none;
         }
 
         .results-section.show {
+            opacity: 1;
+            transform: translateY(0);
             display: block;
         }
 
-        .expediente-card {
-            border: 2px solid #d4af37;
-            border-radius: 10px;
-            padding: 25px;
-            margin-bottom: 20px;
-            background: linear-gradient(135deg, #ffffff 0%, #f5f5f5 100%);
-            box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+        .cej-view {
+            display: flex;
+            flex-direction: column;
+            gap: 24px;
         }
 
-        .expediente-header {
+        .section-card {
+            background: var(--surface);
+            border: 1px solid rgba(255,255,255,0.05);
+            border-radius: 24px;
+            padding: 32px;
+            box-shadow: 0 20px 40px rgba(0,0,0,0.3);
+        }
+
+        .section-title {
             display: flex;
-            justify-content: space-between;
             align-items: center;
-            margin-bottom: 20px;
-            padding-bottom: 15px;
-            border-bottom: 2px solid #e0e0e0;
-        }
-
-        .expediente-numero {
-            font-size: 24px;
-            font-weight: 700;
-            color: #d4af37;
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.1);
-        }
-
-        .expediente-estado {
-            padding: 8px 20px;
-            border-radius: 20px;
-            font-size: 14px;
-            font-weight: 600;
-        }
-
-        .estado-registrado {
-            background: linear-gradient(135deg, #d4af37 0%, #f0d060 100%);
-            color: #1a1a1a;
-            font-weight: 700;
-        }
-
-        .estado-proceso {
-            background: linear-gradient(135deg, #c0c0c0 0%, #e8e8e8 100%);
-            color: #1a1a1a;
-            font-weight: 700;
-        }
-
-        .estado-resuelto {
-            background: linear-gradient(135deg, #2c3e50 0%, #34495e 100%);
-            color: #ffffff;
-            font-weight: 700;
-        }
-
-        .info-grid {
-            display: grid;
-            grid-template-columns: repeat(2, 1fr);
-            gap: 15px;
-            margin-bottom: 20px;
-        }
-
-        .info-item {
-            padding: 12px;
-            background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 6px;
-            border-left: 3px solid #d4af37;
-        }
-
-        .info-label {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
-
-        .info-value {
-            font-size: 15px;
-            color: #333;
-            font-weight: 500;
-        }
-
-        .timeline {
-            margin-top: 30px;
-        }
-
-        .timeline-title {
+            gap: 12px;
+            color: var(--primary);
+            font-family: 'Outfit', sans-serif;
             font-size: 18px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
+            font-weight: 700;
+            margin-bottom: 24px;
+            text-transform: uppercase;
+            letter-spacing: 1px;
         }
 
-        .timeline-item {
-            display: flex;
-            gap: 15px;
-            margin-bottom: 20px;
+        .section-title svg {
+            width: 24px;
+            height: 24px;
+            fill: currentColor;
+        }
+
+        .cej-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 20px;
+        }
+
+        .data-item {
+            padding: 16px;
+            background: rgba(255,255,255,0.02);
+            border-radius: 16px;
+            border-left: 3px solid var(--primary);
+        }
+
+        .data-item label {
+            display: block;
+            font-size: 11px;
+            text-transform: uppercase;
+            color: var(--text-muted);
+            letter-spacing: 1px;
+            margin-bottom: 6px;
+        }
+
+        .data-item .value {
+            font-size: 15px;
+            font-weight: 500;
+            color: #FFF;
+        }
+
+        .status-badge {
+            padding: 6px 12px;
+            border-radius: 20px;
+            font-size: 12px;
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+
+        .btn-download {
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            padding: 10px 16px;
+            background: rgba(255,255,255,0.05);
+            border: 1px solid rgba(255,255,255,0.1);
+            border-radius: 12px;
+            color: #FFF;
+            text-decoration: none;
+            font-size: 13px;
+            transition: all 0.3s;
+        }
+
+        .btn-download:hover {
+            background: var(--primary);
+            color: #000;
+            border-color: var(--primary);
+        }
+
+        /* Timeline (Seguimiento) */
+        .cej-timeline {
             position: relative;
+            padding-left: 30px;
         }
 
-        .timeline-item:not(:last-child)::before {
+        .cej-timeline::before {
             content: '';
             position: absolute;
-            left: 19px;
-            top: 40px;
+            left: 0;
+            top: 0;
+            bottom: 0;
             width: 2px;
-            height: calc(100% + 10px);
-            background: #e0e0e0;
+            background: rgba(212,175,55,0.2);
         }
 
-        .timeline-dot {
-            width: 40px;
-            height: 40px;
+        .timeline-entry {
+            position: relative;
+            margin-bottom: 32px;
+        }
+
+        .timeline-marker {
+            position: absolute;
+            left: -34px;
+            top: 0;
+            width: 10px;
+            height: 10px;
             border-radius: 50%;
-            background: linear-gradient(135deg, #d4af37 0%, #f0d060 100%);
+            background: var(--primary);
+            box-shadow: 0 0 10px var(--primary);
+        }
+
+        .entry-card {
+            background: rgba(255,255,255,0.03);
+            border-radius: 16px;
+            padding: 20px;
+            border: 1px solid rgba(255,255,255,0.05);
+        }
+
+        .entry-header {
             display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #1a1a1a;
-            font-weight: bold;
-            flex-shrink: 0;
-            box-shadow: 0 2px 8px rgba(212, 175, 55, 0.4);
+            justify-content: space-between;
+            margin-bottom: 12px;
         }
 
-        .timeline-content {
-            flex: 1;
-            padding: 15px;
-            background: linear-gradient(to right, #f8f9fa 0%, #ffffff 100%);
-            border-radius: 8px;
-            border-left: 3px solid #c0c0c0;
+        .entry-date {
+            color: var(--text-muted);
+            font-size: 13px;
         }
 
-        .timeline-date {
-            font-size: 12px;
-            color: #666;
-            margin-bottom: 5px;
-        }
-
-        .timeline-action {
-            font-size: 15px;
+        .entry-sumilla {
+            color: #FFF;
             font-weight: 600;
-            color: #333;
-            margin-bottom: 5px;
+            font-size: 15px;
+            margin-bottom: 8px;
         }
 
-        .timeline-description {
-            font-size: 14px;
-            color: #666;
+        /* Animations */
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
-        .no-results {
-            text-align: center;
-            padding: 40px;
-            color: #666;
-        }
-
-        .no-results-icon {
-            font-size: 64px;
-            margin-bottom: 20px;
-        }
-
-        .loading {
-            text-align: center;
-            padding: 40px;
-        }
-
-        .spinner {
-            border: 4px solid #f3f3f3;
-            border-top: 4px solid #d4af37;
-            border-radius: 50%;
-            width: 50px;
-            height: 50px;
-            animation: spin 1s linear infinite;
-            margin: 0 auto 20px;
-        }
-
-        @keyframes spin {
-            0% { transform: rotate(0deg); }
-            100% { transform: rotate(360deg); }
-        }
-
-        .login-inline {
-            background: linear-gradient(to bottom, #f5f5f5 0%, #e8e8e8 100%);
-            padding: 40px;
-            box-shadow: 0 8px 20px rgba(0,0,0,0.3);
-            border-left: 2px solid #d4af37;
-            border-right: 2px solid #d4af37;
-        }
-
-        .login-inline-content {
-            max-width: 400px;
-            margin: 0 auto;
+        .qr-section {
+            margin-top: 30px;
+            padding-top: 30px;
+            border-top: 1px solid rgba(255,255,255,0.05);
             text-align: center;
         }
 
-        .login-inline h3 {
-            color: #1a1a1a;
-            margin-bottom: 10px;
-            font-size: 24px;
+        .qr-btn {
+            background: transparent;
+            border: 1px solid var(--primary);
+            color: var(--primary);
+            padding: 12px 24px;
+            border-radius: 12px;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s;
         }
 
-        @media (max-width: 768px) {
-            .info-grid {
-                grid-template-columns: 1fr;
-            }
-
-            .search-form {
-                flex-direction: column;
-            }
-
-            .btn-search {
-                margin-top: 0;
-            }
-
-            .tabs {
-                flex-direction: column;
-            }
+        .qr-btn:hover {
+            background: var(--primary);
+            color: #000;
         }
     </style>
 </head>
 <body>
     <div class="container">
-        <!-- Header -->
-        <div class="header">
-            <h1>🔍 Seguimiento de Expediente</h1>
-            <p>Consulta el estado de tu solicitud en tiempo real</p>
-        </div>
+        <header class="header">
+            <h1>Seguimiento Judicial</h1>
+            <p>Acceso Seguro al Expediente Electrónico</p>
+        </header>
 
-        <!-- Login Inline (se muestra cuando no hay sesión) -->
-        <div id="login-inline-section" class="login-inline" style="display: none;">
-            <div class="login-inline-content">
-                <h3>🔐 Iniciar Sesión</h3>
-                <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Ingresa tus credenciales para ver tu expediente</p>
-                <form id="login-inline-form" onsubmit="loginInline(event)">
-                    <div class="form-group">
-                        <label for="username-inline">Usuario</label>
-                        <input type="text" id="username-inline" placeholder="Tu usuario" required>
-                    </div>
-                    <div class="form-group">
-                        <label for="password-inline">Contraseña</label>
-                        <input type="password" id="password-inline" placeholder="Tu contraseña" required>
-                    </div>
-                    <button type="submit" class="btn-search" style="width: 100%; margin-top: 10px;">
-                        🔓 Acceder
-                    </button>
-                </form>
-            </div>
-        </div>
-
-        <!-- Search Section -->
-        <div class="search-section">
-            <!-- Tabs -->
+        <section class="search-section">
             <div class="tabs">
-                <button class="tab active" onclick="switchTab('manual')">
-                    📝 Búsqueda Manual
-                </button>
-                <button class="tab" onclick="switchTab('qr')">
-                    📷 Escanear QR
-                </button>
+                <button class="tab active" onclick="switchTab('codigo')">Por Código</button>
+                <button class="tab" onclick="switchTab('nombre')">Por Nombre</button>
             </div>
 
-            <!-- Tab: Búsqueda Manual -->
-            <div id="tab-manual" class="tab-content active">
-                <form class="search-form" onsubmit="buscarExpediente(event)">
-                    <div class="form-group">
-                        <label for="codigo-mpv">Código TMARC</label>
-                        <input 
-                            type="text" 
-                            id="codigo-mpv" 
-                            placeholder="TMARC-0001-2025"
-                            pattern="TMARC-\d{4}-\d{4}"
-                        >
-                    </div>
-                    <div class="form-group">
-                        <label for="razon">Razón</label>
-                        <input 
-                            type="text" 
-                            id="razon" 
-                            placeholder="Nombre del solicitante"
-                        >
-                    </div>
-                    <button type="submit" class="btn-search">
-                        🔍 Buscar
-                    </button>
-                </form>
-                <p style="color: #666; font-size: 13px; margin-top: 10px;">
-                    💡 Ingresa el código TMARC o el nombre del solicitante para buscar tu expediente
-                </p>
-            </div>
-
-            <!-- Tab: Escanear QR -->
-            <div id="tab-qr" class="tab-content">
-                <div class="qr-scanner-container">
-                    <h3 style="margin-bottom: 15px;">Escanea o sube el código QR de tu cargo</h3>
-                    
-                    <!-- Opción 1: Escanear con cámara -->
-                    <div style="margin-bottom: 20px;">
-                        <h4 style="color: #667eea; margin-bottom: 10px;">📷 Opción 1: Escanear con cámara</h4>
-                        <div id="qr-reader"></div>
-                        <button class="btn-start-scan" onclick="iniciarEscaneo()">
-                            📷 Iniciar Escaneo
-                        </button>
-                        <button class="btn-stop-scan" onclick="detenerEscaneo()">
-                            ⏹️ Detener Escaneo
-                        </button>
-                    </div>
-
-                    <!-- Separador -->
-                    <div style="text-align: center; margin: 20px 0; color: #999;">
-                        ───── O ─────
-                    </div>
-
-                    <!-- Opción 2: Subir imagen -->
-                    <div>
-                        <h4 style="color: #667eea; margin-bottom: 10px;">📤 Opción 2: Subir imagen del QR</h4>
-                        <input 
-                            type="file" 
-                            id="qr-file-input" 
-                            accept="image/*" 
-                            style="display: none;"
-                            onchange="procesarImagenQR(event)"
-                        >
-                        <button 
-                            class="btn-start-scan" 
-                            onclick="document.getElementById('qr-file-input').click()"
-                            style="background: #28a745;">
-                            📤 Subir Imagen QR
-                        </button>
-                        <div id="qr-file-result" style="margin-top: 15px; color: #666; font-size: 14px;"></div>
-                    </div>
-
-                    <p style="color: #666; font-size: 13px; margin-top: 20px;">
-                        💡 Puedes escanear directamente con la cámara o subir una foto del QR
-                    </p>
+            <form id="search-form" onsubmit="buscarExpediente(event)">
+                <div id="group-codigo" class="search-group">
+                    <input type="text" id="codigo-mpv" class="search-input" placeholder="Ej: TMARC-0001-2025">
                 </div>
-            </div>
-        </div>
+                <div id="group-nombre" class="search-group" style="display:none">
+                    <input type="text" id="razon" class="search-input" placeholder="Nombre completo o Razón Social">
+                </div>
+                
+                <button type="submit" class="btn-search">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.3-4.3"/></svg>
+                    Consultar Expediente
+                </button>
+            </form>
 
-        <!-- Results Section -->
+            <div class="qr-section">
+                <p style="font-size: 13px; color: var(--text-muted); margin-bottom: 15px;">¿Tienes un código QR?</p>
+                <input type="file" id="qr-input" accept="image/*" style="display:none" onchange="processQR(event)">
+                <button class="qr-btn" onclick="document.getElementById('qr-input').click()">📸 Escanear QR desde Imagen</button>
+                <div id="qr-result" style="margin-top: 10px; font-size: 12px;"></div>
+            </div>
+        </section>
+
         <div id="results-section" class="results-section">
-            <!-- Los resultados se cargarán aquí dinámicamente -->
+            <!-- Dynamic content -->
         </div>
     </div>
 
-    <!-- QR Scanner Library -->
     <script src="https://unpkg.com/html5-qrcode"></script>
-
     <script>
-        let html5QrCode = null;
-        let codigoPendiente = null; // Guardar código para después del login
-
-        // Login inline
-        async function loginInline(event) {
-            event.preventDefault();
-            
-            const username = document.getElementById('username-inline').value.trim();
-            const password = document.getElementById('password-inline').value;
-            const loginBtn = event.target.querySelector('button[type="submit"]');
-            
-            if (!username || !password) {
-                alert('Por favor, completa todos los campos');
-                return;
-            }
-            
-            // Mostrar loading
-            loginBtn.disabled = true;
-            loginBtn.innerHTML = '⏳ Iniciando sesión...';
-            
-            try {
-                const response = await fetch('/api/auth/login', {
-                    method: 'POST',
-                    headers: {
-                        'Content-Type': 'application/json'
-                    },
-                    body: JSON.stringify({ usernameOEmail: username, password })
-                });
-                
-                const data = await response.json();
-                
-                if (response.ok && data.success) {
-                    // Guardar token y usuario
-                    sessionStorage.setItem('authToken', data.data.token);
-                    sessionStorage.setItem('user', JSON.stringify(data.data.usuario));
-                    sessionStorage.setItem('userId', data.data.usuario.id.toString());
-                    
-                    // Ocultar formulario de login
-                    document.getElementById('login-inline-section').style.display = 'none';
-                    
-                    // Mostrar sección de búsqueda
-                    document.querySelector('.search-section').style.display = 'block';
-                    
-                    // Si hay código pendiente, buscarlo automáticamente
-                    if (codigoPendiente) {
-                        buscarPorCodigo(codigoPendiente);
-                    }
-                } else {
-                    alert(data.message || 'Usuario o contraseña incorrectos');
-                    loginBtn.disabled = false;
-                    loginBtn.innerHTML = '🔓 Acceder';
-                }
-            } catch (error) {
-                console.error('Error en login:', error);
-                alert('Error de conexión. Intenta nuevamente.');
-                loginBtn.disabled = false;
-                loginBtn.innerHTML = '🔓 Acceder';
-            }
-        }
-        
-        // Buscar automáticamente si viene código en la URL
-        window.addEventListener('DOMContentLoaded', () => {
-            const urlParams = new URLSearchParams(window.location.search);
-            const codigo = urlParams.get('codigo');
-            const token = sessionStorage.getItem('authToken') || localStorage.getItem('token');
-            
-            // Si hay código en la URL
-            if (codigo) {
-                codigoPendiente = codigo; // Guardar para después del login
-                document.getElementById('codigo-mpv').value = codigo;
-                
-                // Si ya tiene sesión, buscar inmediatamente
-                if (token) {
-                    console.log('✅ Sesión activa detectada, buscando expediente...');
-                    buscarPorCodigo(codigo);
-                } else {
-                    // Sin sesión: mostrar formulario de login inline
-                    console.log('🔐 Sin sesión, mostrando formulario de login...');
-                    document.getElementById('login-inline-section').style.display = 'block';
-                    document.querySelector('.search-section').style.display = 'none';
-                }
-            }
-        });
-
-        // Cambiar entre tabs
-        function switchTab(tabName) {
-            // Actualizar tabs
-            document.querySelectorAll('.tab').forEach(tab => {
-                tab.classList.remove('active');
-            });
+        function switchTab(type) {
+            document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
             event.target.classList.add('active');
-
-            // Actualizar contenido
-            document.querySelectorAll('.tab-content').forEach(content => {
-                content.classList.remove('active');
-            });
-            document.getElementById(`tab-${tabName}`).classList.add('active');
-
-            // Detener escaneo si se cambia de tab
-            if (tabName === 'manual' && html5QrCode) {
-                detenerEscaneo();
-            }
+            
+            document.getElementById('group-codigo').style.display = type === 'codigo' ? 'block' : 'none';
+            document.getElementById('group-nombre').style.display = type === 'nombre' ? 'block' : 'none';
         }
 
-        // Iniciar escaneo QR
-        function iniciarEscaneo() {
-            const btnStart = document.querySelector('.btn-start-scan');
-            const btnStop = document.querySelector('.btn-stop-scan');
-
-            html5QrCode = new Html5Qrcode("qr-reader");
-
-            html5QrCode.start(
-                { facingMode: "environment" },
-                {
-                    fps: 10,
-                    qrbox: { width: 250, height: 250 }
-                },
-                (decodedText) => {
-                    console.log('QR detectado:', decodedText);
-                    
-                    // Extraer código del expediente de la URL (formato TMARC-0001-2025)
-                    const match = decodedText.match(/TMARC-\d{4}-\d{4}/);
-                    if (match) {
-                        detenerEscaneo();
-                        buscarPorCodigo(match[0]);
-                    } else {
-                        alert('QR no válido. Debe contener un código de expediente TMARC.');
-                    }
-                },
-                (errorMessage) => {
-                    // Error de escaneo (normal, se ignora)
-                }
-            ).then(() => {
-                btnStart.style.display = 'none';
-                btnStop.style.display = 'inline-block';
-            }).catch((err) => {
-                console.error('Error iniciando cámara:', err);
-                alert('No se pudo acceder a la cámara. Verifica los permisos.');
-            });
-        }
-
-        // Detener escaneo QR
-        function detenerEscaneo() {
-            if (html5QrCode) {
-                html5QrCode.stop().then(() => {
-                    document.querySelector('.btn-start-scan').style.display = 'inline-block';
-                    document.querySelector('.btn-stop-scan').style.display = 'none';
-                }).catch((err) => {
-                    console.error('Error deteniendo cámara:', err);
-                });
-            }
-        }
-
-        // Procesar imagen QR subida
-        async function procesarImagenQR(event) {
-            const file = event.target.files[0];
-            const resultDiv = document.getElementById('qr-file-result');
-
-            if (!file) {
-                return;
-            }
-
-            resultDiv.innerHTML = '⏳ Procesando imagen...';
-
-            try {
-                // Crear instancia de Html5Qrcode para procesar archivo
-                const html5QrCodeScanner = new Html5Qrcode("qr-reader");
-                
-                // Escanear el archivo
-                const decodedText = await html5QrCodeScanner.scanFile(file, true);
-                
-                console.log('QR detectado en imagen:', decodedText);
-                resultDiv.innerHTML = '✅ QR detectado correctamente';
-
-                // Extraer código del expediente (formato TMARC-0001-2025)
-                const match = decodedText.match(/TMARC-\d{4}-\d{4}/);
-                if (match) {
-                    await buscarPorCodigo(match[0]);
-                } else {
-                    resultDiv.innerHTML = '❌ QR no válido. Debe contener un código de expediente TMARC.';
-                }
-
-            } catch (error) {
-                console.error('Error procesando imagen:', error);
-                resultDiv.innerHTML = '❌ No se pudo leer el QR de la imagen. Intenta con otra foto más clara.';
-            }
-
-            // Limpiar input
-            event.target.value = '';
-        }
-
-        // Buscar expediente (formulario)
         async function buscarExpediente(event) {
             event.preventDefault();
+            const results = document.getElementById('results-section');
+            results.classList.add('show');
+            results.innerHTML = '<div style="text-align:center; padding:50px">⏳ Buscando expediente...</div>';
             
-            const codigoMPV = document.getElementById('codigo-mpv').value.trim();
-            const razon = document.getElementById('razon').value.trim();
-
-            if (!codigoMPV && !razon) {
-                alert('Por favor, ingresa al menos un criterio de búsqueda');
-                return;
-            }
-
-            if (codigoMPV) {
-                await buscarPorCodigo(codigoMPV);
-            } else {
-                await buscarPorRazon(razon);
-            }
+            // Simulación de búsqueda (aquí iría el fetch real)
+            setTimeout(() => {
+                // Para efectos de demo, llamamos a buscarPorCodigo con el valor ingresado
+                const val = document.getElementById('codigo-mpv').value || document.getElementById('razon').value;
+                buscarPorCodigo(val);
+            }, 800);
         }
 
-        // Buscar por código — usa el endpoint unificado
         async function buscarPorCodigo(codigo) {
-            mostrarCargando();
             try {
-                const token = sessionStorage.getItem('authToken') || localStorage.getItem('token');
-                if (!token) {
-                    codigoPendiente = codigo;
-                    document.getElementById('login-inline-section').style.display = 'block';
-                    document.querySelector('.search-section').style.display = 'none';
-                    document.getElementById('results-section').style.display = 'none';
-                    return;
-                }
-                const response = await fetch(`/api/seguimiento/${encodeURIComponent(codigo)}`, {
-                    headers: { 'Authorization': `Bearer ${token}` }
-                });
-                if (response.status === 401) {
-                    sessionStorage.clear(); localStorage.removeItem('token');
-                    codigoPendiente = codigo;
-                    document.getElementById('login-inline-section').style.display = 'block';
-                    document.querySelector('.search-section').style.display = 'none';
-                    document.getElementById('results-section').style.display = 'none';
-                    return;
-                }
-                if (!response.ok) { mostrarSinResultados(); return; }
+                const response = await fetch(`/api/seguimiento/${encodeURIComponent(codigo)}`);
                 const data = await response.json();
-                mostrarResultados(data);
-            } catch (err) {
-                console.error('Error:', err);
-                mostrarSinResultados();
-            }
-        }
-
-        
-        // Mostrar sin permisos
-        function mostrarSinPermisos() {
-            const resultsSection = document.getElementById('results-section');
-            resultsSection.className = 'results-section show';
-            resultsSection.innerHTML = `
-                <div class="no-results">
-                    <div class="no-results-icon">🔒</div>
-                    <h3>Acceso Denegado</h3>
-                    <p>No tienes permiso para ver este expediente.</p>
-                    <p style="font-size: 13px; color: #666; margin-top: 10px;">
-                        Solo puedes ver tus propios expedientes.
-                    </p>
-                </div>
-            `;
-        }
-
-        // Buscar por razón social
-        async function buscarPorRazon(razon) {
-            mostrarCargando();
-
-            try {
-                const response = await fetch(`/api/mesa-partes/buscar?razon=${encodeURIComponent(razon)}`);
-                
-                if (!response.ok) {
-                    throw new Error('No se encontraron expedientes');
-                }
-
-                const data = await response.json();
-                
-                if (data.length === 0) {
-                    mostrarSinResultados();
-                } else if (data.length === 1) {
-                    mostrarResultados(data[0]);
+                if (data.success) {
+                    mostrarResultados(data.data);
                 } else {
-                    mostrarMultiplesResultados(data);
+                    document.getElementById('results-section').innerHTML = '<div style="text-align:center; padding:50px">❌ Expediente no encontrado.</div>';
                 }
-
             } catch (error) {
-                console.error('Error:', error);
-                mostrarSinResultados();
+                console.error(error);
             }
         }
 
-        // Mostrar loading
-        function mostrarCargando() {
-            const resultsSection = document.getElementById('results-section');
-            resultsSection.className = 'results-section show';
-            resultsSection.innerHTML = `
-                <div class="loading">
-                    <div class="spinner"></div>
-                    <p>Buscando expediente...</p>
-                </div>
-            `;
-        }
-
-        // Mostrar sin resultados
-        function mostrarSinResultados() {
-            const resultsSection = document.getElementById('results-section');
-            resultsSection.className = 'results-section show';
-            resultsSection.innerHTML = `
-                <div class="no-results">
-                    <div class="no-results-icon">📋</div>
-                    <h3>No se encontró el expediente</h3>
-                    <p>Verifica que el código o nombre sea correcto</p>
-                </div>
-            `;
-        }
-
-        // ── HELPERS ──────────────────────────────────────────────────────────
-        function fmtFecha(f) {
-            if (!f) return '—';
-            try {
-                return new Date(f).toLocaleDateString('es-PE', {
-                    day: '2-digit', month: '2-digit', year: 'numeric'
-                });
-            } catch (_) { return f; }
-        }
-        function fmtFechaHora(f) {
-            if (!f) return '—';
-            try {
-                return new Date(f).toLocaleString('es-PE', {
-                    day: '2-digit', month: '2-digit', year: 'numeric',
-                    hour: '2-digit', minute: '2-digit'
-                });
-            } catch (_) { return f; }
-        }
         const BADGE = {
             'Nuevo': '#d4af37', 'En Trámite': '#2196F3', 'En Procesamiento': '#9C27B0',
             'Completado': '#4CAF50', 'Archivado': '#607D8B',
@@ -943,291 +428,163 @@
             'NOTA': '#607D8B', 'OFICIO': '#1565C0', 'RESOLUCION': '#6A1B9A',
             'AUTO': '#AD1457', 'DECRETO': '#00838F', 'SENTENCIA': '#1B5E20', 'OTRO': '#37474F'
         };
+
         function badge(txt, color) {
-            return `<span style="background:${color||'#888'};color:#fff;padding:3px 10px;
-                    border-radius:20px;font-size:11px;font-weight:700;letter-spacing:.5px">${txt}</span>`;
+            return `<span class="status-badge" style="background:${color}15; color:${color}; border:1px solid ${color}30">${txt}</span>`;
         }
 
-        // ── MOSTRAR RESULTADOS (vista CEJ completa) ───────────────────────────
+        // ── MOSTRAR RESULTADOS (vista CEJ completa - PRO MAX) ───────────────────────────
         function mostrarResultados(data) {
             const rs = document.getElementById('results-section');
             rs.className = 'results-section show';
-
-            const g = data.datos_generales || data;
+            
+            const exp    = data.datos_generales || data;
             const partes = data.partes_procesales || [];
-            const actos  = data.actos_procesales  || [];
-            const docs   = data.documentos        || [];
+            const actos  = data.actos_procesales || [];
+            const docs   = data.documentos || [];
             const fuente = data.fuente || 'expediente';
 
-            // ── DATOS GENERALES ──────────────────────────────────────────────
-            const estado = g.estado || 'Pendiente';
-            const estadoColor = BADGE[estado] || '#888';
+            const fmtF = (f) => f ? new Date(f).toLocaleDateString('es-PE') : '—';
+            const fmtFH = (f) => f ? new Date(f).toLocaleString('es-PE') : '—';
 
+            // 1. DATOS GENERALES
             let htmlGen = `
-            <div style="background:#fff;border:2px solid #d4af37;border-radius:10px;margin-bottom:20px;overflow:hidden">
-              <div style="background:linear-gradient(135deg,#1a1a1a,#2d2d2d);padding:18px 25px;
-                          display:flex;justify-content:space-between;align-items:center">
-                <div>
-                  <div style="color:#d4af37;font-size:22px;font-weight:700;letter-spacing:1px">
-                    ${g.numero || g.id || '—'}
-                  </div>
-                  <div style="color:#aaa;font-size:12px;margin-top:3px">
-                    ${fuente === 'expediente' ? '📄 Expediente' : fuente === 'mesa_partes' ? '📥 Mesa de Partes' : '📋 Solicitud'}
-                  </div>
-                </div>
-                ${badge(estado, estadoColor)}
-              </div>
-              <div style="padding:20px 25px">
-                <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(200px,1fr));gap:12px">`;
-
-            const campos = [
-                ['Órgano / Sede', g.organo_jurisdiccional || g.sede],
-                ['Distrito Judicial', g.distrito_judicial],
-                ['Árbitro / Juez', g.juez],
-                ['Especialista Legal', g.especialista_legal],
-                ['Materia', g.materia],
-                ['Proceso', g.proceso],
-                ['Etapa Procesal', g.etapa_procesal],
-                ['Ubicación', g.ubicacion],
-                ['Fecha de Inicio', fmtFecha(g.fecha_inicio || g.fecha_creacion)],
-                ['Fecha Conclusión', fmtFecha(g.fecha_conclusion)],
-                ['Cuantía', g.cuantia ? `${g.moneda || 'PEN'} ${Number(g.cuantia).toLocaleString()}` : null],
-                ['Presentante', g.presentante],
-                ['Correo', g.correo || g.email],
-                ['Teléfono', g.telefono],
-            ].filter(([,v]) => v);
-
-            campos.forEach(([lbl, val]) => {
-                htmlGen += `
-                  <div style="padding:10px;background:#f8f9fa;border-radius:6px;border-left:3px solid #d4af37">
-                    <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">${lbl}</div>
-                    <div style="font-size:14px;color:#333;font-weight:500">${val}</div>
-                  </div>`;
-            });
-
-            if (g.sumilla) {
-                htmlGen += `
-                  <div style="padding:10px;background:#f8f9fa;border-radius:6px;border-left:3px solid #d4af37;grid-column:1/-1">
-                    <div style="font-size:11px;color:#888;text-transform:uppercase;letter-spacing:.5px;margin-bottom:3px">Sumilla</div>
-                    <div style="font-size:14px;color:#333">${g.sumilla}</div>
-                  </div>`;
-            }
-
-            htmlGen += `</div></div></div>`;
-
-            // ── PARTES PROCESALES ────────────────────────────────────────────
-            let htmlPartes = '';
-            if (partes.length > 0) {
-                htmlPartes = `
-                <div style="background:#fff;border:2px solid #d4af37;border-radius:10px;margin-bottom:20px;overflow:hidden">
-                  <div style="background:#1a1a1a;padding:14px 25px">
-                    <span style="color:#d4af37;font-weight:700;font-size:15px">👥 PARTES PROCESALES</span>
-                  </div>
-                  <div style="overflow-x:auto">
-                  <table style="width:100%;border-collapse:collapse;font-size:13px">
-                    <thead>
-                      <tr style="background:#f5f5f5">
-                        <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #d4af37;color:#555">Parte</th>
-                        <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #d4af37;color:#555">Tipo</th>
-                        <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #d4af37;color:#555">Ap. Paterno</th>
-                        <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #d4af37;color:#555">Ap. Materno</th>
-                        <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #d4af37;color:#555">Nombres / Razón Social</th>
-                        <th style="padding:10px 14px;text-align:left;border-bottom:2px solid #d4af37;color:#555">Documento</th>
-                      </tr>
-                    </thead>
-                    <tbody>`;
-
-                partes.forEach((p, i) => {
-                    const bg = i % 2 === 0 ? '#fff' : '#fafafa';
-                    const nombreDisplay = p.razon_social || p.nombre_completo || p.nombre || '—';
-                    const apellidoPat   = p.apellido_paterno || '—';
-                    const apellidoMat   = p.apellido_materno || '—';
-                    const nombres       = p.nombres || (p.tipo_persona === 'juridica' ? p.razon_social || '—' : nombreDisplay);
-                    htmlPartes += `
-                      <tr style="background:${bg}">
-                        <td style="padding:10px 14px;font-weight:700;color:#d4af37;text-transform:uppercase">${p.tipo_parte || '—'}</td>
-                        <td style="padding:10px 14px;color:#555;text-transform:uppercase">${p.tipo_persona || '—'}</td>
-                        <td style="padding:10px 14px">${apellidoPat}</td>
-                        <td style="padding:10px 14px">${apellidoMat}</td>
-                        <td style="padding:10px 14px;font-weight:500">${nombres}</td>
-                        <td style="padding:10px 14px;color:#666">${p.documento_identidad || '—'}</td>
-                      </tr>`;
-                });
-                htmlPartes += `</tbody></table></div></div>`;
-            }
-
-            // ── ACTOS PROCESALES (timeline) ──────────────────────────────────
-            let htmlActos = '';
-            if (actos.length > 0) {
-                htmlActos = `
-                <div style="background:#fff;border:2px solid #d4af37;border-radius:10px;overflow:hidden">
-                  <div style="background:#1a1a1a;padding:14px 25px;display:flex;justify-content:space-between;align-items:center">
-                    <span style="color:#d4af37;font-weight:700;font-size:15px">📜 SEGUIMIENTO DEL EXPEDIENTE</span>
-                    <span style="color:#aaa;font-size:12px">${actos.length} acto(s)</span>
-                  </div>
-                  <div style="padding:20px 25px">`;
-
-                actos.forEach((acto, idx) => {
-                    const tipoColor = BADGE[acto.tipo_acto] || '#607D8B';
-                    const notifs    = acto.notificaciones || [];
-                    const numItem   = actos.length - idx;
-
-                    htmlActos += `
-                    <div style="display:flex;gap:15px;margin-bottom:${idx < actos.length-1 ? '0' : '0'};
-                                padding-bottom:25px;${idx < actos.length-1 ? 'border-bottom:1px solid #eee;margin-bottom:25px' : ''}">
-                      <div style="flex-shrink:0;width:44px;height:44px;border-radius:50%;
-                                  background:linear-gradient(135deg,#d4af37,#f0d060);
-                                  display:flex;align-items:center;justify-content:center;
-                                  color:#1a1a1a;font-weight:700;font-size:15px;
-                                  box-shadow:0 2px 8px rgba(212,175,55,.4)">${numItem}</div>
-                      <div style="flex:1">
-                        <!-- Cabecera del acto -->
-                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:10px">
-                          <div style="font-size:12px;color:#666">
-                            <strong>Fecha Ingreso:</strong> ${fmtFechaHora(acto.fecha_ingreso)}
-                          </div>
-                          <div style="font-size:12px;color:#666;display:flex;align-items:center;gap:6px">
-                            <strong>Tipo:</strong> ${badge(acto.tipo_acto || 'NOTA', tipoColor)}
-                          </div>
-                          ${acto.resolucion ? `
-                          <div style="font-size:12px;color:#666">
-                            <strong>Resolución:</strong> ${acto.resolucion}
-                          </div>` : '<div></div>'}
-                          <div style="font-size:12px;color:#666">
-                            <strong>Folios:</strong> ${acto.folios || 0} &nbsp;|&nbsp;
-                            <strong>Fojas:</strong> ${acto.fojas || 0}
-                          </div>
-                          ${acto.fecha_proveido ? `
-                          <div style="font-size:12px;color:#666">
-                            <strong>Proveído:</strong> ${fmtFecha(acto.fecha_proveido)}
-                          </div>` : ''}
-                          ${acto.tipo_notificacion ? `
-                          <div style="font-size:12px;color:#666">
-                            <strong>Tipo Notif.:</strong> ${acto.tipo_notificacion}
-                          </div>` : ''}
+            <div class="cej-view">
+                <div class="section-card">
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24"><path d="M13 2H6c-1.1 0-2 .9-2 2v16c0 1.1.9 2 2 2h12c1.1 0 2-.9 2-2V9l-7-7zM6 20V4h6v5h5v11H6z"/></svg>
+                        Datos Generales del Proceso
+                    </div>
+                    <div class="cej-grid">
+                        <div class="data-item">
+                            <label>Expediente</label>
+                            <div class="value" style="color:var(--primary); font-size:18px">${exp.codigo || exp.numero || '—'}</div>
                         </div>
-                        ${acto.sumilla ? `
-                        <div style="background:#f8f9fa;border-left:3px solid #c0c0c0;padding:10px 14px;
-                                    border-radius:0 6px 6px 0;font-size:13px;color:#333;margin-bottom:8px">
-                          <strong style="color:#555;font-size:11px;text-transform:uppercase">Sumilla:</strong><br>
-                          ${acto.sumilla}
-                        </div>` : ''}
-                        ${acto.descripcion_usuario ? `
-                        <div style="font-size:12px;color:#888;font-style:italic;margin-bottom:8px">
-                          ${acto.descripcion_usuario}
-                        </div>` : ''}
-                        ${acto.tiene_documento ? `
-                        <div style="margin-bottom:10px">
-                          <a href="/api/download/archivo/${acto.documento_archivo}"
-                             target="_blank"
-                             style="display:inline-flex;align-items:center;gap:6px;background:#1a1a1a;
-                                    color:#d4af37;padding:7px 16px;border-radius:6px;font-size:12px;
-                                    font-weight:600;text-decoration:none;border:1px solid #d4af37">
-                            📥 ${acto.documento_nombre || 'Descargar documento'}
-                          </a>
-                        </div>` : ''}
-                        ${notifs.length > 0 ? `
-                        <div style="margin-top:10px">
-                          ${notifs.map(n => `
-                          <div style="background:#f0f4ff;border:1px solid #c5cae9;border-radius:8px;
-                                      padding:12px 16px;margin-bottom:8px">
-                            <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px">
-                              <span style="font-size:12px;font-weight:700;color:#1565C0">
-                                📨 ${n.numero_notificacion || 'NOTIFICACIÓN'}
-                              </span>
-                              ${badge(n.estado || 'Enviada', n.estado === 'Recibida' ? '#4CAF50' : n.estado === 'Devuelta' ? '#f44336' : '#1565C0')}
-                            </div>
-                            <div style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-size:12px;color:#444">
-                              <div><strong>Destinatario:</strong> ${n.destinatario || '—'}</div>
-                              <div><strong>Fecha Envío:</strong> ${fmtFecha(n.fecha_envio)}</div>
-                              ${n.anexos ? `<div><strong>Anexos:</strong> ${n.anexos}</div>` : ''}
-                              ${n.forma_entrega ? `<div><strong>Forma:</strong> ${n.forma_entrega}</div>` : ''}
-                            </div>
-                            ${n.observaciones ? `<div style="font-size:12px;color:#666;margin-top:5px;font-style:italic">${n.observaciones}</div>` : ''}
-                          </div>`).join('')}
-                        </div>` : ''}
-                      </div>
-                    </div>`;
-                });
+                        <div class="data-item">
+                            <label>Estado</label>
+                            <div class="value">${badge(exp.estado || 'EN TRÁMITE', BADGE[exp.estado] || '#888')}</div>
+                        </div>
+                        <div class="data-item">
+                            <label>Fecha Inicio</label>
+                            <div class="value">${fmtF(exp.fecha_inicio || exp.fecha_creacion)}</div>
+                        </div>
+                        <div class="data-item">
+                            <label>Materia</label>
+                            <div class="value">${exp.materia || 'ARBITRAJE'}</div>
+                        </div>
+                        <div class="data-item">
+                            <label>Juez / Árbitro</label>
+                            <div class="value">${exp.juez || 'POR ASIGNAR'}</div>
+                        </div>
+                        <div class="data-item">
+                            <label>Ubicación</label>
+                            <div class="value">${exp.ubicacion || 'SEDE CENTRAL'}</div>
+                        </div>
+                    </div>
+                </div>`;
 
-                htmlActos += `</div></div>`;
-            } else if (fuente === 'expediente') {
-                htmlActos = `
-                <div style="background:#fff;border:2px solid #d4af37;border-radius:10px;overflow:hidden">
-                  <div style="background:#1a1a1a;padding:14px 25px">
-                    <span style="color:#d4af37;font-weight:700;font-size:15px">📜 SEGUIMIENTO DEL EXPEDIENTE</span>
-                  </div>
-                  <div style="padding:30px;text-align:center;color:#999">
-                    <div style="font-size:40px;margin-bottom:10px">📋</div>
-                    <p>Aún no se han registrado actos procesales para este expediente.</p>
-                  </div>
+            // 2. PARTES PROCESALES
+            if (partes.length > 0) {
+                htmlGen += `
+                <div class="section-card">
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24"><path d="M16 11c1.66 0 2.99-1.34 2.99-3S17.66 5 16 5s-3 1.34-3 3 1.34 3 3 3zm-8 0c1.66 0 2.99-1.34 2.99-3S9.66 5 8 5 5 6.34 5 8s1.34 3 3 3zm0 2c-2.33 0-7 1.17-7 3.5V19h14v-2.5c0-2.33-4.67-3.5-7-3.5zm8 0c-.29 0-.62.02-.97.05 1.16.84 1.97 1.97 1.97 3.45V19h6v-2.5c0-2.33-4.67-3.5-7-3.5z"/></svg>
+                        Partes Procesales
+                    </div>
+                    <div style="overflow-x:auto">
+                        <table style="width:100%; border-collapse:collapse; font-size:14px">
+                            <thead>
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.1); text-align:left">
+                                    <th style="padding:12px; color:var(--text-muted)">Parte</th>
+                                    <th style="padding:12px; color:var(--text-muted)">Nombres / Razón Social</th>
+                                    <th style="padding:12px; color:var(--text-muted)">Documento</th>
+                                </tr>
+                            </thead>
+                            <tbody>
+                                ${partes.map(p => `
+                                <tr style="border-bottom:1px solid rgba(255,255,255,0.03)">
+                                    <td style="padding:12px; font-weight:600">${p.tipo_parte || 'PARTE'}</td>
+                                    <td style="padding:12px">${p.razon_social || p.nombre || '—'}</td>
+                                    <td style="padding:12px; font-family:monospace; color:var(--primary)">${p.dni || p.ruc || p.documento_identidad || '—'}</td>
+                                </tr>`).join('')}
+                            </tbody>
+                        </table>
+                    </div>
                 </div>`;
             }
 
-            // ── DOCUMENTOS ADJUNTOS ──────────────────────────────────────────
-            let htmlDocs = '';
+            // 3. DOCUMENTOS
             if (docs.length > 0) {
-                htmlDocs = `
-                <div style="background:#fff;border:2px solid #d4af37;border-radius:10px;
-                            margin-bottom:20px;overflow:hidden">
-                  <div style="background:#1a1a1a;padding:14px 25px">
-                    <span style="color:#d4af37;font-weight:700;font-size:15px">📎 DOCUMENTOS ADJUNTOS (${docs.length})</span>
-                  </div>
-                  <div style="padding:16px 25px;display:flex;flex-wrap:wrap;gap:10px">`;
-                docs.forEach(d => {
-                    const nombre = d.nombre_original || d.nombre || 'Archivo';
-                    const archivo = d.nombre_archivo || d.url?.split('/').pop() || '';
-                    htmlDocs += `
-                    <a href="/api/download/archivo/${archivo}" target="_blank"
-                       style="display:inline-flex;align-items:center;gap:6px;background:#f8f9fa;
-                              color:#333;padding:8px 14px;border-radius:6px;font-size:12px;
-                              text-decoration:none;border:1px solid #ddd">
-                      📄 ${nombre}
-                    </a>`;
-                });
-                htmlDocs += `</div></div>`;
+                htmlGen += `
+                <div class="section-card">
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24"><path d="M16.5 6v11.5c0 2.21-1.79 4-4 4s-4-1.79-4-4V5c0-1.38 1.12-2.5 2.5-2.5s2.5 1.12 2.5 2.5v10.5c0 .55-.45 1-1 1s-1-.45-1-1V6H10v9.5c0 1.38 1.12 2.5 2.5 2.5s2.5-1.12 2.5-2.5V5c0-2.21-1.79-4-4-4S7 2.79 7 5v12.5c0 3.31 2.69 6 6 6s6-2.69 6-6V6h-1.5z"/></svg>
+                        Expediente Digital
+                    </div>
+                    <div style="display:flex; flex-wrap:wrap; gap:12px">
+                        ${docs.map(d => `
+                        <a href="/api/download/archivo/${d.nombre_archivo}" target="_blank" class="btn-download">
+                            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                            ${d.nombre_original || 'Ver Documento'}
+                        </a>`).join('')}
+                    </div>
+                </div>`;
             }
 
-            rs.innerHTML = htmlGen + htmlPartes + htmlDocs + htmlActos;
-        }
-
-        // generarTimeline ya no se usa (reemplazado por mostrarResultados)
-        function generarTimeline() { return ''; }
-
-
-        // Formatear fecha
-        function formatearFecha(fecha) {
-            if (!fecha) return 'No especificada';
-            const date = new Date(fecha);
-            return date.toLocaleDateString('es-ES', {
-                year: 'numeric',
-                month: 'long',
-                day: 'numeric',
-                hour: '2-digit',
-                minute: '2-digit'
-            });
-        }
-
-        // Mostrar múltiples resultados
-        function mostrarMultiplesResultados(expedientes) {
-            const resultsSection = document.getElementById('results-section');
-            resultsSection.className = 'results-section show';
-
-            let html = '<h3 style="margin-bottom: 20px;">Se encontraron múltiples expedientes:</h3>';
-            
-            expedientes.forEach(exp => {
-                html += `
-                    <div class="expediente-card" style="cursor: pointer;" onclick="buscarPorCodigo('${exp.numero_registro}')">
-                        <div class="expediente-header">
-                            <div class="expediente-numero">${exp.numero_registro}</div>
-                            <div class="info-value">${formatearFecha(exp.fecha_registro || exp.fecha_presentacion)}</div>
-                        </div>
-                        <p>${exp.demandante?.nombre || 'No especificado'}</p>
+            // 4. TIMELINE
+            let htmlActos = '';
+            if (actos.length > 0) {
+                htmlActos = `
+                <div class="section-card">
+                    <div class="section-title">
+                        <svg viewBox="0 0 24 24"><path d="M11.99 2C6.47 2 2 6.48 2 12s4.47 10 9.99 10C17.52 22 22 17.52 22 12S17.52 2 11.99 2zm3.3 14.71L11 12.41V7h2v4.59l3.71 3.71-1.42 1.41z"/></svg>
+                        Seguimiento Procesal
                     </div>
-                `;
-            });
+                    <div class="cej-timeline">`;
 
-            resultsSection.innerHTML = html;
+                actos.forEach(acto => {
+                    const color = BADGE[acto.tipo_acto] || '#607D8B';
+                    htmlActos += `
+                    <div class="timeline-entry">
+                        <div class="timeline-marker"></div>
+                        <div class="entry-card">
+                            <div class="entry-header">
+                                <span class="entry-date">${fmtFH(acto.fecha_ingreso)}</span>
+                                ${badge(acto.tipo_acto || 'ACTO', color)}
+                            </div>
+                            <div class="entry-sumilla">${acto.sumilla || 'Sin Sumilla'}</div>
+                            <div class="entry-details">
+                                <p>${acto.descripcion_usuario || ''}</p>
+                            </div>
+                            ${acto.tiene_documento ? `
+                            <a href="/api/download/archivo/${acto.documento_archivo}" target="_blank" class="btn-download">
+                                <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4M7 10l5 5 5-5M12 15V3"/></svg>
+                                Descargar Resolución
+                            </a>` : ''}
+                        </div>
+                    </div>`;
+                });
+                htmlActos += `</div></div>`;
+            }
+
+            htmlGen += htmlActos + `</div>`;
+            rs.innerHTML = htmlGen;
+        }
+
+        function mostrarMultiplesResultados(exps) {
+            const rs = document.getElementById('results-section');
+            rs.className = 'results-section show';
+            rs.innerHTML = `
+            <div class="section-card">
+                <div class="section-title">Coincidencias Encontradas</div>
+                <div style="display:grid; gap:12px">
+                    ${exps.map(e => `
+                    <div class="entry-card" style="cursor:pointer" onclick="buscarPorCodigo('${e.numero_registro}')">
+                        <div style="color:var(--primary); font-weight:700">${e.numero_registro}</div>
+                        <div style="font-size:13px; color:#FFF">${e.demandante?.nombre || e.razon_social || '—'}</div>
+                    </div>`).join('')}
+                </div>
+            </div>`;
         }
     </script>
 </body>

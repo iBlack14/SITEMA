@@ -1,276 +1,142 @@
 /* 
- * Base Premium Styles - Paleta Elegante
- * Colores: Plateado, Blanco, Dorado, Negro
+ * 🏛️ TMARC DESIGN SYSTEM - MASTER BASE (UI-UX-PRO-MAX)
+ * Paleta: Golden Authority (Black, Gold, Silver, Glass)
+ * Typography: Outfit (Headers), Inter (Body)
  */
 
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+
 :root {
-    /* Paleta de Colores Premium */
-    --color-negro: #0a0a0a;
-    --color-negro-suave: #1a1a1a;
-    --color-gris-oscuro: #2a2a2a;
+    /* 🎨 Primary Palette - Golden Authority */
+    --color-primary: #D4AF37;
+    --color-primary-light: #F4D03F;
+    --color-primary-dark: #B8941F;
     
-    --color-plateado: #C0C0C0;
-    --color-plateado-claro: #D3D3D3;
-    --color-plateado-oscuro: #A8A8A8;
+    /* 🌑 Surface & Background */
+    --color-bg: #0D0D0D;
+    --color-surface: #141414;
+    --color-surface-soft: #1E1E1E;
+    --color-surface-lighter: #2A2A2A;
     
-    --color-dorado: #D4AF37;
-    --color-dorado-claro: #F4D03F;
-    --color-dorado-oscuro: #B8941F;
+    /* ❄️ Accent & Silver */
+    --color-silver: #C0C0C0;
+    --color-silver-muted: #808080;
     
-    --color-blanco: #FFFFFF;
-    --color-blanco-hueso: #F8F8F8;
-    --color-blanco-perla: #F0F0F0;
+    /* 💎 Glassmorphism Tokens */
+    --glass-bg: rgba(255, 255, 255, 0.03);
+    --glass-border: rgba(255, 255, 255, 0.08);
+    --glass-border-gold: rgba(212, 175, 55, 0.2);
+    --glass-blur: blur(20px);
     
-    /* Colores de Estado */
-    --color-exito: #2ecc71;
-    --color-advertencia: #f39c12;
-    --color-error: #e74c3c;
-    --color-info: #3498db;
+    /* 🟢 Status Colors */
+    --color-success: #4CAF50;
+    --color-warning: #FF9800;
+    --color-error: #F44336;
+    --color-info: #2196F3;
     
-    /* Gradientes Premium */
-    --gradiente-dorado: linear-gradient(135deg, #D4AF37 0%, #F4D03F 100%);
-    --gradiente-plateado: linear-gradient(135deg, #A8A8A8 0%, #D3D3D3 100%);
-    --gradiente-oscuro: linear-gradient(135deg, #0a0a0a 0%, #2a2a2a 100%);
-    --gradiente-elegante: linear-gradient(135deg, #1a1a1a 0%, #2a2a2a 50%, #1a1a1a 100%);
+    /* 📏 Spacing System (8dp) */
+    --space-1: 4px;
+    --space-2: 8px;
+    --space-3: 16px;
+    --space-4: 24px;
+    --space-5: 32px;
+    --space-6: 48px;
     
-    /* Sombras Elegantes */
-    --sombra-dorada: 0 4px 15px rgba(212, 175, 55, 0.3);
-    --sombra-dorada-hover: 0 8px 25px rgba(212, 175, 55, 0.5);
-    --sombra-plateada: 0 4px 15px rgba(192, 192, 192, 0.2);
-    --sombra-oscura: 0 4px 20px rgba(0, 0, 0, 0.4);
-    --sombra-suave: 0 2px 10px rgba(0, 0, 0, 0.1);
+    /* ✍️ Typography */
+    --font-header: 'Outfit', sans-serif;
+    --font-body: 'Inter', sans-serif;
     
-    /* Espaciado */
-    --spacing-xs: 5px;
-    --spacing-sm: 10px;
-    --spacing-md: 15px;
-    --spacing-lg: 20px;
-    --spacing-xl: 30px;
-    --spacing-xxl: 40px;
+    /* 🛡️ Shadows */
+    --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.4);
+    --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.15);
     
-    /* Tipografía */
-    --font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
-    --font-size-xs: 11px;
-    --font-size-sm: 13px;
-    --font-size-md: 15px;
-    --font-size-lg: 17px;
-    --font-size-xl: 20px;
-    --font-size-xxl: 26px;
-    --font-size-xxxl: 34px;
+    /* 🎭 Gradients */
+    --gradiente-dorado: linear-gradient(135deg, #D4AF37 0%, #F4D03F 50%, #B8941F 100%);
+    --gradiente-dorado-texto: linear-gradient(180deg, #FFFFFF 0%, #D4AF37 100%);
     
-    /* Layout */
-    --sidebar-width: 260px;
-    --sidebar-collapsed-width: 75px;
-    --border-radius: 12px;
-    --border-radius-sm: 6px;
-    --border-radius-lg: 18px;
-    
-    /* Transiciones */
-    --transition-rapida: 0.2s ease;
-    --transition-normal: 0.3s ease;
-    --transition-suave: 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+    /* 🔄 Transitions */
+    --transition-smooth: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    --transition-fast: all 0.2s ease;
 }
 
-/* Reset y Estilos Base */
+/* 🧱 Global Reset */
 * {
     margin: 0;
     padding: 0;
     box-sizing: border-box;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
 }
 
 body {
-    font-family: var(--font-family);
-    background: linear-gradient(135deg, #e8e8e8 0%, #f5f5f5 50%, #e8e8e8 100%);
-    color: var(--color-negro);
+    font-family: var(--font-body);
+    background-color: var(--color-bg);
+    color: #FFFFFF;
     min-height: 100vh;
     line-height: 1.6;
-    font-size: var(--font-size-md);
     overflow-x: hidden;
+    background-image: radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
+                      radial-gradient(circle at 100% 100%, rgba(192, 192, 192, 0.05) 0%, transparent 50%);
 }
 
-/* Scrollbar Personalizado */
+/* 📜 Custom Scrollbar */
 ::-webkit-scrollbar {
-    width: 10px;
-    height: 10px;
+    width: 8px;
+    height: 8px;
 }
 
 ::-webkit-scrollbar-track {
-    background: var(--color-blanco-perla);
+    background: var(--color-bg);
 }
 
 ::-webkit-scrollbar-thumb {
-    background: var(--gradiente-plateado);
-    border-radius: 5px;
+    background: var(--color-surface-lighter);
+    border-radius: 10px;
+    border: 2px solid var(--color-bg);
 }
 
 ::-webkit-scrollbar-thumb:hover {
-    background: var(--gradiente-dorado);
+    background: var(--color-primary);
 }
 
-/* Selección de Texto */
-::selection {
-    background: var(--color-dorado);
-    color: var(--color-blanco);
+/* 🏷️ Typography Utilities */
+h1, h2, h3, h4, h5, h6 {
+    font-family: var(--font-header);
+    letter-spacing: -0.02em;
+    font-weight: 700;
 }
 
-::-moz-selection {
-    background: var(--color-dorado);
-    color: var(--color-blanco);
+.text-gold { color: var(--color-primary); }
+.text-silver { color: var(--color-silver); }
+.text-muted { color: var(--color-silver-muted); }
+
+/* 🃏 Glass Container Utility */
+.glass-panel {
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 24px;
 }
 
-/* Utilidades de Texto */
-.text-center { text-align: center; }
-.text-left { text-align: left; }
-.text-right { text-align: right; }
-
-.text-dorado { color: var(--color-dorado); }
-.text-plateado { color: var(--color-plateado); }
-.text-blanco { color: var(--color-blanco); }
-.text-negro { color: var(--color-negro); }
-
-.fw-light { font-weight: 300; }
-.fw-normal { font-weight: 400; }
-.fw-medium { font-weight: 500; }
-.fw-semibold { font-weight: 600; }
-.fw-bold { font-weight: 700; }
-
-/* Utilidades de Espaciado */
-.m-0 { margin: 0; }
-.mt-1 { margin-top: var(--spacing-xs); }
-.mt-2 { margin-top: var(--spacing-sm); }
-.mt-3 { margin-top: var(--spacing-md); }
-.mt-4 { margin-top: var(--spacing-lg); }
-.mt-5 { margin-top: var(--spacing-xl); }
-
-.mb-0 { margin-bottom: 0; }
-.mb-1 { margin-bottom: var(--spacing-xs); }
-.mb-2 { margin-bottom: var(--spacing-sm); }
-.mb-3 { margin-bottom: var(--spacing-md); }
-.mb-4 { margin-bottom: var(--spacing-lg); }
-.mb-5 { margin-bottom: var(--spacing-xl); }
-
-.p-0 { padding: 0; }
-.p-1 { padding: var(--spacing-xs); }
-.p-2 { padding: var(--spacing-sm); }
-.p-3 { padding: var(--spacing-md); }
-.p-4 { padding: var(--spacing-lg); }
-.p-5 { padding: var(--spacing-xl); }
-
-/* Utilidades de Display */
-.d-none { display: none; }
-.d-block { display: block; }
-.d-flex { display: flex; }
-.d-grid { display: grid; }
-.d-inline-block { display: inline-block; }
-
-/* Utilidades de Flexbox */
-.flex-column { flex-direction: column; }
-.flex-row { flex-direction: row; }
-.flex-wrap { flex-wrap: wrap; }
-.justify-start { justify-content: flex-start; }
-.justify-center { justify-content: center; }
-.justify-end { justify-content: flex-end; }
-.justify-between { justify-content: space-between; }
-.justify-around { justify-content: space-around; }
-.align-start { align-items: flex-start; }
-.align-center { align-items: center; }
-.align-end { align-items: flex-end; }
-.gap-xs { gap: var(--spacing-xs); }
-.gap-sm { gap: var(--spacing-sm); }
-.gap-md { gap: var(--spacing-md); }
-.gap-lg { gap: var(--spacing-lg); }
-.gap-xl { gap: var(--spacing-xl); }
-
-/* Utilidades de Bordes */
-.rounded { border-radius: var(--border-radius); }
-.rounded-sm { border-radius: var(--border-radius-sm); }
-.rounded-lg { border-radius: var(--border-radius-lg); }
-.rounded-full { border-radius: 9999px; }
-
-/* Utilidades de Sombras */
-.shadow-dorada { box-shadow: var(--sombra-dorada); }
-.shadow-plateada { box-shadow: var(--sombra-plateada); }
-.shadow-oscura { box-shadow: var(--sombra-oscura); }
-.shadow-suave { box-shadow: var(--sombra-suave); }
-
-/* Animaciones Suaves */
-@keyframes fadeIn {
-    from {
-        opacity: 0;
-        transform: translateY(10px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
-}
-
-@keyframes slideIn {
-    from {
-        opacity: 0;
-        transform: translateX(-20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateX(0);
-    }
-}
-
-@keyframes shimmer {
-    0% {
-        background-position: -1000px 0;
-    }
-    100% {
-        background-position: 1000px 0;
-    }
-}
-
-.fade-in {
-    animation: fadeIn var(--transition-suave);
-}
-
-.slide-in {
-    animation: slideIn var(--transition-suave);
-}
-
-/* Overlay Oscuro */
-.overlay {
-    position: fixed;
-    top: 0;
-    left: 0;
-    width: 100%;
-    height: 100%;
-    background: rgba(10, 10, 10, 0.7);
-    backdrop-filter: blur(5px);
-    z-index: 999;
-    display: none;
-}
-
-.overlay.active {
-    display: block;
-    animation: fadeIn 0.3s ease;
-}
-
-/* Loading Spinner Premium */
+/* 🌀 Loading Spinner Pro */
 .loading-spinner {
-    width: 50px;
-    height: 50px;
-    border: 4px solid var(--color-plateado);
-    border-top-color: var(--color-dorado);
+    width: 48px;
+    height: 48px;
+    border: 3px solid rgba(212, 175, 55, 0.1);
+    border-top-color: var(--color-primary);
     border-radius: 50%;
-    animation: spin 1s linear infinite;
+    animation: spin-premium 1s cubic-bezier(0.4, 0, 0.2, 1) infinite;
 }
 
-@keyframes spin {
+@keyframes spin-premium {
     to { transform: rotate(360deg); }
 }
 
-/* Responsive */
+/* 📱 Responsive Adjustments */
 @media (max-width: 768px) {
     :root {
-        --sidebar-width: 100%;
-        --font-size-md: 14px;
-        --font-size-lg: 16px;
-        --font-size-xl: 18px;
+        --space-4: 16px;
+        --space-5: 24px;
     }
 }

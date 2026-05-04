@@ -4,8 +4,21 @@
     <link rel="icon" type="image/png" href="favicon.png">
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Sistema de Mesa de Partes Virtual</title>
+    <title>TMARC | Portal Judicial</title>
+    <!-- Google Fonts: Outfit for titles, Inter for body -->
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&family=Outfit:wght@700;800&display=swap" rel="stylesheet">
     <style>
+        :root {
+            --primary: #D4AF37;
+            --primary-light: #F0D060;
+            --surface: #1A1A1A;
+            --background: #0D0D0D;
+            --text-main: #FFFFFF;
+            --text-muted: #C0C0C0;
+            --glass: rgba(255, 255, 255, 0.05);
+            --glass-border: rgba(212, 175, 55, 0.2);
+        }
+
         * {
             margin: 0;
             padding: 0;
@@ -13,324 +26,276 @@
         }
 
         body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background: url('assets/img/login.png') no-repeat center center fixed;
-            background-size: cover;
+            font-family: 'Inter', sans-serif;
+            background: var(--background);
+            color: var(--text-main);
             min-height: 100vh;
             display: flex;
             align-items: center;
             justify-content: center;
-            padding: 20px;
-            position: relative;
+            overflow-x: hidden;
         }
 
-        /* Overlay oscuro */
-        body::before {
-            content: '';
+        /* Hero Background with Immersive Overlay */
+        .bg-video {
             position: fixed;
             top: 0;
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0, 0, 0, 0.6);
-            z-index: 0;
+            object-fit: cover;
+            z-index: -1;
+            filter: brightness(0.4);
+        }
+
+        .bg-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(circle at center, transparent 0%, rgba(0,0,0,0.8) 100%);
+            z-index: -1;
         }
 
         .container {
+            width: 100%;
+            max-width: 1100px;
+            padding: 40px 20px;
             position: relative;
             z-index: 1;
-            width: 100%;
-            max-width: 1200px;
         }
 
         .header {
             text-align: center;
-            margin-bottom: 50px;
-            animation: fadeInDown 0.8s ease-out;
+            margin-bottom: 60px;
+            animation: fadeInDown 1s cubic-bezier(0.2, 0.8, 0.2, 1);
         }
 
         .header h1 {
-            color: #d4af37;
-            font-size: 42px;
-            font-weight: 700;
-            margin-bottom: 10px;
-            text-shadow: 0 3px 6px rgba(0, 0, 0, 0.5);
+            font-family: 'Outfit', sans-serif;
+            font-size: clamp(32px, 8vw, 56px);
+            font-weight: 800;
+            letter-spacing: -1px;
+            background: linear-gradient(135deg, #FFF 0%, var(--primary) 100%);
+            -webkit-background-clip: text;
+            background-clip: text;
+            -webkit-text-fill-color: transparent;
+            margin-bottom: 12px;
         }
 
         .header p {
-            color: #C0C0C0;
+            color: var(--text-muted);
             font-size: 18px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
+            font-weight: 400;
+            letter-spacing: 1px;
+            text-transform: uppercase;
         }
 
-        .services-container {
+        .services-grid {
             display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(320px, 1fr));
-            gap: 40px;
-            max-width: 900px;
-            margin: 0 auto;
+            grid-template-columns: repeat(auto-fit, minmax(340px, 1fr));
+            gap: 30px;
         }
 
+        /* Glassmorphism Card Style */
         .service-card {
-            background: rgba(255, 255, 255, 0.95);
-            backdrop-filter: blur(10px);
-            border-radius: 20px;
-            padding: 40px 30px;
+            background: var(--glass);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border: 1px solid var(--glass-border);
+            border-radius: 24px;
+            padding: 40px;
             text-align: center;
-            box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
-            border: 2px solid rgba(212, 175, 55, 0.3);
-            transition: all 0.3s ease;
-            animation: fadeInUp 0.8s ease-out;
+            transition: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+            position: relative;
+            overflow: hidden;
             cursor: pointer;
+        }
+
+        .service-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(135deg, var(--primary) 0%, transparent 50%);
+            opacity: 0;
+            transition: opacity 0.4s ease;
+            z-index: -1;
         }
 
         .service-card:hover {
-            transform: translateY(-10px);
-            box-shadow: 0 30px 80px rgba(0, 0, 0, 0.4);
-            border-color: #d4af37;
+            transform: translateY(-12px) scale(1.02);
+            border-color: var(--primary);
+            box-shadow: 0 20px 40px rgba(0,0,0,0.4), 0 0 20px rgba(212, 175, 55, 0.1);
         }
 
-        .service-card.card-1 {
-            animation-delay: 0.2s;
+        .service-card:hover::before {
+            opacity: 0.05;
         }
 
-        .service-card.card-2 {
-            animation-delay: 0.4s;
-        }
-
-        .service-icon {
-            width: 80px;
-            height: 80px;
-            margin: 0 auto 20px;
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            border-radius: 50%;
+        .icon-box {
+            width: 72px;
+            height: 72px;
+            background: rgba(212, 175, 55, 0.1);
+            border-radius: 18px;
             display: flex;
             align-items: center;
             justify-content: center;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
+            margin: 0 auto 24px;
+            transition: transform 0.4s ease;
         }
 
-        .service-icon svg {
-            width: 40px;
-            height: 40px;
-            fill: #d4af37;
+        .service-card:hover .icon-box {
+            transform: scale(1.1) rotate(5deg);
+            background: var(--primary);
+        }
+
+        .icon-box svg {
+            width: 32px;
+            height: 32px;
+            fill: var(--primary);
+            transition: fill 0.4s ease;
+        }
+
+        .service-card:hover .icon-box svg {
+            fill: #000;
         }
 
         .service-card h2 {
-            color: #1a1a1a;
+            font-family: 'Outfit', sans-serif;
             font-size: 24px;
-            font-weight: 700;
-            margin-bottom: 15px;
+            margin-bottom: 16px;
+            color: #FFF;
         }
 
         .service-card p {
-            color: #555;
+            color: var(--text-muted);
             font-size: 15px;
             line-height: 1.6;
-            margin-bottom: 25px;
-            min-height: 100px;
+            margin-bottom: 30px;
+            min-height: 72px;
         }
 
-        .service-button {
-            background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
-            color: #d4af37;
-            border: none;
-            padding: 15px 40px;
-            font-size: 16px;
+        .btn-action {
+            width: 100%;
+            background: transparent;
+            border: 2px solid var(--primary);
+            color: var(--primary);
+            padding: 14px 28px;
+            border-radius: 12px;
             font-weight: 600;
-            border-radius: 10px;
+            font-size: 14px;
+            text-transform: uppercase;
+            letter-spacing: 1.5px;
             cursor: pointer;
             transition: all 0.3s ease;
-            text-transform: uppercase;
-            letter-spacing: 1px;
-            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.3);
-            display: inline-flex;
+            display: flex;
             align-items: center;
+            justify-content: center;
             gap: 10px;
         }
 
-        .service-button:hover {
-            background: linear-gradient(135deg, #d4af37 0%, #f0d060 100%);
-            color: #1a1a1a;
-            transform: scale(1.05);
-            box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
-        }
-
-        .service-button svg {
-            width: 20px;
-            height: 20px;
-            fill: currentColor;
-        }
-
-        @keyframes fadeInDown {
-            from {
-                opacity: 0;
-                transform: translateY(-30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @keyframes fadeInUp {
-            from {
-                opacity: 0;
-                transform: translateY(30px);
-            }
-            to {
-                opacity: 1;
-                transform: translateY(0);
-            }
-        }
-
-        @media (max-width: 768px) {
-            .header h1 {
-                font-size: 32px;
-            }
-
-            .header p {
-                font-size: 16px;
-            }
-
-            .services-container {
-                grid-template-columns: 1fr;
-                gap: 30px;
-            }
-
-            .service-card {
-                padding: 30px 20px;
-            }
-
-            .service-card p {
-                min-height: auto;
-            }
+        .service-card:hover .btn-action {
+            background: var(--primary);
+            color: #000;
+            box-shadow: 0 8px 20px rgba(212, 175, 55, 0.3);
         }
 
         .footer {
             position: fixed;
-            bottom: 20px;
-            left: 0;
-            right: 0;
+            bottom: 30px;
+            width: 100%;
             text-align: center;
-            color: #C0C0C0;
-            font-size: 14px;
-            text-shadow: 0 2px 4px rgba(0, 0, 0, 0.5);
-            z-index: 1;
+            font-size: 12px;
+            color: rgba(255,255,255,0.3);
+            letter-spacing: 1px;
+            text-transform: uppercase;
+        }
+
+        @keyframes fadeInDown {
+            from { opacity: 0; transform: translateY(-30px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        @media (max-width: 768px) {
+            .container { padding: 80px 20px 40px; }
+            .services-grid { grid-template-columns: 1fr; }
         }
     </style>
 </head>
 <body>
+    <!-- Background Elements -->
+    <div class="bg-overlay"></div>
+    <img src="assets/img/login.png" class="bg-video" alt="Background">
+
     <div class="container">
         <div class="header">
-            <h1>NUESTROS SERVICIOS</h1>
-            <p>Sistema de Gestión de Arbitraje y JPRD</p>
+            <h1>TMARC PORTAL</h1>
+            <p>Sistema de Gestión Judicial Inteligente</p>
         </div>
 
-        <div class="services-container">
-            <!-- Tarjeta 1: Mesa de Partes Virtual -->
-            <div class="service-card card-1" onclick="accederMesaPartes()">
-                <div class="service-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+        <div class="services-grid">
+            <!-- Card 1: Mesa de Partes -->
+            <div class="service-card" onclick="accederMesaPartes()">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24">
                         <path d="M14 2H6c-1.1 0-1.99.9-1.99 2L4 20c0 1.1.89 2 1.99 2H18c1.1 0 2-.9 2-2V8l-6-6zm2 16H8v-2h8v2zm0-4H8v-2h8v2zm-3-5V3.5L18.5 9H13z"/>
                     </svg>
                 </div>
-                <h2>MESA DE PARTES VIRTUAL</h2>
-                <p>Diseñada para la presentación, recepción y gestión de documentos en general, Demandas, Escritos, Apelaciones, Arbitraje, Junta de Prevención y Resolución de Disputas, Conciliación, Acceso al Centro de Capacitación y Formación Tmarc.</p>
-                <button class="service-button">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm-2 15l-5-5 1.41-1.41L10 14.17l7.59-7.59L19 8l-9 9z"/>
-                    </svg>
-                    ACCEDER
+                <h2>Mesa de Partes</h2>
+                <p>Gestión integral de escritos, demandas y documentos procesales con firma digital y validación inmediata.</p>
+                <button class="btn-action">
+                    INGRESAR
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </button>
             </div>
 
-            <!-- Tarjeta 2: Seguimiento de Expedientes -->
-            <div class="service-card card-2" onclick="accederSeguimiento()">
-                <div class="service-icon">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
+            <!-- Card 2: Seguimiento -->
+            <div class="service-card" onclick="accederSeguimiento()">
+                <div class="icon-box">
+                    <svg viewBox="0 0 24 24">
                         <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
                     </svg>
                 </div>
-                <h2>SEGUIMIENTO DE EXPEDIENTES</h2>
-                <p>Desde cualquier lugar puedes acceder y seguir el estado de tu proceso virtualmente con un número de expediente y consultar el estado de tus procesos.</p>
-                <button class="service-button">
-                    <svg viewBox="0 0 24 24" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M15.5 14h-.79l-.28-.27C15.41 12.59 16 11.11 16 9.5 16 5.91 13.09 3 9.5 3S3 5.91 3 9.5 5.91 16 9.5 16c1.61 0 3.09-.59 4.23-1.57l.27.28v.79l5 4.99L20.49 19l-4.99-5zm-6 0C7.01 14 5 11.99 5 9.5S7.01 5 9.5 5 14 7.01 14 9.5 11.99 14 9.5 14z"/>
-                    </svg>
-                    ACCEDER
+                <h2>Seguimiento</h2>
+                <p>Consulta en tiempo real el estado de tus expedientes, resoluciones y notificaciones judiciales con un solo código.</p>
+                <button class="btn-action">
+                    CONSULTAR
+                    <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round"><line x1="5" y1="12" x2="19" y2="12"></line><polyline points="12 5 19 12 12 19"></polyline></svg>
                 </button>
             </div>
         </div>
     </div>
 
     <div class="footer">
-        © 2025 Sistema de Mesa de Partes Virtual - Todos los derechos reservados
+        © 2025 TMARC ARBITRAJE & JPRD · PODER JUDICIAL VIRTUAL
     </div>
 
     <script>
-        // Función para acceder a Mesa de Partes
         function accederMesaPartes() {
-            // Verificar si hay sesión activa
             const token = localStorage.getItem('token');
             const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-            
             if (token && usuario.username) {
-                // Usuario ya logueado: ir directo al dashboard
-                console.log('✅ Usuario ya logueado:', usuario.username);
-                
-                if (usuario.tipo === 'admin') {
-                    window.location.href = '/public/admin/index.html';
-                } else {
-                    window.location.href = '/dashboard-modular.html';
-                }
+                window.location.href = (usuario.tipo === 'admin') ? '/public/admin/index.html' : '/dashboard-modular.html';
             } else {
-                // Sin sesión: ir a login
-                console.log('🔐 Sin sesión, redirigiendo a login...');
                 window.location.href = '/login.html';
             }
         }
         
-        // Función para acceder a Seguimiento
         function accederSeguimiento() {
-            // Verificar si hay sesión activa
             const token = localStorage.getItem('token');
             const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-            
             if (token && usuario.username) {
-                // Usuario ya logueado: ir directo a seguimiento
-                console.log('✅ Usuario ya logueado, accediendo a seguimiento');
                 window.location.href = '/seguimiento.html';
             } else {
-                // Sin sesión: ir a login primero
-                console.log('🔐 Sin sesión, redirigiendo a login...');
                 sessionStorage.setItem('redirectAfterLogin', 'seguimiento');
                 window.location.href = '/login.html?redirect=seguimiento';
             }
         }
-        
-        // Animación de entrada
-        document.addEventListener('DOMContentLoaded', function() {
-            const cards = document.querySelectorAll('.service-card');
-            cards.forEach((card, index) => {
-                card.style.opacity = '0';
-                setTimeout(() => {
-                    card.style.transition = 'opacity 0.8s ease-out';
-                    card.style.opacity = '1';
-                }, 200 * (index + 1));
-            });
-        });
-
-        // Efecto hover adicional
-        document.querySelectorAll('.service-card').forEach(card => {
-            card.addEventListener('mouseenter', function() {
-                this.style.transform = 'translateY(-10px) scale(1.02)';
-            });
-            
-            card.addEventListener('mouseleave', function() {
-                this.style.transform = 'translateY(0) scale(1)';
-            });
-        });
     </script>
 </body>
 </html>
+
