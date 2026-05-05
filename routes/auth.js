@@ -90,7 +90,7 @@ router.post('/login', async (req, res) => {
             });
         }
 
-        // Verificar contraseña (ahora soporta tanto hash bcrypt como texto plano legacy)
+        // Verificar contraseña (soporta hash bcrypt y texto plano legacy)
         const passwordValida = await UsuarioModel.verificarPassword(usuario, password);
         if (!passwordValida) {
             return res.status(401).json({
@@ -129,6 +129,66 @@ router.post('/login', async (req, res) => {
     } catch (error) {
         console.error('Error en login:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// Cambio de contraseña del usuario actual
+router.post('/change-password', verificarAuth, async (req, res) => {
+    try {
+        const { currentPassword, newPassword } = req.body;
+        const usuarioId = req.usuario.id;
+
+        if (!currentPassword || !newPassword) {
+            return res.status(400).json({
+                success: false,
+                error: 'La contraseña actual y la nueva son requeridas'
+            });
+        }
+
+        if (newPassword.length < 6) {
+            return res.status(400).json({
+                success: false,
+                error: 'La nueva contraseña debe tener al menos 6 caracteres'
+            });
+        }
+
+        // Obtener usuario (con contraseña para verificar)
+        const usuario = await UsuarioModel.obtenerPorIdConPassword(usuarioId);
+        if (!usuario) {
+            return res.status(404).json({
+                success: false,
+                error: 'Usuario no encontrado'
+            });
+        }
+
+        // Verificar contraseña actual
+        const esValida = await UsuarioModel.verificarPassword(usuario, currentPassword);
+        if (!esValida) {
+            return res.status(401).json({
+                success: false,
+                error: 'La contraseña actual es incorrecta'
+            });
+        }
+
+        // Hashear y guardar nueva contraseña
+        const bcrypt = require('bcrypt');
+        const saltRounds = 10;
+        const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
+
+        const { query } = require('../database-config');
+        await query('UPDATE usuarios SET password = ? WHERE id = ?', [hashedPassword, usuarioId]);
+
+        res.json({
+            success: true,
+            message: 'Contraseña actualizada correctamente'
+        });
+
+    } catch (error) {
+        console.error('Error cambiando contraseña:', error);
+        res.status(500).json({ 
+            success: false, 
+            error: 'Error interno del servidor' 
+        });
     }
 });
 

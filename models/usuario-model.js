@@ -86,6 +86,12 @@ class UsuarioModel {
     // Verificar contraseña
     static async verificarPassword(usuario, password) {
         try {
+            // Validar que el usuario tenga el campo password
+            if (!usuario || !usuario.password) {
+                console.error('verificarPassword: El objeto usuario no contiene el campo password');
+                return false;
+            }
+
             // Primero intentar verificar como hash bcrypt
             const esHashBcrypt = usuario.password.startsWith('$2b$') || usuario.password.startsWith('$2a$');
 
@@ -108,6 +114,18 @@ class UsuarioModel {
         } catch (error) {
             console.error('Error verificando contraseña:', error);
             throw error;
+        }
+    }
+
+    // Actualizar contraseña legacy a hash bcrypt
+    static async actualizarPasswordLegacy(id, passwordPlano) {
+        try {
+            const hash = await bcrypt.hash(passwordPlano, 10);
+            await query('UPDATE usuarios SET password = ? WHERE id = ?', [hash, id]);
+            console.log(`✅ Contraseña legacy actualizada a bcrypt para usuario ID: ${id}`);
+        } catch (error) {
+            console.error('Error actualizando contraseña legacy:', error);
+            // No lanzar error para no interrumpir el login
         }
     }
 

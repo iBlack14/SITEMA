@@ -1,5 +1,5 @@
 require('dotenv').config();
-const { inicializarBaseDatos, cerrarConexion } = require('./database-config');
+const { inicializarBaseDatos, cerrarConexion } = require('../database-config');
 
 async function resetDB() {
     console.log('🚀 Iniciando reset total de la base de datos TMARC...');

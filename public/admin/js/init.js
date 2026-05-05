@@ -29,6 +29,10 @@ document.addEventListener('DOMContentLoaded', async () => {
         // 6. Configurar event listeners
         configurarEventListeners();
 
+        // 7. Manejar hash inicial para navegación Pro
+        manejarHashInicial();
+        window.addEventListener('hashchange', manejarHashInicial);
+
         console.log('✅ Admin Dashboard inicializado correctamente');
 
     } catch (error) {
@@ -36,6 +40,25 @@ document.addEventListener('DOMContentLoaded', async () => {
         alert('Error al inicializar el dashboard. Por favor, recargue la página.');
     }
 });
+
+// Función para manejar navegación por Hash (#)
+function manejarHashInicial() {
+    const hash = window.location.hash.substring(1);
+    if (hash) {
+        // Mapear hash a sectionId (por si son diferentes, aunque aquí coinciden)
+        const validSections = ['dashboard', 'usuarios', 'casilla', 'expedientes', 'solicitudes', 'configuracion'];
+        if (validSections.includes(hash)) {
+            if (typeof window.showSection === 'function') {
+                window.showSection(hash);
+            }
+        }
+    } else {
+        // Si no hay hash, forzar dashboard por defecto
+        if (typeof window.showSection === 'function') {
+            window.showSection('dashboard');
+        }
+    }
+}
 
 // Función para cargar datos iniciales
 async function cargarDatosIniciales() {
@@ -125,34 +148,68 @@ function configurarFormularios() {
     }
 }
 
-// Función para iniciar actualizaciones periódicas
+// Motor de Sincronización Inteligente (Evita saturación de BD)
 function iniciarActualizacionesPeriodicas() {
-    console.log('⏰ Iniciando actualizaciones periódicas...');
+    console.log('⏰ Configurando Sincronización Inteligente (Modo Pro)...');
 
-    // Actualizar estadísticas cada 30 segundos
-    setInterval(async () => {
-        if (window.adminAuth && typeof window.adminAuth.cargarDatosDashboard === 'function') {
-            await window.adminAuth.cargarDatosDashboard();
+    // Configuración de intervalos (en milisegundos)
+    const INTERVALO_GENERAL = 300000; // 5 minutos (Estadísticas, Casilla, Notificaciones)
+    const INTERVALO_SOLICITUDES = 120000; // 2 minutos (Nuevas alertas)
+
+    let lastGlobalUpdate = Date.now();
+    let lastSolicitudCheck = Date.now();
+
+    const ejecutarSincronizacion = async () => {
+        // REGLA DE ORO: No trabajar si el usuario no está viendo la página
+        if (document.hidden) return;
+
+        const ahora = Date.now();
+
+        // 1. Verificación de Solicitudes (Cada 2 min)
+        if (ahora - lastSolicitudCheck >= INTERVALO_SOLICITUDES) {
+            if (typeof verificarNuevasSolicitudes === 'function') {
+                console.log('🔄 Sincronizando solicitudes...');
+                await verificarNuevasSolicitudes();
+            }
+            lastSolicitudCheck = ahora;
         }
-    }, 30000);
 
-    // Verificar nuevas solicitudes cada 10 segundos
-    setInterval(async () => {
-        if (typeof verificarNuevasSolicitudes === 'function') {
-            await verificarNuevasSolicitudes();
+        // 2. Actualización General (Cada 5 min)
+        if (ahora - lastGlobalUpdate >= INTERVALO_GENERAL) {
+            console.log('🔄 Sincronización global en progreso...');
+            
+            // Estadísticas
+            if (typeof DashboardModule !== 'undefined' && typeof DashboardModule.cargarEstadisticas === 'function') {
+                await DashboardModule.cargarEstadisticas();
+            }
+            
+            // Notificaciones Admin
+            if (typeof cargarNotificacionesAdmin === 'function') {
+                await cargarNotificacionesAdmin();
+            }
+            
+            // Casilla
+            if (typeof CasillaUnificada !== 'undefined') {
+                await CasillaUnificada.cargar();
+            }
+
+            lastGlobalUpdate = ahora;
         }
-    }, 10000);
+    };
 
-    // Actualizar casilla electrónica cada 30 segundos
-    setInterval(async () => {
-        if (typeof CasillaUnificada !== 'undefined') {
-            await CasillaUnificada.cargar();
-        } else if (typeof cargarCasillaElectronicaAdmin === 'function') {
-            await cargarCasillaElectronicaAdmin();
+    // Un solo intervalo maestro cada 10 segundos para evaluar qué toca actualizar
+    // (Esto no consume BD, solo evalúa tiempos en memoria)
+    setInterval(ejecutarSincronizacion, 10000);
+
+    // Actualizar inmediatamente cuando el usuario vuelve a la pestaña después de mucho tiempo
+    document.addEventListener('visibilitychange', () => {
+        if (!document.hidden) {
+            console.log('👀 Usuario regresó: Evaluando sincronización necesaria...');
+            ejecutarSincronizacion();
         }
-    }, 30000);
+    });
 
-    console.log('  ✓ Actualizaciones periódicas configuradas');
+    console.log('  ✓ Sincronización Inteligente activada (Visibility-Aware)');
 }
 
 // Función para configurar event listeners

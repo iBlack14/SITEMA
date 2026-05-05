@@ -153,12 +153,7 @@ const DashboardModule = {
     async init() {
         await this.cargarEstadisticas();
         await this.cargarActividades();
-
-        // Auto-refresh optimizado (cada 5 minutos)
-        setInterval(() => {
-            this.cargarEstadisticas();
-            this.cargarActividades();
-        }, 300000);
+        // El refresco ahora se maneja de forma centralizada en init.js para evitar saturación
     }
 };
 

@@ -447,22 +447,28 @@ async function inicializarBaseDatos(reset = false) {
                 categoria VARCHAR(50) NOT NULL,
                 clave VARCHAR(50) NOT NULL UNIQUE,
                 valor TEXT,
+                tipo VARCHAR(20) DEFAULT 'texto',
                 descripcion VARCHAR(255),
                 fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
         `);
 
-        // Insertar configuraciones iniciales
-        const configExistente = await query('SELECT COUNT(*) as count FROM configuracion_sistema');
-        if (configExistente[0].count === 0) {
-            await query(`
-                INSERT INTO configuracion_sistema (categoria, clave, valor, descripcion) VALUES
-                ('general', 'nombre_institucion', 'TMARC', 'Nombre de la institución'),
-                ('general', 'logo_url', '/img/logo.png', 'URL del logo'),
-                ('notificaciones', 'email_soporte', 'soporte@tmarc.org', 'Email de contacto'),
-                ('sistema', 'mantenimiento', 'false', 'Estado de mantenimiento')
-            `);
-        }
+        // Crear tabla de logs_auditoria
+        await query(`
+            CREATE TABLE IF NOT EXISTS logs_auditoria (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                usuario_id INT,
+                accion VARCHAR(100) NOT NULL,
+                tabla_afectada VARCHAR(50),
+                registro_id VARCHAR(50),
+                detalles TEXT,
+                ip_direccion VARCHAR(45),
+                fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+            )
+        `);
+
+        // Las configuraciones iniciales ahora se gestionan vía .env para mayor seguridad y flexibilidad
 
         console.log('✅ Todas las tablas verificadas/creadas');
 
@@ -471,33 +477,23 @@ async function inicializarBaseDatos(reset = false) {
         const adminEmail = process.env.ADMIN_EMAIL || 'admin@sistema.gov';
         const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
         const hashedAdminPass = await bcrypt.hash(adminPass, 10);
-        
-        const demoUser = 'demo';
-        const demoEmail = 'demo@ejemplo.com';
-        const demoPass = 'demo123';
-        const hashedDemoPass = await bcrypt.hash(demoPass, 10);
 
         try {
-            // Insertar/Actualizar Administrador
-            await query(`
-                INSERT INTO usuarios (username, email, password, nombre, tipo) 
-                VALUES (?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE 
-                    email = VALUES(email), 
-                    password = VALUES(password),
-                    nombre = VALUES(nombre)
-            `, [adminUser, adminEmail, hashedAdminPass, 'Administrador del Sistema', 'admin']);
+            // Solo insertar el administrador si no existe ningún usuario admin
+            const adminExistente = await query("SELECT id FROM usuarios WHERE tipo = 'admin' LIMIT 1");
             
-            // Insertar Demo si no existe
-            await query(`
-                INSERT INTO usuarios (username, email, password, nombre, tipo) 
-                VALUES (?, ?, ?, ?, ?)
-                ON DUPLICATE KEY UPDATE username = username
-            `, [demoUser, demoEmail, hashedDemoPass, 'Usuario Demo', 'usuario']);
-            
-            console.log('✅ Usuarios del sistema verificados/actualizados desde entorno');
+            if (adminExistente.length === 0) {
+                console.log('👤 Creando administrador inicial...');
+                await query(`
+                    INSERT INTO usuarios (username, email, password, nombre, tipo) 
+                    VALUES (?, ?, ?, ?, ?)
+                `, [adminUser, adminEmail, hashedAdminPass, 'Administrador del Sistema', 'admin']);
+                console.log('✅ Administrador inicial creado exitosamente');
+            } else {
+                console.log('ℹ️ Administrador ya existe. Las contraseñas se gestionan desde el panel.');
+            }
         } catch (error) {
-            console.error('⚠️ Error al inicializar usuarios:', error.message);
+            console.error('⚠️ Error al inicializar administrador:', error.message);
         }
 
         // Insertar configuración SMTP por defecto (inactiva)
@@ -512,6 +508,12 @@ async function inicializarBaseDatos(reset = false) {
 
         // Agregar columnas faltantes a tablas existentes de forma segura
         try {
+            // Verificar si la columna tipo existe en configuracion_sistema
+            if (!(await columnaExiste('configuracion_sistema', 'tipo'))) {
+                await query("ALTER TABLE configuracion_sistema ADD COLUMN tipo VARCHAR(20) DEFAULT 'texto' AFTER valor");
+                console.log('✅ Columna tipo añadida a configuracion_sistema');
+            }
+
             // Verificar si la columna casilla_electronica existe en solicitudes
             const existeCasillaElectronica = await columnaExiste('solicitudes', 'casilla_electronica');
             if (!existeCasillaElectronica) {

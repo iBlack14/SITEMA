@@ -14,12 +14,15 @@ async function cargarConfiguracion() {
         if (data.success) {
             const config = data.data;
             
-            // Configuración General
-            if (config.nombre_sistema) {
-                document.getElementById('config-nombre-sistema').value = config.nombre_sistema.valor;
+            // Configuración General (Compatible con nombres antiguos y nuevos)
+            const nombre = config.nombre_sistema || config.nombre_institucion;
+            if (nombre) {
+                document.getElementById('config-nombre-sistema').value = nombre.valor;
             }
-            if (config.correo_soporte) {
-                document.getElementById('config-correo-soporte').value = config.correo_soporte.valor;
+            
+            const correo = config.correo_soporte || config.email_soporte;
+            if (correo) {
+                document.getElementById('config-correo-soporte').value = correo.valor;
             }
             
             // Configuración SMTP
@@ -61,16 +64,18 @@ async function guardarConfigGeneral() {
         const correoSoporte = document.getElementById('config-correo-soporte').value;
         
         if (!nombreSistema || !correoSoporte) {
-            alert('Por favor, complete todos los campos');
+            mostrarNotificacion('Por favor, complete todos los campos', 'warning');
             return;
         }
         
         console.log('💾 Guardando configuración general...');
         
+        const token = await getSecureItem('authToken');
         const response = await fetch('/api/configuracion/batch', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
             },
             body: JSON.stringify({
                 configuraciones: {
@@ -120,7 +125,8 @@ async function guardarConfigSMTP() {
         const response = await fetch('/api/configuracion/batch', {
             method: 'POST',
             headers: {
-                'Content-Type': 'application/json'
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${await getSecureItem('authToken')}`
             },
             body: JSON.stringify({
                 configuraciones: {
@@ -218,3 +224,81 @@ document.addEventListener('DOMContentLoaded', () => {
 });
 
 console.log('✅ Módulo de configuración cargado');
+
+/**
+ * Cambiar contraseña del administrador
+ */
+async function cambiarPasswordAdmin() {
+    const currentPassword = document.getElementById('admin-pass-actual').value;
+    const newPassword = document.getElementById('admin-pass-nueva').value;
+    const confirmPassword = document.getElementById('admin-pass-confirmar').value;
+
+    if (!currentPassword || !newPassword || !confirmPassword) {
+        mostrarNotificacion('Por favor, completa todos los campos de contraseña', 'warning');
+        return;
+    }
+
+    if (newPassword !== confirmPassword) {
+        mostrarNotificacion('La nueva contraseña y su confirmación no coinciden', 'error');
+        return;
+    }
+
+    if (newPassword.length < 6) {
+        mostrarNotificacion('La nueva contraseña debe tener al menos 6 caracteres', 'warning');
+        return;
+    }
+
+    try {
+        const token = await getSecureItem('authToken');
+        const response = await fetch('/api/auth/change-password', {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json',
+                'Authorization': `Bearer ${token}`
+            },
+            body: JSON.stringify({ currentPassword, newPassword })
+        });
+
+        const data = await response.json();
+
+        if (data.success) {
+            mostrarNotificacion('¡Contraseña actualizada con éxito!', 'success');
+            document.getElementById('admin-pass-actual').value = '';
+            document.getElementById('admin-pass-nueva').value = '';
+            document.getElementById('admin-pass-confirmar').value = '';
+        } else {
+            mostrarNotificacion(data.error || 'Error al cambiar contraseña', 'error');
+        }
+    } catch (error) {
+        console.error('Error:', error);
+        mostrarNotificacion('Error de conexión con el servidor', 'error');
+    }
+}
+
+/**
+ * Utilidad para mostrar notificaciones (si SweetAlert está presente, usarlo)
+ */
+function mostrarNotificacion(mensaje, tipo = 'info') {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: tipo === 'success' ? 'Éxito' : 'Aviso',
+            text: mensaje,
+            icon: tipo,
+            confirmButtonColor: '#d4af37'
+        });
+    } else {
+        alert(mensaje);
+    }
+}
+
+/**
+ * Alternar visibilidad de contraseña
+ */
+function togglePassword(inputId) {
+    const input = document.getElementById(inputId);
+    if (input.type === 'password') {
+        input.type = 'text';
+    } else {
+        input.type = 'password';
+    }
+}

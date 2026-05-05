@@ -72,7 +72,32 @@ function showSection(sectionId, el) {
 
     // Marcar item activo del menú
     document.querySelectorAll('.nav-item').forEach(i => i.classList.remove('active'));
+    
+    // Si no se pasó el elemento, intentar encontrarlo por el sectionId
+    if (!el) {
+        el = document.querySelector(`.nav-item[onclick*="'${sectionId}'"]`) || 
+             document.querySelector(`.nav-item[onclick*='"${sectionId}"']`);
+    }
+    
     if (el) el.classList.add('active');
+
+    // Títulos dinámicos Pro
+    const sectionTitles = {
+        'dashboard': 'Dashboard',
+        'usuarios': 'Gestión de Usuarios',
+        'casilla': 'Casilla Electrónica',
+        'expedientes': 'Expedientes Judiciales',
+        'solicitudes': 'Solicitudes Pendientes',
+        'configuracion': 'Configuración Sistema'
+    };
+    
+    const pageTitle = sectionTitles[sectionId] || 'Panel Administrativo';
+    document.title = `TMARC | ${pageTitle}`;
+
+    // Actualizar hash en la URL para vista "Pro"
+    if (window.location.hash !== '#' + sectionId) {
+        history.replaceState(null, null, '#' + sectionId);
+    }
 
     // Cargas perezosas
     if (sectionId === 'solicitudes') {
@@ -101,17 +126,137 @@ function closeModal() {
 
 // Función para logout
 function logout() {
-    if (confirm('¿Está seguro de cerrar sesión?')) {
-        sessionStorage.removeItem('authToken');
-        sessionStorage.removeItem('userData');
-        window.location.href = 'login.html';
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: '¿Cerrar Sesión?',
+            text: "Está a punto de salir del sistema administrativo.",
+            icon: 'warning',
+            showCancelButton: true,
+            confirmButtonColor: '#d4af37',
+            cancelButtonColor: '#3085d6',
+            confirmButtonText: 'Sí, cerrar sesión',
+            cancelButtonText: 'Cancelar',
+            background: '#fff',
+            customClass: {
+                title: 'swal2-title-custom',
+                content: 'swal2-content-custom'
+            }
+        }).then((result) => {
+            if (result.isConfirmed) {
+                sessionStorage.removeItem('authToken');
+                sessionStorage.removeItem('userData');
+                window.location.href = 'login.html';
+            }
+        });
+    } else {
+        if (confirm('¿Está seguro de cerrar sesión?')) {
+            sessionStorage.removeItem('authToken');
+            sessionStorage.removeItem('userData');
+            window.location.href = 'login.html';
+        }
     }
 }
 
 // Función para toggle del menú de usuario
 function toggleUserMenu() {
-    // Implementar menú desplegable de usuario si es necesario
     console.log('Toggle user menu');
+}
+
+// --- SISTEMA DE ENCRIPTACIÓN DE SESIÓN (AES-256) ---
+const SESSION_KEY = 'TMARC_SECURE_JUDICIAL_KEY_2026';
+
+/**
+ * Encripta datos usando AES-GCM (Web Crypto API)
+ */
+async function encryptSessionData(text) {
+    try {
+        const encoder = new TextEncoder();
+        const data = encoder.encode(text);
+        
+        // Generar una clave a partir del string secreto
+        const keyMaterial = await window.crypto.subtle.importKey(
+            'raw', encoder.encode(SESSION_KEY), 'PBKDF2', false, ['deriveKey']
+        );
+        const key = await window.crypto.subtle.deriveKey(
+            { name: 'PBKDF2', salt: encoder.encode('tmarc-salt'), iterations: 100000, hash: 'SHA-256' },
+            keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['encrypt']
+        );
+
+        const iv = window.crypto.getRandomValues(new Uint8Array(12));
+        const encrypted = await window.crypto.subtle.encrypt({ name: 'AES-GCM', iv }, key, data);
+        
+        const combined = new Uint8Array(iv.length + encrypted.byteLength);
+        combined.set(iv);
+        combined.set(new Uint8Array(encrypted), iv.length);
+        
+        // Conversión segura a Base64 para evitar corrupción de bytes
+        let binary = '';
+        const bytes = new Uint8Array(combined);
+        for (let i = 0; i < bytes.byteLength; i++) {
+            binary += String.fromCharCode(bytes[i]);
+        }
+        return btoa(binary);
+    } catch (e) {
+        console.error('❌ Error crítico encriptando sesión:', e);
+        return text;
+    }
+}
+
+/**
+ * Desencripta datos usando AES-GCM
+ */
+async function decryptSessionData(encoded) {
+    try {
+        if (!encoded || encoded.startsWith('{') || encoded.startsWith('[') || encoded.length < 20) {
+            return encoded; // No parece estar encriptado
+        }
+
+        const encoder = new TextEncoder();
+        const binary = atob(encoded);
+        const combined = new Uint8Array(binary.length);
+        for (let i = 0; i < binary.length; i++) {
+            combined[i] = binary.charCodeAt(i);
+        }
+        const iv = combined.slice(0, 12);
+        const data = combined.slice(12);
+
+        const keyMaterial = await window.crypto.subtle.importKey(
+            'raw', encoder.encode(SESSION_KEY), 'PBKDF2', false, ['deriveKey']
+        );
+        const key = await window.crypto.subtle.deriveKey(
+            { name: 'PBKDF2', salt: encoder.encode('tmarc-salt'), iterations: 100000, hash: 'SHA-256' },
+            keyMaterial, { name: 'AES-GCM', length: 256 }, false, ['decrypt']
+        );
+
+        const decrypted = await window.crypto.subtle.decrypt({ name: 'AES-GCM', iv }, key, data);
+        return new TextDecoder().decode(decrypted);
+    } catch (e) {
+        // Si falla, probablemente no esté encriptado
+        return encoded;
+    }
+}
+
+/**
+ * Guarda un item de forma segura en sessionStorage
+ */
+async function setSecureItem(key, value) {
+    const stringValue = typeof value === 'object' ? JSON.stringify(value) : String(value);
+    const encrypted = await encryptSessionData(stringValue);
+    sessionStorage.setItem(key, encrypted);
+}
+
+/**
+ * Obtiene un item de forma segura de sessionStorage
+ */
+async function getSecureItem(key) {
+    const encrypted = sessionStorage.getItem(key);
+    if (!encrypted) return null;
+    const decrypted = await decryptSessionData(encrypted);
+    try {
+        return JSON.parse(decrypted);
+    } catch (e) {
+        return decrypted;
+    }
 }
 
 // Exportar funciones para uso global
@@ -125,4 +270,6 @@ if (typeof window !== 'undefined') {
     window.closeModal = closeModal;
     window.logout = logout;
     window.toggleUserMenu = toggleUserMenu;
+    window.setSecureItem = setSecureItem;
+    window.getSecureItem = getSecureItem;
 }

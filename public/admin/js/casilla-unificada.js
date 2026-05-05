@@ -126,22 +126,42 @@ const CasillaUnificada = {
             return;
         }
 
+        // Estilos iniciales para la transición si no existen
+        if (!tbody.style.transition) {
+            tbody.style.transition = 'all 0.3s cubic-bezier(0.4, 0, 0.2, 1)';
+        }
+
         // Usar items filtrados o todos
         const itemsToRender = items !== null ? items : this.obtenerItemsFiltrados();
 
         if (itemsToRender.length === 0) {
             tbody.innerHTML = `
                 <tr>
-                    <td colspan="6" style="text-align: center; padding: 40px; color: #666;">
-                        <div style="font-size: 48px; margin-bottom: 10px;">📭</div>
-                        <div>No hay items para mostrar</div>
+                    <td colspan="6" style="text-align: center; padding: 60px; color: #666; animation: fadeIn 0.5s ease-out;">
+                        <div style="font-size: 64px; margin-bottom: 20px; filter: grayscale(1); opacity: 0.5;">📭</div>
+                        <div style="font-weight: 500; letter-spacing: 1px;">No hay items en esta categoría</div>
                     </td>
                 </tr>
             `;
             return;
         }
 
+        // Renderizado con efecto stagger (opcional, aquí lo hacemos directo pero con la transición del tbody)
         tbody.innerHTML = itemsToRender.map((item, index) => this.renderizarFila(item, index)).join('');
+        
+        // Aplicar micro-animación a las nuevas filas
+        const rows = tbody.querySelectorAll('tr');
+        rows.forEach((row, i) => {
+            row.style.opacity = '0';
+            row.style.transform = 'translateX(-10px)';
+            row.style.transition = `all 0.3s ease-out ${i * 0.03}s`;
+            
+            setTimeout(() => {
+                row.style.opacity = '1';
+                row.style.transform = 'translateX(0)';
+            }, 10);
+        });
+
         console.log(`📋 ${itemsToRender.length} items renderizados`);
     },
 
@@ -208,14 +228,42 @@ const CasillaUnificada = {
      * Filtrar por tipo
      */
     filtrar(tipo) {
-        this.filtroActual = tipo;
+        if (this.filtroActual === tipo) return;
         
-        // Actualizar UI de botones
-        document.querySelectorAll('[data-filtro-tipo]').forEach(btn => {
-            btn.classList.toggle('active', btn.dataset.filtroTipo === tipo);
-        });
+        const tbody = document.querySelector('#casilla table tbody');
+        if (tbody) {
+            tbody.style.opacity = '0';
+            tbody.style.transform = 'translateY(10px)';
+        }
 
-        this.renderizar();
+        setTimeout(() => {
+            this.filtroActual = tipo;
+            
+            // Actualizar UI de botones
+            document.querySelectorAll('[data-filtro-tipo]').forEach(btn => {
+                const isActive = btn.dataset.filtroTipo === tipo;
+                btn.classList.toggle('active', isActive);
+                btn.classList.toggle('btn-primary', isActive);
+                btn.classList.toggle('btn-secondary', !isActive);
+                
+                // Efecto de pulso en el badge activo
+                const badge = btn.querySelector('.filter-badge');
+                if (badge) {
+                    badge.style.transform = isActive ? 'scale(1.2)' : 'scale(1)';
+                    badge.style.boxShadow = isActive ? '0 0 10px rgba(255,255,255,0.5)' : 'none';
+                }
+            });
+
+            this.renderizar();
+            
+            if (tbody) {
+                setTimeout(() => {
+                    tbody.style.opacity = '1';
+                    tbody.style.transform = 'translateY(0)';
+                }, 50);
+            }
+        }, 150);
+
         console.log(`🔍 Filtrado por: ${tipo}`);
     },
 

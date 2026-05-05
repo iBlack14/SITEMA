@@ -388,12 +388,19 @@ async function manejarEnvioNotificacion(event) {
         usuario_id: document.getElementById('notif-usuario-id').value,
         tipo: document.getElementById('notif-tipo').value,
         titulo: document.getElementById('notif-titulo').value.trim(),
-        mensaje: document.getElementById('notif-mensaje').value.trim()
+        mensaje: document.getElementById('notif-mensaje').value.trim(),
+        enviar_casilla: document.getElementById('notif-canal-casilla').checked,
+        enviar_email: document.getElementById('notif-canal-email').checked
     };
 
     // Validación
     if (!datosNotificacion.usuario_id || !datosNotificacion.titulo || !datosNotificacion.mensaje) {
         alert('Por favor, complete todos los campos obligatorios.');
+        return;
+    }
+
+    if (!datosNotificacion.enviar_casilla && !datosNotificacion.enviar_email) {
+        alert('Por favor, seleccione al menos un canal de envío (Casilla o Correo).');
         return;
     }
 
@@ -421,6 +428,27 @@ async function manejarEnvioNotificacion(event) {
     } catch (error) {
         console.error('Error enviando notificación:', error);
         alert('❌ Error de conexión al enviar notificación');
+    }
+}
+
+// Función para generar contraseña aleatoria
+function generarContrasena(inputId, confirmId) {
+    const chars = "abcdefghijklmnopqrstuvwxyzABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789!@#$%^&*";
+    let password = "";
+    for (let i = 0; i < 12; i++) {
+        password += chars.charAt(Math.floor(Math.random() * chars.length));
+    }
+    
+    document.getElementById(inputId).value = password;
+    if (confirmId) {
+        document.getElementById(confirmId).value = password;
+    }
+    
+    // Cambiar temporalmente el tipo a text para que el admin pueda verla si lo desea
+    // (Ya lo pusimos como text en el HTML por facilidad)
+    
+    if (window.conexionDatos) {
+        window.conexionDatos.mostrarNotificacion('Contraseña generada', 'info');
     }
 }
 
@@ -507,6 +535,7 @@ if (typeof window !== 'undefined') {
     window.cerrarModalEnviarNotificacion = cerrarModalEnviarNotificacion;
     window.cargarUsuariosParaNotificacion = cargarUsuariosParaNotificacion;
     window.manejarEnvioNotificacion = manejarEnvioNotificacion;
+    window.generarContrasena = generarContrasena;
     window.forzarSincronizacionUsuarios = forzarSincronizacionUsuarios;
     window.mostrarEstadisticasSincronizacion = mostrarEstadisticasSincronizacion;
 }

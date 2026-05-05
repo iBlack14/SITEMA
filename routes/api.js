@@ -924,7 +924,7 @@ router.get('/notificaciones', async (req, res) => {
     }
 });
 
-// Crear nueva notificación (desde admin) - con soporte para archivos
+// Crear nueva notificación (desde admin) - con soporte para archivos y multi-canal
 router.post('/notificaciones', upload.single('archivo'), async (req, res) => {
     try {
         const {
@@ -935,7 +935,9 @@ router.post('/notificaciones', upload.single('archivo'), async (req, res) => {
             expediente_id,
             solicitud_id,
             referencia_tipo,
-            referencia_id
+            referencia_id,
+            enviar_casilla = true, // Por defecto true si viene de la casilla
+            enviar_email = false
         } = req.body;
 
         // Validación
@@ -945,46 +947,73 @@ router.post('/notificaciones', upload.single('archivo'), async (req, res) => {
             });
         }
 
-        // Generar ID único
         const id = 'NOTIF-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5);
+        let results = { casilla: false, email: false };
 
-        // Preparar datos del archivo si existe
-        let archivoAdjunto = null;
-        if (req.file) {
-            archivoAdjunto = JSON.stringify({
-                nombre: req.file.originalname,
-                ruta: req.file.path,
-                tipo: req.file.mimetype,
-                tamano: req.file.size
-            });
-            console.log('📎 Archivo adjunto guardado:', req.file.originalname);
+        // 1. Enviar por CASILLA (Base de Datos)
+        if (enviar_casilla === 'true' || enviar_casilla === true) {
+            let archivoAdjunto = null;
+            if (req.file) {
+                archivoAdjunto = JSON.stringify({
+                    nombre: req.file.originalname,
+                    ruta: req.file.path,
+                    tipo: req.file.mimetype,
+                    tamano: req.file.size
+                });
+            }
+
+            await query(`
+                INSERT INTO notificaciones
+                (id, usuario_id, tipo, titulo, mensaje, expediente_id, solicitud_id, archivo_adjunto, leida, fecha)
+                VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NOW())
+            `, [
+                id,
+                usuario_id,
+                tipo,
+                titulo,
+                mensaje,
+                expediente_id || referencia_id || null,
+                solicitud_id || null,
+                archivoAdjunto
+            ]);
+            results.casilla = true;
         }
 
-        // Insertar notificación con archivo
-        await query(`
-            INSERT INTO notificaciones
-            (id, usuario_id, tipo, titulo, mensaje, expediente_id, solicitud_id, archivo_adjunto, leida, fecha)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, 0, NOW())
-        `, [
-            id,
-            usuario_id,
-            tipo,
-            titulo,
-            mensaje,
-            expediente_id || referencia_id || null,
-            solicitud_id || null,
-            archivoAdjunto
-        ]);
+        // 2. Enviar por EMAIL
+        if (enviar_email === 'true' || enviar_email === true) {
+            // Obtener email del usuario
+            const [user] = await query('SELECT email, nombre FROM usuarios WHERE id = ?', [usuario_id]);
+            if (user && user.email) {
+                const emailSent = await smtpConfigManager.enviarEmail({
+                    to: user.email,
+                    subject: `TMARC | ${titulo}`,
+                    html: `
+                        <div style="font-family: 'Outfit', Arial, sans-serif; padding: 20px; color: #333;">
+                            <h2 style="color: #D4AF37;">Notificación de Sistema</h2>
+                            <p>Estimado/a <strong>${user.nombre}</strong>,</p>
+                            <div style="background: #f8f9fa; padding: 20px; border-radius: 12px; border-left: 5px solid #D4AF37; margin: 20px 0;">
+                                <h3 style="margin-top: 0;">${titulo}</h3>
+                                <p style="line-height: 1.6;">${mensaje}</p>
+                            </div>
+                            <p style="font-size: 12px; color: #888;">Puede ver más detalles ingresando a su Casilla Electrónica en el portal TMARC.</p>
+                            <hr style="border: none; border-top: 1px solid #eee; margin: 20px 0;">
+                            <p style="font-size: 11px; color: #aaa; text-align: center;">Este es un mensaje automático, por favor no responda a este correo.</p>
+                        </div>
+                    `
+                });
+                results.email = emailSent.success;
+            }
+        }
 
         // Registrar en auditoría
         await registrarAuditoria('notificaciones', id, 'INSERT', req.body.usuario_admin_id || null, null, {
-            usuario_id, tipo, titulo, mensaje, expediente_id, solicitud_id, tiene_archivo: !!req.file
+            usuario_id, tipo, titulo, mensaje, results
         });
 
         res.status(201).json({
             success: true,
-            message: 'Notificación creada exitosamente',
-            data: { id, tiene_archivo: !!req.file }
+            message: 'Comunicación procesada correctamente',
+            data: { id, results }
         });
     } catch (error) {
         console.error('Error creando notificación:', error);

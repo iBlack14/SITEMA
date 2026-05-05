@@ -11,17 +11,32 @@ class AdminAuthCheck {
     }
 
     async checkAuthentication() {
-        const token = sessionStorage.getItem('authToken');
-        const userData = sessionStorage.getItem('userData');
+        console.log('🔐 [AUTH] Iniciando verificación de sesión...');
+        
+        const token = await getSecureItem('authToken');
+        const userData = await getSecureItem('userData');
+
+        console.log('🔐 [AUTH] Token recuperado:', token ? '✅ (' + typeof token + ', ' + String(token).substring(0, 20) + '...)' : '❌ null');
+        console.log('🔐 [AUTH] UserData recuperado:', userData ? '✅ (' + typeof userData + ')' : '❌ null');
+        if (userData) console.log('🔐 [AUTH] UserData contenido:', JSON.stringify(userData));
 
         if (!token || !userData) {
+            console.warn('🔐 [AUTH] Sesión vacía - redirigiendo a login');
             this.redirectToLogin();
             return;
         }
 
         try {
-            const user = JSON.parse(userData);
+            const user = (typeof userData === 'string') ? JSON.parse(userData) : userData;
+            
+            if (!user || typeof user !== 'object' || !user.id) {
+                console.warn('🔐 [AUTH] Datos inválidos:', {type: typeof user, hasId: user?.id, user});
+                this.logout();
+                return;
+            }
 
+            console.log('🔐 [AUTH] Verificando con backend: /api/usuarios/' + user.id);
+            
             // Verificar token con el backend
             const response = await fetch('/api/usuarios/' + user.id, {
                 headers: {
@@ -29,7 +44,10 @@ class AdminAuthCheck {
                 }
             });
 
+            console.log('🔐 [AUTH] Respuesta del backend:', response.status, response.ok);
+
             if (!response.ok) {
+                console.warn('🔐 [AUTH] Backend rechazó token - status:', response.status);
                 this.logout();
                 return;
             }
@@ -41,11 +59,12 @@ class AdminAuthCheck {
             }
 
             this.usuarioActual = user;
+            console.log('🔐 [AUTH] ✅ Autenticación exitosa para:', user.nombre);
             this.mostrarInfoUsuario();
             this.cargarDatosDashboard();
 
         } catch (error) {
-            console.error('Error verificando autenticación:', error);
+            console.error('🔐 [AUTH] Error verificando autenticación:', error);
             this.logout();
         }
     }
@@ -70,7 +89,7 @@ class AdminAuthCheck {
 
     async cargarDatosDashboard() {
         try {
-            const token = sessionStorage.getItem('authToken');
+            const token = await getSecureItem('authToken');
 
             // Cargar estadísticas del dashboard
             const response = await fetch('/api/estadisticas/dashboard', {
@@ -106,8 +125,8 @@ class AdminAuthCheck {
 
     async cargarActividadesRecientes() {
         try {
-            const token = sessionStorage.getItem('authToken');
-            const response = await fetch('/api/actividades/recientes', {
+            const token = await getSecureItem('authToken');
+            const response = await fetch('/api/estadisticas/actividades-recientes?limite=5', {
                 headers: {
                     'Authorization': 'Bearer ' + token
                 }
@@ -143,8 +162,8 @@ class AdminAuthCheck {
         `).join('');
     }
 
-    getToken() {
-        return sessionStorage.getItem('authToken');
+    async getToken() {
+        return await getSecureItem('authToken');
     }
 
     getUsuario() {
@@ -176,8 +195,8 @@ function verificarPermiso(permiso) {
 }
 
 // Función auxiliar para obtener headers con autenticación
-function getAuthHeaders() {
-    const token = sessionStorage.getItem('authToken');
+async function getAuthHeaders() {
+    const token = await getSecureItem('authToken');
     return {
         'Content-Type': 'application/json',
         'Authorization': token ? `Bearer ${token}` : ''

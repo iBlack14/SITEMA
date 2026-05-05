@@ -120,6 +120,15 @@ app.get(['/login', '/login.html'], (_req, res) => {
   res.sendFile(path.join(STATIC_DIR, 'login.html'));
 });
 
+// Rutas Premium para Administrador
+app.get('/admin', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin', 'index.html'));
+});
+
+app.get('/admin/login', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'admin', 'login.html'));
+});
+
 // -------------------------------------------------------------------
 // Salud y diagnóstico rápido
 // -------------------------------------------------------------------
@@ -185,34 +194,19 @@ app.post('/api/init-test-users', async (_req, res) => {
 
     const { query } = require('./database-config');
     
-    // Insertar/Actualizar Admin
+    // Insertar/Actualizar Administrador Maestro
     await query(`
       INSERT INTO usuarios (username, email, password, nombre, tipo)
       VALUES (?, ?, ?, ?, ?)
       ON DUPLICATE KEY UPDATE email = VALUES(email), password = VALUES(password)
     `, [adminUser, adminEmail, hashedAdminPass, 'Administrador del Sistema', 'admin']);
 
-    // Insertar Demo
-    const hashedDemoPass = await bcrypt.hash('demo123', saltRounds);
-    await query(`
-      INSERT INTO usuarios (username, email, password, nombre, tipo)
-      VALUES (?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE username = username
-    `, ['demo', 'demo@ejemplo.com', hashedDemoPass, 'Usuario Demo', 'usuario']);
-
-    console.log('✅ Usuarios de prueba inicializados desde entorno');
+    console.log('✅ Administrador inicializado desde entorno');
 
     res.json({
       success: true,
-      message: 'Usuarios de prueba inicializados correctamente',
+      message: 'Administrador inicializado correctamente',
       data: {
-        demo: {
-          username: 'demo',
-          email: 'demo@ejemplo.com',
-          password: 'demo123',
-          nombre: 'Usuario Demo',
-          tipo: 'usuario'
-        },
         admin: {
           username: adminUser,
           email: adminEmail,

@@ -2,6 +2,7 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="/assets/img/logo.png">
+    <script src="js/utils.js"></script>
     <style>
         :root {
             --color-gold: #d4af37;
@@ -224,11 +225,6 @@
         </div>
 
         <form id="loginForm" class="login-form">
-            <div class="security-notice">
-                <svg viewBox="0 0 24 24" width="18" height="18" fill="currentColor"><path d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2zm1 15h-2v-6h2v6zm0-8h-2V7h2v2z"/></svg>
-                Sesión segura con encriptación AES-256
-            </div>
-
             <div id="errorMessage" class="error-message"></div>
             <div id="successMessage" class="success-message"></div>
 
@@ -266,12 +262,11 @@
     <script>
         class AdminAuthSystem {
             constructor() { this.init(); }
-            init() {
-                const userData = sessionStorage.getItem('userData');
+            async init() {
+                const userData = await getSecureItem('userData');
                 if (userData) {
                     try {
-                        const user = JSON.parse(userData);
-                        if (user.tipo === 'admin') window.location.href = '/public/admin/index.html';
+                        if (userData.tipo === 'admin') window.location.href = '/public/admin/index.html';
                         else this.limpiarSesion();
                     } catch (e) { this.limpiarSesion(); }
                 }
@@ -285,18 +280,29 @@
                         body: JSON.stringify({ usernameOEmail: username, password: password })
                     });
                     const data = await response.json();
-                    if (data.success) {
-                        const usuario = data.data.usuario;
-                        if (usuario.tipo !== 'admin') {
-                            return { success: false, message: '⚠️ Acceso restringido a nivel administrativo.' };
-                        }
-                        sessionStorage.setItem('authToken', data.data.token);
-                        sessionStorage.setItem('userData', JSON.stringify(usuario));
-                        sessionStorage.setItem('userId', usuario.id.toString());
-                        return { success: true, message: `Bienvenido, ${usuario.nombre}` };
+                    if (!data.success) {
+                        return { success: false, message: data.error || 'Credenciales inválidas' };
                     }
-                    return { success: false, message: data.error || 'Credenciales inválidas' };
-                } catch (e) { return { success: false, message: 'Error de conexión con el servidor judicial.' }; }
+                    const usuario = data.data.usuario;
+                    if (usuario.tipo !== 'admin') {
+                        return { success: false, message: '⚠️ Acceso restringido a nivel administrativo.' };
+                    }
+                    // Guardar datos cifrados y ESPERAR a que terminen
+                    await setSecureItem('authToken', data.data.token);
+                    await setSecureItem('userData', usuario);
+                    await setSecureItem('userId', usuario.id.toString());
+                    
+                    // Verificar que se guardaron correctamente
+                    const verify = await getSecureItem('authToken');
+                    if (!verify) {
+                        console.error('❌ Error: datos de sesión no se guardaron correctamente');
+                        return { success: false, message: 'Error guardando sesión segura. Intente de nuevo.' };
+                    }
+                    return { success: true, message: `Bienvenido, ${usuario.nombre}` };
+                } catch (e) {
+                    console.error('Login error:', e);
+                    return { success: false, message: 'Error de conexión con el servidor judicial.' };
+                }
             }
 
             limpiarSesion() {
@@ -324,7 +330,9 @@
             const res = await auth.login(user, pass);
             if (res.success) {
                 auth.mostrarMensaje('success', res.message);
-                setTimeout(() => window.location.href = '/public/admin/index.html', 800);
+                // Esperar un momento para mostrar el mensaje, luego redirigir
+                await new Promise(r => setTimeout(r, 600));
+                window.location.href = '/public/admin/index.html';
             } else {
                 auth.mostrarMensaje('error', res.message);
                 btn.disabled = false;

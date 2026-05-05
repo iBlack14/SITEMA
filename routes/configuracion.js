@@ -20,25 +20,14 @@ router.get('/', async (req, res) => {
         
         sql += ' ORDER BY categoria, clave';
         
-        const configuraciones = await query(sql, params);
+        const configuraciones = await query(sql);
         
-        // Convertir array a objeto para facilitar el uso
+        // Convertir array a objeto
         const config = {};
         configuraciones.forEach(item => {
             let valor = item.valor;
-            
-            // Convertir según el tipo
-            if (item.tipo === 'numero') {
-                valor = parseFloat(valor);
-            } else if (item.tipo === 'boolean') {
-                valor = valor === 'true' || valor === '1';
-            } else if (item.tipo === 'json') {
-                try {
-                    valor = JSON.parse(valor);
-                } catch (e) {
-                    valor = null;
-                }
-            }
+            if (item.tipo === 'boolean') valor = valor === 'true' || valor === '1';
+            else if (item.tipo === 'numero') valor = parseFloat(valor);
             
             config[item.clave] = {
                 valor: valor,
@@ -47,6 +36,41 @@ router.get('/', async (req, res) => {
                 categoria: item.categoria
             };
         });
+        
+        // Mapear valores por defecto desde .env si no existen en la DB
+        const defaults = {
+            'nombre_sistema': {
+                valor: process.env.SMTP_FROM_NAME || 'TMARC',
+                tipo: 'texto',
+                descripcion: 'Nombre de la institución',
+                categoria: 'general'
+            },
+            'correo_soporte': {
+                valor: process.env.SMTP_FROM_EMAIL || 'soporte@tmarc.org',
+                tipo: 'texto',
+                descripcion: 'Email de contacto',
+                categoria: 'general'
+            },
+            'logo_url': {
+                valor: '/img/logo.png',
+                tipo: 'texto',
+                descripcion: 'URL del logo',
+                categoria: 'general'
+            },
+            'mantenimiento': {
+                valor: false,
+                tipo: 'boolean',
+                descripcion: 'Estado de mantenimiento',
+                categoria: 'sistema'
+            }
+        };
+
+        // Mezclar con prioridades
+        for (const [clave, def] of Object.entries(defaults)) {
+            if (!config[clave] && (!categoria || def.categoria === categoria)) {
+                config[clave] = def;
+            }
+        }
         
         res.json({
             success: true,
@@ -57,8 +81,7 @@ router.get('/', async (req, res) => {
         console.error('Error obteniendo configuración:', error);
         res.status(500).json({
             success: false,
-            error: 'Error interno del servidor',
-            details: error.message
+            error: 'Error interno del servidor'
         });
     }
 });
@@ -138,32 +161,30 @@ router.post('/batch', async (req, res) => {
             });
         }
         
-        // Actualizar cada configuración
+        // Actualizar o insertar cada configuración
         const updates = [];
         for (const [clave, valor] of Object.entries(configuraciones)) {
-            // Verificar si existe
-            const existing = await query(
-                'SELECT tipo FROM configuracion_sistema WHERE clave = ?',
-                [clave]
-            );
-            
-            if (existing.length > 0) {
-                let valorFinal = valor;
-                if (existing[0].tipo === 'boolean') {
-                    valorFinal = valor ? 'true' : 'false';
-                } else if (existing[0].tipo === 'json') {
-                    valorFinal = JSON.stringify(valor);
-                } else {
-                    valorFinal = String(valor);
-                }
-                
-                updates.push(
-                    query(
-                        'UPDATE configuracion_sistema SET valor = ? WHERE clave = ?',
-                        [valorFinal, clave]
-                    )
-                );
+            let valorFinal = valor;
+            let tipo = 'texto';
+            let categoria = 'general';
+
+            // Determinar tipo y categoría por la clave para nuevas entradas
+            if (clave === 'mantenimiento') {
+                tipo = 'boolean';
+                categoria = 'sistema';
+                valorFinal = valor ? 'true' : 'false';
+            } else if (typeof valor === 'boolean') {
+                tipo = 'boolean';
+                valorFinal = valor ? 'true' : 'false';
             }
+
+            updates.push(
+                query(`
+                    INSERT INTO configuracion_sistema (clave, valor, tipo, categoria) 
+                    VALUES (?, ?, ?, ?)
+                    ON DUPLICATE KEY UPDATE valor = VALUES(valor)
+                `, [clave, valorFinal, tipo, categoria])
+            );
         }
         
         await Promise.all(updates);
