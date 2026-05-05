@@ -277,9 +277,9 @@ const CargoGenerator = {
             </div>
             
             <div class="contact-info">
-                <p><strong>Av. Jose Pardo N° 510   DPTO 203 URB. SANTA CRUZ, Lima - Lima - Miraflores</strong></p>
-                <p>Central Telefónica: (044) - 538899 | Celular: +51 968 183 889 - 967 735 960</p>
-                <p>Email: sistema@tmarc.pe | Web: https://sistema.tmarc.pe</p>
+                <p><strong>${datos.direccion || 'Av. Jose Pardo N° 510 DPTO 203 URB. SANTA CRUZ, Lima - Lima - Miraflores'}</strong></p>
+                <p>Central Telefónica: ${datos.telefono || '(044) - 538899'} | Celular: ${datos.celular || '+51 968 183 889 - 967 735 960'}</p>
+                <p>Email: ${datos.email || 'sistema@tmarc.pe'} | Web: ${datos.web || 'https://sistema.tmarc.pe'}</p>
             </div>
         </div>
     </div>

@@ -178,18 +178,29 @@ app.post('/api/init-test-users', async (_req, res) => {
       });
     }
 
-    // Crear usuario demo con contraseña conocida
-    const saltRounds = 10;
-    const hashedPassword = await bcrypt.hash('demo123', saltRounds);
+    const adminUser = process.env.ADMIN_USER || 'admin';
+    const adminEmail = process.env.ADMIN_EMAIL || 'admin@sistema.gov';
+    const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
+    const hashedAdminPass = await bcrypt.hash(adminPass, saltRounds);
 
     const { query } = require('./database-config');
+    
+    // Insertar/Actualizar Admin
     await query(`
       INSERT INTO usuarios (username, email, password, nombre, tipo)
       VALUES (?, ?, ?, ?, ?)
-      ON DUPLICATE KEY UPDATE password = VALUES(password)
-    `, ['demo', 'demo@ejemplo.com', hashedPassword, 'Usuario Demo', 'usuario']);
+      ON DUPLICATE KEY UPDATE email = VALUES(email), password = VALUES(password)
+    `, [adminUser, adminEmail, hashedAdminPass, 'Administrador del Sistema', 'admin']);
 
-    console.log('✅ Usuarios de prueba inicializados');
+    // Insertar Demo
+    const hashedDemoPass = await bcrypt.hash('demo123', saltRounds);
+    await query(`
+      INSERT INTO usuarios (username, email, password, nombre, tipo)
+      VALUES (?, ?, ?, ?, ?)
+      ON DUPLICATE KEY UPDATE username = username
+    `, ['demo', 'demo@ejemplo.com', hashedDemoPass, 'Usuario Demo', 'usuario']);
+
+    console.log('✅ Usuarios de prueba inicializados desde entorno');
 
     res.json({
       success: true,
@@ -203,9 +214,9 @@ app.post('/api/init-test-users', async (_req, res) => {
           tipo: 'usuario'
         },
         admin: {
-          username: 'admin',
-          email: 'admin@sistema.gov',
-          password: 'admin123',
+          username: adminUser,
+          email: adminEmail,
+          password: '***',
           nombre: 'Administrador del Sistema',
           tipo: 'admin'
         }

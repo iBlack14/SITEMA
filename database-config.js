@@ -1,4 +1,5 @@
 const mysql = require('mysql2');
+const bcrypt = require('bcryptjs');
 
 // Validar que existan las variables de entorno requeridas
 if (!process.env.DB_HOST || !process.env.DB_USER || !process.env.DB_PASSWORD || !process.env.DB_NAME) {
@@ -461,15 +462,38 @@ async function inicializarBaseDatos(reset = false) {
 
         console.log('✅ Todas las tablas verificadas/creadas');
 
-        // Insertar usuarios por defecto si no existen
-        const usuariosExistentes = await query('SELECT COUNT(*) as count FROM usuarios');
-        if (usuariosExistentes[0].count === 0) {
+        // Insertar usuarios por defecto si no existen o actualizar si han cambiado en .env
+        const adminUser = process.env.ADMIN_USER || 'admin';
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@sistema.gov';
+        const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
+        const hashedAdminPass = await bcrypt.hash(adminPass, 10);
+        
+        const demoUser = 'demo';
+        const demoEmail = 'demo@ejemplo.com';
+        const demoPass = 'demo123';
+        const hashedDemoPass = await bcrypt.hash(demoPass, 10);
+
+        try {
+            // Insertar/Actualizar Administrador
             await query(`
-                INSERT INTO usuarios (username, email, password, nombre, tipo) VALUES
-                ('admin', 'admin@sistema.gov', '$2b$10$IuJfmmtjDk3M0Z4Jp00wpelIcqefNFtWDeGbYpJURNKEIkp/.FshO', 'Administrador del Sistema', 'admin'),
-                ('demo', 'demo@ejemplo.com', '$2b$10$IxLAR4K.sJ5xFif2u3ox3ePN9kZjdwsmVbHfeAgMqBlnrUrx9tDLa', 'Usuario Demo', 'usuario')
-            `);
-            console.log('✅ Usuarios por defecto insertados');
+                INSERT INTO usuarios (username, email, password, nombre, tipo) 
+                VALUES (?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE 
+                    email = VALUES(email), 
+                    password = VALUES(password),
+                    nombre = VALUES(nombre)
+            `, [adminUser, adminEmail, hashedAdminPass, 'Administrador del Sistema', 'admin']);
+            
+            // Insertar Demo si no existe
+            await query(`
+                INSERT INTO usuarios (username, email, password, nombre, tipo) 
+                VALUES (?, ?, ?, ?, ?)
+                ON DUPLICATE KEY UPDATE username = username
+            `, [demoUser, demoEmail, hashedDemoPass, 'Usuario Demo', 'usuario']);
+            
+            console.log('✅ Usuarios del sistema verificados/actualizados desde entorno');
+        } catch (error) {
+            console.error('⚠️ Error al inicializar usuarios:', error.message);
         }
 
         // Insertar configuración SMTP por defecto (inactiva)

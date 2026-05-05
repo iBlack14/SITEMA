@@ -54,7 +54,7 @@ class AdminAuthCheck {
         // Actualizar nombre de usuario en la interfaz
         const userNameElement = document.querySelector('.user-name');
         if (userNameElement && this.usuarioActual) {
-            userNameElement.textContent = this.usuarioActual.nombre || 'Administrador';
+            userNameElement.textContent = this.usuarioActual.nombre || 'Administrador del Sistema';
         }
     }
 
