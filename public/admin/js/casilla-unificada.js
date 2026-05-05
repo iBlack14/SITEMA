@@ -387,88 +387,135 @@ const CasillaUnificada = {
     },
 
     /**
-     * Modal para Mesa de Partes
+     * Modal para Mesa de Partes (Rediseñado Pro-Max)
      */
     modalMesaPartes(presentacion) {
         const demandante = presentacion.demandante || {};
         const demandado = presentacion.demandado || {};
         const documentos = presentacion.documentos || [];
+        const estadoClass = this.getEstadoClass(presentacion.estado);
 
         return `
-            <div class="modal" id="casillaModal" style="display: block;">
-                <div class="modal-content" style="max-width: 900px;">
-                    <div class="modal-header">
-                        <h2>📨 Mesa de Partes - ${presentacion.numero_registro}</h2>
-                        <button class="expediente-close" onclick="CasillaUnificada.cerrarModal()">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="expediente-info-grid">
-                            <div class="expediente-info-card">
-                                <h3>📋 Información General</h3>
-                                ${this.renderizarCampo('Número', presentacion.numero_registro)}
-                                ${this.renderizarCampo('Tipo', presentacion.tipo_presentacion)}
-                                ${this.renderizarCampo('Materia', presentacion.materia)}
-                                ${this.renderizarCampo('Estado', `<span class="status-badge ${this.getEstadoClass(presentacion.estado)}">${presentacion.estado}</span>`)}
-                                ${this.renderizarCampo('Fecha', new Date(presentacion.fecha_presentacion).toLocaleString('es-ES'))}
-                            </div>
-                            <div class="expediente-info-card">
-                                <h3>👤 Demandante</h3>
-                                ${this.renderizarCampo('Nombre', demandante.nombre)}
-                                ${this.renderizarCampo('Documento', `${demandante.documento_tipo || ''} ${demandante.documento_numero || ''}`)}
-                                ${this.renderizarCampo('Correo', demandante.correo)}
-                                ${this.renderizarCampo('Teléfono', demandante.telefono)}
-                            </div>
-                            <div class="expediente-info-card">
-                                <h3>⚖️ Demandado</h3>
-                                ${this.renderizarCampo('Nombre', demandado.nombre)}
-                                ${this.renderizarCampo('Documento', `${demandado.documento_tipo || ''} ${demandado.documento_numero || ''}`)}
+            <div class="modal" id="casillaModal" style="display: flex; align-items: center; justify-content: center; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);">
+                <div class="modal-content" style="max-width: 950px; border-radius: 24px; border: 1px solid rgba(212, 175, 55, 0.2); box-shadow: 0 25px 80px rgba(0,0,0,0.5); overflow: hidden; background: #ffffff;">
+                    <div class="modal-header" style="background: #0a0a0a; padding: 25px 40px; border-bottom: 4px solid var(--color-gold); display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 45px; height: 45px; background: rgba(212, 175, 55, 0.1); border-radius: 12px; display: flex; align-items: center; justify-content: center; color: var(--color-gold); font-size: 24px;">📥</div>
+                            <div>
+                                <h2 style="margin: 0; color: #ffffff; font-size: 22px; font-weight: 700; letter-spacing: -0.5px;">Mesa de Partes</h2>
+                                <span style="color: var(--color-gold); font-size: 13px; font-weight: 600; opacity: 0.8;">REGISTRO: ${presentacion.numero_registro}</span>
                             </div>
                         </div>
-                        ${documentos.length > 0 ? `
-                        <div class="expediente-info-card">
-                            <h3>📎 Documentos (${documentos.length})</h3>
-                            ${documentos.map((doc, idx) => `
-                                <div style="padding: 10px; background: #f5f5f5; border-radius: 5px; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center;">
-                                    <div>
-                                        <strong>${idx + 1}. ${this.escaparHTML(doc.nombre_original || 'Documento')}</strong><br>
-                                        <small>${(doc.tamano / 1024).toFixed(2)} KB</small>
+                        <button class="expediente-close" onclick="CasillaUnificada.cerrarModal()" style="width: 40px; height: 40px; border-radius: 50%; background: rgba(255,255,255,0.05); color: #ffffff; border: none; font-size: 24px; cursor: pointer; transition: all 0.3s;">&times;</button>
+                    </div>
+                    
+                    <div class="modal-body" style="padding: 40px; background: #fdfdfd; max-height: 75vh; overflow-y: auto;">
+                        <div style="display: grid; grid-template-columns: 1.2fr 0.8fr; gap: 30px; margin-bottom: 30px;">
+                            <!-- Columna Izquierda: Información Principal -->
+                            <div style="display: flex; flex-direction: column; gap: 25px;">
+                                <div class="expediente-info-card" style="background: #ffffff; border-radius: 18px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);">
+                                    <h3 style="color: var(--color-gold); font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-size: 18px;">📋</span> INFORMACIÓN GENERAL
+                                    </h3>
+                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                        ${this.renderizarCampoModerno('Tipo de Presentación', presentacion.tipo_presentacion)}
+                                        ${this.renderizarCampoModerno('Materia / Asunto', presentacion.materia)}
+                                        ${this.renderizarCampoModerno('Estado Actual', `<span class="status-badge ${estadoClass}" style="padding: 5px 12px; font-size: 10px;">${presentacion.estado}</span>`)}
+                                        ${this.renderizarCampoModerno('Fecha de Ingreso', new Date(presentacion.fecha_presentacion).toLocaleString('es-ES'))}
                                     </div>
-                                    <button class="btn btn-primary" 
-                                            style="padding: 6px 12px; font-size: 12px;" 
-                                            onclick="window.open('/uploads/mesa-partes/${doc.nombre_archivo}', '_blank')">
-                                        📥 Descargar
-                                    </button>
                                 </div>
-                            `).join('')}
+
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 25px;">
+                                    <div class="expediente-info-card" style="background: #ffffff; border-radius: 18px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);">
+                                        <h3 style="color: var(--color-gold); font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                                            <span style="font-size: 18px;">👤</span> DATOS DEL DEMANDANTE
+                                        </h3>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                            ${this.renderizarCampoModerno('Nombre Completo', demandante.nombre)}
+                                            ${this.renderizarCampoModerno('Documento Identidad', `${demandante.documento_tipo || ''} ${demandante.documento_numero || ''}`)}
+                                            ${this.renderizarCampoModerno('Correo Electrónico', demandante.correo)}
+                                            ${this.renderizarCampoModerno('Teléfono / WhatsApp', demandante.telefono)}
+                                        </div>
+                                    </div>
+                                    
+                                    <div class="expediente-info-card" style="background: #ffffff; border-radius: 18px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05);">
+                                        <h3 style="color: var(--color-gold); font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                                            <span style="font-size: 18px;">⚖️</span> DATOS DEL DEMANDADO
+                                        </h3>
+                                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                                            ${this.renderizarCampoModerno('Nombre / Razón Social', demandado.nombre)}
+                                            ${this.renderizarCampoModerno('Documento', `${demandado.documento_tipo || ''} ${demandado.documento_numero || ''}`)}
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Columna Derecha: Documentos y Acciones -->
+                            <div style="display: flex; flex-direction: column; gap: 25px;">
+                                <div class="expediente-info-card" style="background: #ffffff; border-radius: 18px; padding: 25px; box-shadow: 0 4px 15px rgba(0,0,0,0.03); border: 1px solid rgba(0,0,0,0.05); height: 100%;">
+                                    <h3 style="color: var(--color-gold); font-size: 14px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 20px; display: flex; align-items: center; gap: 10px;">
+                                        <span style="font-size: 18px;">📎</span> DOCUMENTACIÓN (${documentos.length})
+                                    </h3>
+                                    <div style="display: flex; flex-direction: column; gap: 12px;">
+                                        ${documentos.length > 0 ? documentos.map((doc, idx) => `
+                                            <div style="padding: 15px; background: #f8f9fa; border: 1px solid rgba(0,0,0,0.05); border-radius: 14px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; cursor: pointer;" onmouseover="this.style.borderColor='var(--color-gold)'; this.style.background='#fff';" onmouseout="this.style.borderColor='rgba(0,0,0,0.05)'; this.style.background='#f8f9fa';">
+                                                <div style="display: flex; align-items: center; gap: 12px;">
+                                                    <div style="width: 36px; height: 36px; background: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 18px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">📄</div>
+                                                    <div style="overflow: hidden; max-width: 150px;">
+                                                        <strong style="display: block; font-size: 12px; color: #333; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${this.escaparHTML(doc.nombre_original || 'Documento')}</strong>
+                                                        <small style="font-size: 10px; color: #999;">${(doc.tamano / 1024).toFixed(2)} KB</small>
+                                                    </div>
+                                                </div>
+                                                <button class="btn" style="padding: 8px 12px; background: var(--color-gold); color: #1a1a1a; border-radius: 10px; font-size: 10px; box-shadow: 0 4px 10px rgba(212, 175, 55, 0.2);" onclick="window.open('/uploads/mesa-partes/${doc.nombre_archivo}', '_blank')">
+                                                    DESCARGAR
+                                                </button>
+                                            </div>
+                                        `).join('') : '<p style="text-align: center; color: #999; font-style: italic; font-size: 13px; padding: 20px;">No se adjuntaron documentos</p>'}
+                                    </div>
+                                </div>
+                            </div>
                         </div>
-                        ` : ''}
-                        <div class="expediente-info-card">
-                            <h3>⚙️ Acciones</h3>
-                            <button class="btn btn-primary" 
-                                    style="background:linear-gradient(135deg,#d4af37,#f1d582);color:#1a1a1a;margin-right:10px;"
-                                    onclick="CasillaUnificada.cerrarModal();TimelineManager.abrir('mesa-partes','${presentacion.id}','Mesa de Partes: ${presentacion.numero_registro}')">
-                                📋 Ver Timeline
-                            </button>
-                            <button class="btn btn-primary" 
-                                    style="background:#4CAF50; margin-right: 10px;"
-                                    onclick="CasillaUnificada.responderMesaPartes('${presentacion.id}', '${presentacion.usuario_id}', '${presentacion.numero_registro}')">
-                                💬 Responder
-                            </button>
-                            <button class="btn btn-primary" 
-                                    onclick="CasillaUnificada.cambiarEstado('mesa_partes', '${presentacion.id}', 'Aprobado')">
-                                ✅ Aprobar
-                            </button>
-                            <button class="btn btn-secondary" 
-                                    onclick="CasillaUnificada.cambiarEstado('mesa_partes', '${presentacion.id}', 'Rechazado')" 
-                                    style="margin-left: 10px;">
-                                ❌ Rechazar
-                            </button>
+
+                        <!-- Sección de Acciones Centralizada -->
+                        <div style="background: rgba(212, 175, 55, 0.05); border: 1px solid rgba(212, 175, 55, 0.1); border-radius: 18px; padding: 25px;">
+                            <h3 style="color: var(--color-gold); font-size: 12px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 20px; text-align: center;">⚙️ ACCIONES ADMINISTRATIVAS DISPONIBLES</h3>
+                            <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: 15px;">
+                                <button class="btn btn-primary" 
+                                        style="background: linear-gradient(135deg, #2d2d2d 0%, #1a1a1a 100%); color: #C0C0C0; border: 1px solid rgba(255,255,255,0.1); padding: 15px;"
+                                        onclick="CasillaUnificada.cerrarModal(); TimelineManager.abrir('mesa-partes','${presentacion.id}','Mesa de Partes: ${presentacion.numero_registro}')">
+                                    📋 VER TIMELINE
+                                </button>
+                                <button class="btn" 
+                                        style="background: #27ae60; color: white; padding: 15px; box-shadow: 0 8px 20px rgba(39, 174, 96, 0.25);"
+                                        onclick="CasillaUnificada.responderMesaPartes('${presentacion.id}', '${presentacion.usuario_id}', '${presentacion.numero_registro}')">
+                                    💬 RESPONDER
+                                </button>
+                                <button class="btn" 
+                                        style="background: var(--color-gold); color: #1a1a1a; padding: 15px; box-shadow: 0 8px 20px rgba(212, 175, 55, 0.25);"
+                                        onclick="CasillaUnificada.confirmarCambioEstado('mesa_partes', '${presentacion.id}', 'Aprobado')">
+                                    ✅ APROBAR
+                                </button>
+                                <button class="btn" 
+                                        style="background: #e74c3c; color: white; padding: 15px; box-shadow: 0 8px 20px rgba(231, 76, 60, 0.25);"
+                                        onclick="CasillaUnificada.confirmarCambioEstado('mesa_partes', '${presentacion.id}', 'Rechazado')">
+                                    ❌ RECHAZAR
+                                </button>
+                            </div>
                         </div>
-                    </div>
-                    <div class="modal-footer">
-                        <button class="btn-close" onclick="CasillaUnificada.cerrarModal()">Cerrar</button>
                     </div>
                 </div>
+            </div>
+        `;
+    },
+
+    /**
+     * Helper para renderizar campos con estilo moderno
+     */
+    renderizarCampoModerno(label, value) {
+        return `
+            <div style="display: flex; flex-direction: column; gap: 5px;">
+                <label style="margin: 0; color: #999; font-size: 10px; font-weight: 700; text-transform: uppercase; letter-spacing: 1px;">${label}</label>
+                <div style="color: #1a1a1a; font-size: 14px; font-weight: 500;">${value || 'N/A'}</div>
             </div>
         `;
     },
@@ -576,11 +623,63 @@ const CasillaUnificada = {
     },
 
     /**
-     * Cambiar estado de un item
+     * NUEVO: Modal de Confirmación de Cambio de Estado (Pro-Max)
      */
-    async cambiarEstado(tipo, id, nuevoEstado) {
+    confirmarCambioEstado(tipo, id, nuevoEstado) {
+        const modalId = 'modalConfirmarEstado';
+        const color = nuevoEstado === 'Aprobado' ? '#27ae60' : '#e74c3c';
+        const icono = nuevoEstado === 'Aprobado' ? '✅' : '❌';
+
+        const modalHTML = `
+            <div id="${modalId}" style="display:flex; position:fixed; z-index:40000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter: blur(10px); align-items:center; justify-content:center; animation: fadeIn 0.3s ease-out;">
+                <div style="background:#ffffff; width:90%; max-width:500px; border-radius:30px; overflow:hidden; box-shadow:0 30px 70px rgba(0,0,0,0.5); border: 1px solid rgba(0,0,0,0.05); transform: translateY(20px); animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">
+                    <div style="background:${color}; padding:40px; text-align:center;">
+                        <div style="font-size:60px; margin-bottom:15px; animation: scaleIn 0.5s ease-out;">${icono}</div>
+                        <h2 style="color:white; margin:0; font-size:24px; font-weight:800; letter-spacing:-0.5px;">${nuevoEstado.toUpperCase()}</h2>
+                        <p style="color:rgba(255,255,255,0.8); margin:10px 0 0 0; font-size:14px;">Confirmar procesamiento de documento</p>
+                    </div>
+                    
+                    <div style="padding:40px;">
+                        <label style="color:#666; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:12px; display:block;">Observaciones Administrativas</label>
+                        <textarea id="obs-cambio-estado" placeholder="Ingrese las observaciones para el usuario..." 
+                                  style="width:100%; padding:20px; border:1px solid #eee; border-radius:18px; font-family:inherit; font-size:14px; background:#f9f9f9; resize:none; height:120px; transition:all 0.3s;"
+                                  onfocus="this.style.borderColor='${color}'; this.style.background='white'; this.style.boxShadow='0 5px 15px rgba(0,0,0,0.03)';"></textarea>
+                        
+                        <div style="display:grid; grid-template-columns:1fr 1fr; gap:15px; margin-top:30px;">
+                            <button onclick="document.getElementById('${modalId}').remove()" 
+                                    style="padding:16px; background:#f5f5f5; color:#666; border:none; border-radius:15px; cursor:pointer; font-weight:700; font-size:13px; transition:all 0.2s;"
+                                    onmouseover="this.style.background='#eee'" onmouseout="this.style.background='#f5f5f5'">
+                                CANCELAR
+                            </button>
+                            <button onclick="CasillaUnificada.cambiarEstado('${tipo}', '${id}', '${nuevoEstado}', document.getElementById('obs-cambio-estado').value)" 
+                                    style="padding:16px; background:${color}; color:white; border:none; border-radius:15px; cursor:pointer; font-weight:700; font-size:13px; box-shadow:0 10px 20px ${color}44; transition:all 0.2s;"
+                                    onmouseover="this.style.transform='translateY(-2px)'; this.style.filter='brightness(1.1)'" onmouseout="this.style.transform='translateY(0)'; this.style.filter='none'">
+                                CONFIRMAR
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+            <style>
+                @keyframes modalSlideUp { to { transform: translateY(0); } }
+                @keyframes scaleIn { from { transform: scale(0); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+            </style>
+        `;
+
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+        setTimeout(() => document.getElementById('obs-cambio-estado').focus(), 100);
+    },
+
+    /**
+     * Cambiar estado de un item (Actualizado)
+     */
+    async cambiarEstado(tipo, id, nuevoEstado, observaciones = '') {
         try {
-            const observaciones = prompt(`Observaciones para ${nuevoEstado}:`) || '';
+            // Cerrar el modal de confirmación si existe
+            const modalConfirmar = document.getElementById('modalConfirmarEstado');
+            if (modalConfirmar) modalConfirmar.remove();
+
+            this.mostrarCargando('Actualizando estado...');
 
             let endpoint;
             switch (tipo) {
@@ -600,7 +699,7 @@ const CasillaUnificada = {
             const data = await response.json();
 
             if (data.success) {
-                this.mostrarExito(`Estado cambiado a: ${nuevoEstado}`);
+                this.mostrarExito(`Documento ${nuevoEstado} correctamente`);
                 this.cerrarModal();
                 await this.cargar();
             } else {
@@ -610,6 +709,32 @@ const CasillaUnificada = {
             console.error('❌ Error:', error);
             this.mostrarError('Error cambiando estado: ' + error.message);
         }
+    },
+
+    /**
+     * NUEVO: Mostrar overlay de carga (Mejorado)
+     */
+    mostrarCargando(mensaje) {
+        if (window.showLoading) {
+            window.showLoading(mensaje);
+        } else {
+            this.cerrarCargando();
+            const loadingHTML = `
+                <div id="loading-overlay-admin" style="position:fixed; z-index:50000; left:0; top:0; width:100%; height:100%; background:rgba(255,255,255,0.8); backdrop-filter:blur(5px); display:flex; flex-direction:column; align-items:center; justify-content:center; gap:20px;">
+                    <div style="width:50px; height:50px; border:4px solid #eee; border-top:4px solid var(--color-gold); border-radius:50%; animation: spin 1s linear infinite;"></div>
+                    <div style="font-weight:700; color:var(--color-dark); letter-spacing:1px; font-size:12px; text-transform:uppercase;">${mensaje}</div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', loadingHTML);
+        }
+    },
+
+    /**
+     * NUEVO: Cerrar overlay de carga
+     */
+    cerrarCargando() {
+        const overlay = document.getElementById('loading-overlay-admin');
+        if (overlay) overlay.remove();
     },
 
     /**
@@ -656,10 +781,15 @@ const CasillaUnificada = {
     },
 
     /**
-     * Mostrar error
+     * Mostrar error (Mejorado)
      */
     mostrarError(mensaje) {
-        if (window.conexionDatos && window.conexionDatos.mostrarNotificacion) {
+        if (window.hideLoading) window.hideLoading();
+        this.cerrarCargando();
+        
+        if (window.showError) {
+            window.showError(mensaje);
+        } else if (window.conexionDatos && window.conexionDatos.mostrarNotificacion) {
             window.conexionDatos.mostrarNotificacion(mensaje, 'error');
         } else {
             alert('❌ ' + mensaje);
@@ -667,10 +797,15 @@ const CasillaUnificada = {
     },
 
     /**
-     * Mostrar éxito
+     * Mostrar éxito (Mejorado)
      */
     mostrarExito(mensaje) {
-        if (window.conexionDatos && window.conexionDatos.mostrarNotificacion) {
+        if (window.hideLoading) window.hideLoading();
+        this.cerrarCargando();
+        
+        if (window.showSuccess) {
+            window.showSuccess(mensaje);
+        } else if (window.conexionDatos && window.conexionDatos.mostrarNotificacion) {
             window.conexionDatos.mostrarNotificacion(mensaje, 'success');
         } else {
             alert('✅ ' + mensaje);

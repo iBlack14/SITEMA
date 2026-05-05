@@ -207,6 +207,7 @@ class DashboardApp {
             }
         } else if (sectionId === 'inicio') {
             await this.loadDashboardStats();
+            await this.loadRecentActivity();
         }
     }
 
@@ -222,6 +223,66 @@ class DashboardApp {
         if (loader) {
             loader.style.display = 'none';
         }
+    }
+
+    async loadRecentActivity() {
+        console.log('🏛️ Sincronizando actividad reciente...');
+        const tbody = document.getElementById('actividades-tbody');
+        if (!tbody) return;
+
+        try {
+            const usuarioId = this.getCurrentUserId();
+            const response = await fetch(`/api/estadisticas/usuario/${usuarioId}/actividades?limite=5`);
+            const data = await response.json();
+
+            if (data.success && data.data && data.data.length > 0) {
+                tbody.innerHTML = data.data.map(act => {
+                    const date = new Date(act.fecha).toLocaleDateString('es-PE', {
+                        day: '2-digit',
+                        month: '2-digit',
+                        year: 'numeric',
+                        hour: '2-digit',
+                        minute: '2-digit'
+                    });
+                    
+                    let badgeClass = 'badge-info';
+                    const estado = (act.estado || '').toLowerCase();
+                    if (estado.includes('pendiente')) badgeClass = 'badge-warning';
+                    if (estado.includes('aprobado') || estado.includes('leída')) badgeClass = 'badge-success';
+                    if (estado.includes('rechazado')) badgeClass = 'badge-error';
+
+                    return `
+                        <tr>
+                            <td>${date}</td>
+                            <td>
+                                <div style="display: flex; align-items: center; gap: 10px;">
+                                    <div class="activity-icon" style="background: rgba(212,175,55,0.1); color: var(--color-primary); width: 32px; height: 32px; border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 14px;">
+                                        ${this.getActivityIcon(act.tipo)}
+                                    </div>
+                                    <span style="font-weight: 500;">${act.actividad || act.accion}</span>
+                                </div>
+                            </td>
+                            <td><span class="badge ${badgeClass}">${act.estado || 'Procesado'}</span></td>
+                        </tr>
+                    `;
+                }).join('');
+            } else {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center text-muted">No hay actividad reciente registrada.</td></tr>';
+            }
+        } catch (error) {
+            console.warn('⚠️ Error sincronizando actividad reciente:', error);
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center text-error">Error al sincronizar actividad.</td></tr>';
+        }
+    }
+
+    getActivityIcon(tipo) {
+        const icons = {
+            'solicitud': '📜',
+            'expediente': '📂',
+            'notificacion': '🔔',
+            'registro': '👤'
+        };
+        return icons[tipo] || '⚡';
     }
 
     async loadDashboardStats() {

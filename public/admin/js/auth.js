@@ -182,12 +182,14 @@ class AdminAuthCheck {
 // Función auxiliar para verificar permisos
 function verificarPermiso(permiso) {
     if (!window.adminAuth || !window.adminAuth.isAuthenticated()) {
-        alert('Debe iniciar sesión para realizar esta acción');
+        if (window.showError) window.showError('Debe iniciar sesión para realizar esta acción');
+        else alert('Debe iniciar sesión para realizar esta acción');
         return false;
     }
 
     if (!window.adminAuth.isAdmin()) {
-        alert('No tiene permisos para realizar esta acción');
+        if (window.showError) window.showError('No tiene permisos para realizar esta acción');
+        else alert('No tiene permisos para realizar esta acción');
         return false;
     }
 

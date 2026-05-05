@@ -22,7 +22,9 @@ const dbConfig = {
     connectionLimit: 20,
     waitForConnections: true,
     queueLimit: 0,
-    connectTimeout: 60000
+    connectTimeout: 60000,
+    enableKeepAlive: true,
+    keepAliveInitialDelay: 10000
 };
 
 // Debug: mostrar configuración (sin mostrar password)
@@ -226,7 +228,11 @@ async function inicializarBaseDatos(reset = false) {
                 fecha_presentacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
                 observaciones TEXT,
+                revisado_por INT,
+                fecha_revision TIMESTAMP NULL,
+                fecha_respuesta TIMESTAMP NULL,
                 FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL,
+                FOREIGN KEY (revisado_por) REFERENCES usuarios(id) ON DELETE SET NULL,
                 INDEX idx_numero_registro (numero_registro),
                 INDEX idx_usuario_id (usuario_id),
                 INDEX idx_estado (estado)
@@ -286,6 +292,7 @@ async function inicializarBaseDatos(reset = false) {
                 estado ENUM('Nuevo', 'En Trámite', 'En Procesamiento', 'Completado', 'Archivado') DEFAULT 'Nuevo',
                 fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                documentos JSON,
                 observaciones TEXT,
                 FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
             )
@@ -603,6 +610,21 @@ async function inicializarBaseDatos(reset = false) {
                 console.log('✅ Columna sede agregada a mesa_partes');
             }
 
+            // ── Columnas de revisión para mesa_partes ──
+            if (!(await columnaExiste('mesa_partes', 'revisado_por'))) {
+                await query('ALTER TABLE mesa_partes ADD COLUMN revisado_por INT AFTER observaciones');
+                await query('ALTER TABLE mesa_partes ADD CONSTRAINT fk_mp_revisado_por FOREIGN KEY (revisado_por) REFERENCES usuarios(id) ON DELETE SET NULL');
+                console.log('✅ Columna revisado_por agregada a mesa_partes');
+            }
+            if (!(await columnaExiste('mesa_partes', 'fecha_revision'))) {
+                await query('ALTER TABLE mesa_partes ADD COLUMN fecha_revision TIMESTAMP NULL AFTER revisado_por');
+                console.log('✅ Columna fecha_revision agregada a mesa_partes');
+            }
+            if (!(await columnaExiste('mesa_partes', 'fecha_respuesta'))) {
+                await query('ALTER TABLE mesa_partes ADD COLUMN fecha_respuesta TIMESTAMP NULL AFTER fecha_revision');
+                console.log('✅ Columna fecha_respuesta agregada a mesa_partes');
+            }
+
             // ── Columnas de seguimiento para solicitudes ──
             if (!(await columnaExiste('solicitudes', 'responsable'))) {
                 await query('ALTER TABLE solicitudes ADD COLUMN responsable VARCHAR(150)');
@@ -611,6 +633,12 @@ async function inicializarBaseDatos(reset = false) {
             if (!(await columnaExiste('solicitudes', 'sede'))) {
                 await query('ALTER TABLE solicitudes ADD COLUMN sede VARCHAR(100)');
                 console.log('✅ Columna sede agregada a solicitudes');
+            }
+
+            // ── Columna documentos para expedientes ──
+            if (!(await columnaExiste('expedientes', 'documentos'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN documentos JSON AFTER fecha_actualizacion');
+                console.log('✅ Columna documentos agregada a expedientes');
             }
         } catch (alterError) {
             console.log('⚠️  Error agregando columna casilla_electronica:', alterError.message);

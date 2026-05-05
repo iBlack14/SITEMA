@@ -335,8 +335,31 @@ class ConexionDatos {
         return notificaciones.filter(n => !n.leida).length;
     }
 
-    // Mostrar notificación en pantalla
+    // Mostrar notificación en pantalla (Mejorado con SweetAlert2)
     mostrarNotificacion(mensaje, tipo = 'info') {
+        if (tipo === 'success') {
+            window.showSuccess ? window.showSuccess(mensaje) : alert('✅ ' + mensaje);
+        } else if (tipo === 'error') {
+            window.showError ? window.showError(mensaje) : alert('❌ ' + mensaje);
+        } else {
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    toast: true,
+                    position: 'top-end',
+                    icon: 'info',
+                    title: mensaje,
+                    showConfirmButton: false,
+                    timer: 3000,
+                    timerProgressBar: true
+                });
+            } else {
+                this.mostrarNotificacionLegacy(mensaje, tipo);
+            }
+        }
+    }
+
+    // Fallback para notificaciones si Swal no está disponible
+    mostrarNotificacionLegacy(mensaje, tipo = 'info') {
         // Crear elemento de notificación
         const notificacion = document.createElement('div');
         notificacion.className = `notificacion-sistema ${tipo}`;

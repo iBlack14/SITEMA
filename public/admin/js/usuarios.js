@@ -86,55 +86,52 @@ async function manejarAgregarUsuario(event) {
 
     // Validación
     if (!nuevoUsuario.username || !nuevoUsuario.nombre || !nuevoUsuario.email || !nuevoUsuario.password) {
-        alert('Por favor, complete todos los campos obligatorios.');
+        if (window.showError) window.showError('Por favor, complete todos los campos obligatorios.');
         return;
     }
 
     // Validar confirmación de contraseña
     const passwordConfirm = document.getElementById('agregar-password-confirm').value;
     if (nuevoUsuario.password !== passwordConfirm) {
-        alert('Las contraseñas no coinciden.');
+        if (window.showError) window.showError('Las contraseñas no coinciden.');
         return;
     }
 
     // Validar email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(nuevoUsuario.email)) {
-        alert('Por favor, ingrese un correo electrónico válido.');
+        if (window.showError) window.showError('Por favor, ingrese un correo electrónico válido.');
         return;
     }
 
     // Validar contraseña
     if (nuevoUsuario.password.length < 6) {
-        alert('La contraseña debe tener al menos 6 caracteres.');
+        if (window.showError) window.showError('La contraseña debe tener al menos 6 caracteres.');
         return;
     }
 
     try {
+        if (window.showLoading) window.showLoading('Creando usuario...');
         const response = await fetch('/api/usuarios', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(nuevoUsuario)
         });
 
         const data = await response.json();
+        if (window.hideLoading) window.hideLoading();
 
         if (data.success) {
-            alert('✅ Usuario creado exitosamente');
+            if (window.showSuccess) window.showSuccess('Usuario creado exitosamente');
             cerrarModalAgregarUsuario();
             await cargarUsuariosDesdeMySQL();
-
-            if (window.conexionDatos) {
-                window.conexionDatos.mostrarNotificacion('Usuario creado correctamente', 'success');
-            }
         } else {
-            alert('❌ Error al crear usuario: ' + (data.error || data.message));
+            if (window.showError) window.showError('Error al crear usuario: ' + (data.error || data.message));
         }
     } catch (error) {
+        if (window.hideLoading) window.hideLoading();
         console.error('Error creando usuario:', error);
-        alert('❌ Error de conexión al crear usuario');
+        if (window.showError) window.showError('Error de conexión al crear usuario');
     }
 }
 
@@ -158,11 +155,11 @@ async function editarUsuario(id) {
             // Mostrar modal
             document.getElementById('editarUsuarioModal').style.display = 'block';
         } else {
-            alert('Error obteniendo datos del usuario');
+            if (window.showError) window.showError('Error obteniendo datos del usuario');
         }
     } catch (error) {
         console.error('Error obteniendo usuario:', error);
-        alert('Error obteniendo datos del usuario');
+        if (window.showError) window.showError('Error obteniendo datos del usuario');
     }
 }
 
@@ -187,42 +184,39 @@ async function manejarActualizarUsuario(event) {
 
     // Validación
     if (!datosActualizados.nombre || !datosActualizados.email) {
-        alert('Por favor, complete todos los campos obligatorios.');
+        if (window.showError) window.showError('Por favor, complete todos los campos obligatorios.');
         return;
     }
 
     // Validar email
     const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
     if (!emailRegex.test(datosActualizados.email)) {
-        alert('Por favor, ingrese un correo electrónico válido.');
+        if (window.showError) window.showError('Por favor, ingrese un correo electrónico válido.');
         return;
     }
 
     try {
+        if (window.showLoading) window.showLoading('Actualizando usuario...');
         const response = await fetch(`/api/usuarios/${id}`, {
             method: 'PUT',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datosActualizados)
         });
 
         const data = await response.json();
+        if (window.hideLoading) window.hideLoading();
 
         if (data.success) {
-            alert('✅ Usuario actualizado exitosamente');
+            if (window.showSuccess) window.showSuccess('Usuario actualizado exitosamente');
             cerrarModalEditarUsuario();
             await cargarUsuariosDesdeMySQL();
-
-            if (window.conexionDatos) {
-                window.conexionDatos.mostrarNotificacion('Usuario actualizado correctamente', 'success');
-            }
         } else {
-            alert('❌ Error al actualizar el usuario: ' + data.error);
+            if (window.showError) window.showError('Error al actualizar el usuario: ' + data.error);
         }
     } catch (error) {
+        if (window.hideLoading) window.hideLoading();
         console.error('Error actualizando usuario:', error);
-        alert('❌ Error al actualizar el usuario');
+        if (window.showError) window.showError('Error al actualizar el usuario');
     }
 }
 
@@ -395,39 +389,36 @@ async function manejarEnvioNotificacion(event) {
 
     // Validación
     if (!datosNotificacion.usuario_id || !datosNotificacion.titulo || !datosNotificacion.mensaje) {
-        alert('Por favor, complete todos los campos obligatorios.');
+        if (window.showError) window.showError('Por favor, complete todos los campos obligatorios.');
         return;
     }
 
     if (!datosNotificacion.enviar_casilla && !datosNotificacion.enviar_email) {
-        alert('Por favor, seleccione al menos un canal de envío (Casilla o Correo).');
+        if (window.showError) window.showError('Por favor, seleccione al menos un canal de envío (Casilla o Correo).');
         return;
     }
 
     try {
+        if (window.showLoading) window.showLoading('Enviando notificación...');
         const response = await fetch('/api/notificaciones', {
             method: 'POST',
-            headers: {
-                'Content-Type': 'application/json'
-            },
+            headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(datosNotificacion)
         });
 
         const data = await response.json();
+        if (window.hideLoading) window.hideLoading();
 
         if (data.success) {
-            alert('✅ Notificación enviada exitosamente');
+            if (window.showSuccess) window.showSuccess('Notificación enviada exitosamente');
             cerrarModalEnviarNotificacion();
-
-            if (window.conexionDatos) {
-                window.conexionDatos.mostrarNotificacion('Notificación enviada al usuario', 'success');
-            }
         } else {
-            alert('❌ Error enviando notificación: ' + (data.error || data.message));
+            if (window.showError) window.showError('Error enviando notificación: ' + (data.error || data.message));
         }
     } catch (error) {
+        if (window.hideLoading) window.hideLoading();
         console.error('Error enviando notificación:', error);
-        alert('❌ Error de conexión al enviar notificación');
+        if (window.showError) window.showError('Error de conexión al enviar notificación');
     }
 }
 
@@ -454,26 +445,43 @@ function generarContrasena(inputId, confirmId) {
 
 // Función para forzar sincronización de usuarios
 async function forzarSincronizacionUsuarios() {
-    if (!confirm('¿Desea forzar la sincronización de usuarios?')) {
-        return;
+    if (typeof Swal === 'undefined') {
+        if (!confirm('¿Desea forzar la sincronización de usuarios?')) return;
+        return procesarSincronizacion();
     }
 
-    try {
-        const response = await fetch('/api/usuarios/sincronizar', {
-            method: 'POST'
-        });
+    Swal.fire({
+        title: 'Sincronizar Usuarios',
+        text: "¿Desea forzar la sincronización con la base de datos central?",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#d4af37',
+        confirmButtonText: 'Sí, sincronizar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            procesarSincronizacion();
+        }
+    });
+}
 
+async function procesarSincronizacion() {
+    try {
+        if (window.showLoading) window.showLoading('Sincronizando...');
+        const response = await fetch('/api/usuarios/sincronizar', { method: 'POST' });
         const data = await response.json();
+        if (window.hideLoading) window.hideLoading();
 
         if (data.success) {
-            alert('✅ Sincronización completada exitosamente');
+            if (window.showSuccess) window.showSuccess('Sincronización completada exitosamente');
             await cargarUsuariosDesdeMySQL();
         } else {
-            alert('❌ Error en la sincronización: ' + data.error);
+            if (window.showError) window.showError('Error en la sincronización: ' + data.error);
         }
     } catch (error) {
+        if (window.hideLoading) window.hideLoading();
         console.error('Error en sincronización:', error);
-        alert('❌ Error en la sincronización');
+        if (window.showError) window.showError('Error en la sincronización');
     }
 }
 
@@ -485,17 +493,33 @@ async function mostrarEstadisticasSincronizacion() {
 
         if (data.success) {
             const stats = data.data;
-            alert(`📊 Estadísticas de Sincronización\n\n` +
-                  `Total de usuarios: ${stats.total}\n` +
-                  `Sincronizados: ${stats.sincronizados}\n` +
-                  `Pendientes: ${stats.pendientes}\n` +
-                  `Última sincronización: ${stats.ultima_sync || 'Nunca'}`);
+            if (typeof Swal !== 'undefined') {
+                Swal.fire({
+                    title: '📊 Estadísticas de Sincronización',
+                    html: `
+                        <div style="text-align: left;">
+                            <p><strong>Total de usuarios:</strong> ${stats.total}</p>
+                            <p><strong>Sincronizados:</strong> ${stats.sincronizados}</p>
+                            <p><strong>Pendientes:</strong> ${stats.pendientes}</p>
+                            <p><strong>Última sincronización:</strong> ${stats.ultima_sync || 'Nunca'}</p>
+                        </div>
+                    `,
+                    icon: 'info',
+                    confirmButtonColor: '#d4af37'
+                });
+            } else {
+                alert(`📊 Estadísticas de Sincronización\n\n` +
+                      `Total de usuarios: ${stats.total}\n` +
+                      `Sincronizados: ${stats.sincronizados}\n` +
+                      `Pendientes: ${stats.pendientes}\n` +
+                      `Última sincronización: ${stats.ultima_sync || 'Nunca'}`);
+            }
         } else {
-            alert('Error obteniendo estadísticas');
+            if (window.showError) window.showError('Error obteniendo estadísticas');
         }
     } catch (error) {
         console.error('Error obteniendo estadísticas:', error);
-        alert('Error obteniendo estadísticas');
+        if (window.showError) window.showError('Error obteniendo estadísticas');
     }
 }
 

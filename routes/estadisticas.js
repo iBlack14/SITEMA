@@ -66,14 +66,25 @@ router.get('/dashboard', async (req, res) => {
             stats.expedientes = { total: 0, activos: 0, finalizados: 0 };
         }
 
-        // 4. MESA DE PARTES (Consolidado con solicitudes si es necesario, o eliminado si es redundante)
-        // Nota: mesa_partes no existe como tabla física, se usa 'solicitudes'
-        stats.mesa_partes = {
-            total: stats.solicitudes.total,
-            pendientes: stats.solicitudes.pendientes,
-            aprobados: stats.solicitudes.aprobadas,
-            rechazados: stats.solicitudes.rechazadas
-        };
+        // 4. MESA DE PARTES
+        try {
+            const mesaPartes = await query(`
+                SELECT COUNT(*) as total,
+                       SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END) as pendientes,
+                       SUM(CASE WHEN estado = 'Aprobado' THEN 1 ELSE 0 END) as aprobados,
+                       SUM(CASE WHEN estado = 'Rechazado' THEN 1 ELSE 0 END) as rechazados
+                FROM mesa_partes
+            `);
+            stats.mesa_partes = {
+                total: mesaPartes[0].total || 0,
+                pendientes: mesaPartes[0].pendientes || 0,
+                aprobados: mesaPartes[0].aprobados || 0,
+                rechazados: mesaPartes[0].rechazados || 0
+            };
+        } catch (error) {
+            console.warn('⚠️ Error obteniendo mesa_partes:', error.message);
+            stats.mesa_partes = { total: 0, pendientes: 0, aprobados: 0, rechazados: 0 };
+        }
 
         // 5. NOTIFICACIONES
         try {

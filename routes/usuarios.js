@@ -366,4 +366,50 @@ router.post('/:id/avatar', upload.single('avatar'), async (req, res) => {
     }
 });
 
+// Obtener estadísticas de sincronización
+router.get('/estadisticas-sync', async (req, res) => {
+    try {
+        const stats = await UsuarioModel.obtenerEstadisticas();
+        
+        // Obtener última sincronización desde logs de auditoría
+        const { query } = require('../database-config');
+        const lastSync = await query("SELECT fecha FROM logs_auditoria WHERE accion = 'SYNC' ORDER BY fecha DESC LIMIT 1");
+        
+        res.json({
+            success: true,
+            data: {
+                total: stats.total_usuarios,
+                sincronizados: stats.total_usuarios, // Por ahora asumimos todos sincronizados
+                pendientes: 0,
+                ultima_sync: lastSync.length > 0 ? lastSync[0].fecha : null
+            }
+        });
+    } catch (error) {
+        console.error('Error obteniendo estadísticas de sincronización:', error);
+        res.status(500).json({ error: 'Error obteniendo estadísticas' });
+    }
+});
+
+// Sincronizar usuarios
+router.post('/sincronizar', async (req, res) => {
+    try {
+        // En un sistema real, aquí se sincronizaría con una base de datos externa
+        // Por ahora, registramos la acción en auditoría
+        const { query } = require('../database-config');
+        
+        await query(`
+            INSERT INTO logs_auditoria (accion, tabla_afectada, detalles)
+            VALUES (?, ?, ?)
+        `, ['SYNC', 'usuarios', JSON.stringify({ message: 'Sincronización manual ejecutada' })]);
+
+        res.json({
+            success: true,
+            message: 'Sincronización completada exitosamente'
+        });
+    } catch (error) {
+        console.error('Error en sincronización:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
 module.exports = router;

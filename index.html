@@ -276,9 +276,9 @@
 
     <script>
         function accederMesaPartes() {
-            const token = localStorage.getItem('token');
-            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-            if (token && usuario.username) {
+            const token = sessionStorage.getItem('token') || sessionStorage.getItem('authToken');
+            const usuario = JSON.parse(sessionStorage.getItem('usuario') || sessionStorage.getItem('user') || '{}');
+            if (token && (usuario.username || usuario.nombre)) {
                 window.location.href = (usuario.tipo === 'admin') ? '/public/admin/index.html' : '/dashboard-modular.html';
             } else {
                 window.location.href = '/login.html';
@@ -286,14 +286,8 @@
         }
         
         function accederSeguimiento() {
-            const token = localStorage.getItem('token');
-            const usuario = JSON.parse(localStorage.getItem('usuario') || '{}');
-            if (token && usuario.username) {
-                window.location.href = '/seguimiento.html';
-            } else {
-                sessionStorage.setItem('redirectAfterLogin', 'seguimiento');
-                window.location.href = '/login.html?redirect=seguimiento';
-            }
+            // Permitir acceso directo al portal público
+            window.location.href = '/seguimiento';
         }
     </script>
 </body>

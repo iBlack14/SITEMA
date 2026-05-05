@@ -79,11 +79,11 @@ async function verDetalleSolicitud(id) {
             }, 10);
             mostrarTabSolicitud('informacion');
         } else {
-            alert('Error obteniendo datos de la solicitud');
+            if (window.showError) window.showError('Error obteniendo datos de la solicitud');
         }
     } catch (error) {
         console.error('Error obteniendo solicitud:', error);
-        alert('Error obteniendo datos de la solicitud');
+        if (window.showError) window.showError('Error obteniendo datos de la solicitud');
     }
 }
 
@@ -174,7 +174,7 @@ async function cargarArchivosSolicitud(solicitud) {
 // Función para descargar archivo de solicitud
 function descargarArchivoSolicitud(url, nombreOriginal) {
     if (!url) {
-        alert('URL del archivo no disponible');
+        if (window.showError) window.showError('URL del archivo no disponible');
         return;
     }
 
@@ -214,62 +214,117 @@ function abrirArchivoSolicitud(nombre, tipo, esSimulado) {
 
 // Función para aprobar solicitud
 async function aprobarSolicitud(id) {
-    if (confirm('¿Está seguro de aprobar esta solicitud?')) {
-        try {
-            const response = await fetch(`/api/solicitudes/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ estado: 'Aprobado' })
-            });
-            const data = await response.json();
-            if (data.success) {
-                alert('Solicitud aprobada exitosamente');
-                // Refrescar tabla
-                if (window.dataManager && typeof window.dataManager.refreshSolicitudesTable === 'function') {
-                    await window.dataManager.refreshSolicitudesTable();
-                }
-                // Enviar notificación al usuario
-                enviarNotificacionUsuario(id, 'Su solicitud ha sido aprobada');
-            } else {
-                alert('Error aprobando solicitud: ' + data.error);
-            }
-        } catch (error) {
-            console.error('Error aprobando solicitud:', error);
-            alert('Error aprobando solicitud');
+    if (typeof Swal === 'undefined') {
+        if (!confirm('¿Está seguro de aprobar esta solicitud?')) return;
+        return procesarAprobacion(id);
+    }
+
+    Swal.fire({
+        title: '¿Aprobar solicitud?',
+        text: "Esta acción marcará la solicitud como aprobada.",
+        icon: 'question',
+        showCancelButton: true,
+        confirmButtonColor: '#4CAF50',
+        cancelButtonColor: '#d33',
+        confirmButtonText: 'Sí, aprobar',
+        cancelButtonText: 'Cancelar'
+    }).then((result) => {
+        if (result.isConfirmed) {
+            procesarAprobacion(id);
         }
+    });
+}
+
+async function procesarAprobacion(id) {
+    try {
+        if (window.showLoading) window.showLoading('Aprobando solicitud...');
+        
+        const response = await fetch(`/api/solicitudes/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estado: 'Aprobado' })
+        });
+        const data = await response.json();
+        
+        if (window.hideLoading) window.hideLoading();
+        
+        if (data.success) {
+            if (window.showSuccess) window.showSuccess('Solicitud aprobada exitosamente');
+            
+            // Refrescar tabla
+            if (window.dataManager && typeof window.dataManager.refreshSolicitudesTable === 'function') {
+                await window.dataManager.refreshSolicitudesTable();
+            }
+            // Enviar notificación al usuario
+            enviarNotificacionUsuario(id, 'Su solicitud ha sido aprobada');
+        } else {
+            if (window.showError) window.showError('Error aprobando solicitud: ' + data.error);
+        }
+    } catch (error) {
+        if (window.hideLoading) window.hideLoading();
+        console.error('Error aprobando solicitud:', error);
+        if (window.showError) window.showError('Error aprobando solicitud');
     }
 }
 
 // Función para rechazar solicitud
 async function rechazarSolicitud(id) {
-    const motivo = prompt('Ingrese el motivo del rechazo:');
-    if (motivo) {
-        try {
-            const response = await fetch(`/api/solicitudes/${id}`, {
-                method: 'PUT',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-                body: JSON.stringify({ estado: 'Rechazado', motivo_rechazo: motivo })
-            });
-            const data = await response.json();
-            if (data.success) {
-                alert('Solicitud rechazada exitosamente');
-                // Refrescar tabla
-                if (window.dataManager && typeof window.dataManager.refreshSolicitudesTable === 'function') {
-                    await window.dataManager.refreshSolicitudesTable();
-                }
-                // Enviar notificación al usuario
-                enviarNotificacionUsuario(id, `Su solicitud ha sido rechazada. Motivo: ${motivo}`);
-            } else {
-                alert('Error rechazando solicitud: ' + data.error);
-            }
-        } catch (error) {
-            console.error('Error rechazando solicitud:', error);
-            alert('Error rechazando solicitud');
+    if (typeof Swal === 'undefined') {
+        const motivo = prompt('Ingrese el motivo del rechazo:');
+        if (motivo) procesarRechazo(id, motivo);
+        return;
+    }
+
+    Swal.fire({
+        title: 'Rechazar Solicitud',
+        text: 'Por favor, ingrese el motivo del rechazo:',
+        input: 'textarea',
+        inputPlaceholder: 'Escriba el motivo aquí...',
+        icon: 'warning',
+        showCancelButton: true,
+        confirmButtonColor: '#e74c3c',
+        cancelButtonColor: '#6c757d',
+        confirmButtonText: 'Rechazar',
+        cancelButtonText: 'Cancelar',
+        inputValidator: (value) => {
+            if (!value) return 'El motivo es obligatorio';
         }
+    }).then((result) => {
+        if (result.isConfirmed) {
+            procesarRechazo(id, result.value);
+        }
+    });
+}
+
+async function procesarRechazo(id, motivo) {
+    try {
+        if (window.showLoading) window.showLoading('Rechazando solicitud...');
+        
+        const response = await fetch(`/api/solicitudes/${id}`, {
+            method: 'PUT',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ estado: 'Rechazado', motivo_rechazo: motivo })
+        });
+        const data = await response.json();
+        
+        if (window.hideLoading) window.hideLoading();
+        
+        if (data.success) {
+            if (window.showSuccess) window.showSuccess('Solicitud rechazada exitosamente');
+            
+            // Refrescar tabla
+            if (window.dataManager && typeof window.dataManager.refreshSolicitudesTable === 'function') {
+                await window.dataManager.refreshSolicitudesTable();
+            }
+            // Enviar notificación al usuario
+            enviarNotificacionUsuario(id, `Su solicitud ha sido rechazada. Motivo: ${motivo}`);
+        } else {
+            if (window.showError) window.showError('Error rechazando solicitud: ' + data.error);
+        }
+    } catch (error) {
+        if (window.hideLoading) window.hideLoading();
+        console.error('Error rechazando solicitud:', error);
+        if (window.showError) window.showError('Error rechazando solicitud');
     }
 }
 
@@ -281,7 +336,7 @@ async function responderSolicitud(id) {
         const data = await response.json();
 
         if (!data.success) {
-            alert('Error obteniendo datos de la solicitud');
+            if (window.showError) window.showError('Error obteniendo datos de la solicitud');
             return;
         }
 
@@ -351,7 +406,7 @@ async function responderSolicitud(id) {
 
     } catch (error) {
         console.error('Error abriendo modal de respuesta:', error);
-        alert('Error al abrir el formulario de respuesta');
+        if (window.showError) window.showError('Error al abrir el formulario de respuesta');
     }
 }
 
@@ -376,13 +431,13 @@ async function enviarRespuestaSolicitud(event, solicitudId, usuarioId) {
     const archivo = archivoInput?.files[0];
 
     if (!asunto || !mensaje) {
-        alert('Por favor, complete todos los campos obligatorios');
+        if (window.showError) window.showError('Por favor, complete todos los campos obligatorios');
         return;
     }
 
     // Validar tamaño del archivo (10MB máximo)
     if (archivo && archivo.size > 10 * 1024 * 1024) {
-        alert('El archivo es demasiado grande. Máximo 10MB.');
+        if (window.showError) window.showError('El archivo es demasiado grande. Máximo 10MB.');
         return;
     }
 
@@ -413,10 +468,10 @@ async function enviarRespuestaSolicitud(event, solicitudId, usuarioId) {
 
         if (data.success) {
             const mensajeExito = archivo 
-                ? '✅ Respuesta enviada correctamente con archivo adjunto. El usuario la verá en su Casilla Electrónica.'
-                : '✅ Respuesta enviada correctamente. El usuario la verá en su Casilla Electrónica.';
+                ? 'Respuesta enviada correctamente con archivo adjunto. El usuario la verá en su Casilla Electrónica.'
+                : 'Respuesta enviada correctamente. El usuario la verá en su Casilla Electrónica.';
             
-            alert(mensajeExito);
+            if (window.showSuccess) window.showSuccess(mensajeExito);
             cerrarModalResponderSolicitud();
             
             // Refrescar tabla
@@ -428,7 +483,7 @@ async function enviarRespuestaSolicitud(event, solicitudId, usuarioId) {
         }
     } catch (error) {
         console.error('❌ Error enviando respuesta:', error);
-        alert('❌ Error al enviar la respuesta: ' + error.message);
+        if (window.showError) window.showError('Error al enviar la respuesta: ' + error.message);
     }
 }
 

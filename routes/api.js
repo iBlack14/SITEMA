@@ -607,37 +607,6 @@ router.get('/estadisticas', async (req, res) => {
 // Obtener estadísticas en tiempo real para dashboards
 router.get('/estadisticas/dashboard', async (req, res) => {
     try {
-        // Obtener estadísticas de solicitudes
-        const [solicitudesRows] = await query(`
-            SELECT
-                COUNT(*) as total_solicitudes,
-                SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END) as solicitudes_pendientes,
-                SUM(CASE WHEN estado = 'Aprobado' THEN 1 ELSE 0 END) as solicitudes_aprobadas,
-                SUM(CASE WHEN estado = 'Rechazado' THEN 1 ELSE 0 END) as solicitudes_rechazadas
-            FROM solicitudes
-        `);
-
-        // Obtener estadísticas de expedientes
-        const [expedientesRows] = await query(`
-            SELECT
-                COUNT(*) as total_expedientes,
-                SUM(CASE WHEN estado = 'Nuevo' THEN 1 ELSE 0 END) as expedientes_nuevos,
-                SUM(CASE WHEN estado = 'En Trámite' THEN 1 ELSE 0 END) as expedientes_tramite,
-                SUM(CASE WHEN estado = 'Finalizado' THEN 1 ELSE 0 END) as expedientes_finalizados,
-                SUM(CASE WHEN estado = 'Activo' THEN 1 ELSE 0 END) as expedientes_activos
-            FROM expedientes
-        `);
-
-        // Obtener estadísticas de usuarios
-        const [usuariosRows] = await query(`
-            SELECT
-                COUNT(*) as total_usuarios,
-                SUM(CASE WHEN activo = 1 THEN 1 ELSE 0 END) as usuarios_activos,
-                SUM(CASE WHEN activo = 0 THEN 1 ELSE 0 END) as usuarios_inactivos,
-                SUM(CASE WHEN DATE(fecha_registro) >= DATE_SUB(CURDATE(), INTERVAL 7 DAY) THEN 1 ELSE 0 END) as nuevos_esta_semana
-            FROM usuarios
-        `);
-
         // Obtener estadísticas de notificaciones (simuladas por ahora)
         const estadisticasNotificaciones = {
             nuevas: Math.floor(Math.random() * 10) + 1, // Simulado

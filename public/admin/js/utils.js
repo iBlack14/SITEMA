@@ -259,6 +259,93 @@ async function getSecureItem(key) {
     }
 }
 
+// --- SISTEMA DE NOTIFICACIONES PROFESIONALES (SweetAlert2) ---
+
+/**
+ * Muestra una notificación de éxito profesional
+ */
+function showSuccess(mensaje, titulo = '¡Éxito!') {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'success',
+            title: titulo,
+            text: mensaje,
+            timer: 3000,
+            timerProgressBar: true,
+            showConfirmButton: false,
+            background: '#fff',
+            customClass: {
+                popup: 'premium-swal-popup-success',
+                title: 'premium-swal-title'
+            }
+        });
+    } else {
+        alert('✅ ' + mensaje);
+    }
+}
+
+/**
+ * Muestra una notificación de error profesional
+ */
+function showError(mensaje, titulo = '¡Error!') {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            icon: 'error',
+            title: titulo,
+            text: mensaje,
+            confirmButtonColor: '#d4af37',
+            confirmButtonText: 'Entendido',
+            background: '#fff',
+            customClass: {
+                popup: 'premium-swal-popup-error',
+                title: 'premium-swal-title'
+            }
+        });
+    } else {
+        alert('❌ ' + mensaje);
+    }
+}
+
+/**
+ * Muestra un overlay de carga profesional
+ */
+function showLoading(mensaje = 'Cargando...') {
+    if (typeof Swal !== 'undefined') {
+        Swal.fire({
+            title: mensaje,
+            allowOutsideClick: false,
+            allowEscapeKey: false,
+            showConfirmButton: false,
+            background: '#fff',
+            didOpen: () => {
+                Swal.showLoading();
+            }
+        });
+    } else {
+        // Fallback al overlay manual si Swal no está
+        const loader = document.getElementById('loading-overlay-admin');
+        if (loader) {
+            loader.style.display = 'flex';
+        }
+    }
+}
+
+/**
+ * Oculta el overlay de carga
+ */
+function hideLoading() {
+    if (typeof Swal !== 'undefined' && Swal.isVisible()) {
+        Swal.close();
+    }
+    const loader = document.getElementById('loading-overlay-admin');
+    if (loader) {
+        loader.style.display = 'none';
+        if (typeof CasillaUnificada !== 'undefined' && CasillaUnificada.cerrarCargando) {
+            CasillaUnificada.cerrarCargando();
+        }
+    }
+}
+
 // Exportar funciones para uso global
 if (typeof window !== 'undefined') {
     window.obtenerIconoArchivo = obtenerIconoArchivo;
@@ -272,4 +359,8 @@ if (typeof window !== 'undefined') {
     window.toggleUserMenu = toggleUserMenu;
     window.setSecureItem = setSecureItem;
     window.getSecureItem = getSecureItem;
+    window.showSuccess = showSuccess;
+    window.showError = showError;
+    window.showLoading = showLoading;
+    window.hideLoading = hideLoading;
 }

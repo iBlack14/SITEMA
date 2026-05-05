@@ -9,6 +9,11 @@
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
     <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <link rel="icon" type="image/png" href="/public/admin/assets/img/logo.png">
+
+    <!-- Professional Notifications & Icons -->
+    <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+    <script src="/public/admin/js/utils.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         :root {
             --gold: #d4af37;
@@ -487,16 +492,17 @@
 
         $('resultado').style.display = 'none';
         $('noResult').style.display = 'none';
-        $('loading').style.display = 'block';
+        showLoading('Consultando sistema...', 'Validando firma digital del expediente...');
 
         try {
             const res = await fetch(`/api/seguimiento-completo/${encodeURIComponent(codigo)}`);
             const data = await res.json();
 
-            $('loading').style.display = 'none';
+            hideLoading();
 
             if (!data.success) {
                 $('noResult').style.display = 'block';
+                showError('No se encontró información para el código consultado: ' + codigo);
                 return;
             }
 
@@ -504,15 +510,21 @@
             $('resultado').style.display = 'block';
             $('resultado').scrollIntoView({ behavior: 'smooth', block: 'start' });
         } catch (e) {
-            $('loading').style.display = 'none';
+            hideLoading();
             $('noResult').style.display = 'block';
             console.error('Error:', e);
+            showError('Ocurrió un error inesperado al consultar el expediente.');
         }
     }
 
-    function renderResultado(data) {
-        const { fuente, datos_generales: dg, partes_procesales: partes, timeline, documentos, total_movimientos } = data;
-
+    function renderResultado(rawData) {
+        // Soporte para datos envueltos en .data o directos
+        const data = rawData.data || rawData;
+        const { fuente, datos_generales, partes_procesales: partes = [], timeline = [], documentos = [], total_movimientos = 0 } = data;
+        
+        // Guard clause para evitar crash si no hay datos generales
+        const dg = datos_generales || {};
+        
         // Fuente badge
         const fuenteMap = { expediente: '📁 Expediente', mesa_partes: '📨 Mesa de Partes', solicitud: '📋 Solicitud' };
         $('fuenteBadge').textContent = fuenteMap[fuente] || fuente;

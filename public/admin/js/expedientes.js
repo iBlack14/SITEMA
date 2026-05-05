@@ -64,7 +64,7 @@ async function verDetalleExpediente(expedienteId) {
         mostrarTab('informacion');
     } catch (error) {
         console.error('Error obteniendo expediente:', error);
-        alert('Error obteniendo datos del expediente');
+        if (window.showError) window.showError('Error obteniendo datos del expediente');
     }
 }
 
@@ -180,7 +180,7 @@ async function cargarDocumentosExpediente(expediente) {
 // Función para descargar documento
 function descargarDocumento(url, nombreOriginal) {
     if (!url) {
-        alert('URL del archivo no disponible');
+        if (window.showError) window.showError('URL del archivo no disponible');
         return;
     }
 
@@ -226,7 +226,7 @@ async function responderExpediente(expedienteId) {
         const data = await response.json();
 
         if (!data.success) {
-            alert('Error obteniendo datos del expediente');
+            if (window.showError) window.showError('Error obteniendo datos del expediente');
             return;
         }
 
@@ -292,7 +292,7 @@ async function responderExpediente(expedienteId) {
 
     } catch (error) {
         console.error('Error abriendo modal de respuesta:', error);
-        alert('Error al abrir el formulario de respuesta');
+        if (window.showError) window.showError('Error al abrir el formulario de respuesta');
     }
 }
 
@@ -314,13 +314,13 @@ async function enviarRespuestaExpediente(event, expedienteId, usuarioId) {
     const archivo = archivoInput?.files[0];
 
     if (!asunto || !mensaje) {
-        alert('Por favor, complete todos los campos obligatorios');
+        if (window.showError) window.showError('Por favor, complete todos los campos obligatorios');
         return;
     }
 
     // Validar tamaño del archivo (10MB máximo)
     if (archivo && archivo.size > 10 * 1024 * 1024) {
-        alert('El archivo es demasiado grande. Máximo 10MB.');
+        if (window.showError) window.showError('El archivo es demasiado grande. Máximo 10MB.');
         return;
     }
 
@@ -352,10 +352,10 @@ async function enviarRespuestaExpediente(event, expedienteId, usuarioId) {
 
         if (data.success) {
             const mensajeExito = archivo 
-                ? '✅ Respuesta enviada correctamente con archivo adjunto. El usuario la verá en su Casilla Electrónica.'
-                : '✅ Respuesta enviada correctamente. El usuario la verá en su Casilla Electrónica.';
+                ? 'Respuesta enviada correctamente con archivo adjunto. El usuario la verá en su Casilla Electrónica.'
+                : 'Respuesta enviada correctamente. El usuario la verá en su Casilla Electrónica.';
             
-            alert(mensajeExito);
+            if (window.showSuccess) window.showSuccess(mensajeExito);
             cerrarModalResponderExpediente();
             
             // Refrescar tabla si existe la función
@@ -367,7 +367,7 @@ async function enviarRespuestaExpediente(event, expedienteId, usuarioId) {
         }
     } catch (error) {
         console.error('❌ Error enviando respuesta:', error);
-        alert('❌ Error al enviar la respuesta: ' + error.message);
+        if (window.showError) window.showError('Error al enviar la respuesta: ' + error.message);
     }
 }
 

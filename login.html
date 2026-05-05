@@ -344,7 +344,15 @@
             }
 
             init() {
-                // Verificar si ya hay una sesión activa (token en sessionStorage)
+                // Capturar parámetros de URL (Professional Redirect)
+                const urlParams = new URLSearchParams(window.location.search);
+                const redirect = urlParams.get('redirect');
+                const codigo = urlParams.get('codigo');
+
+                if (redirect) sessionStorage.setItem('redirectAfterLogin', redirect);
+                if (codigo) sessionStorage.setItem('codigoPendiente', codigo);
+
+                // Verificar si ya hay una sesión activa
                 const token = sessionStorage.getItem('authToken');
                 const userId = sessionStorage.getItem('userId');
                 const userData = sessionStorage.getItem('user');
@@ -451,8 +459,9 @@
                     if (codigoPendiente) {
                         // Limpiar flags y redirigir a seguimiento con el código
                         sessionStorage.removeItem('codigoPendiente');
-                        sessionStorage.removeItem('loginRedirect'); // Limpiar flag de bucle
-                        window.location.href = `seguimiento.html?codigo=${codigoPendiente}`;
+                        sessionStorage.removeItem('redirectAfterLogin');
+                        sessionStorage.removeItem('loginRedirect');
+                        window.location.href = `seguimiento.html?codigo=${encodeURIComponent(codigoPendiente)}`;
                         return;
                     }
 

@@ -107,7 +107,7 @@ const STATIC_DIR = fs.existsSync(path.join(__dirname, 'public', 'login.html'))
 app.use(express.static(STATIC_DIR, {
   index: false,
   extensions: ['html', 'htm'],
-  maxAge: '1h',
+  maxAge: 0, // Desactivar caché para desarrollo/corrección
 }));
 
 // Ruta raíz: Página de inicio con opciones
@@ -131,7 +131,7 @@ app.get('/admin/login', (_req, res) => {
 
 // Portal público de seguimiento (sin autenticación)
 app.get('/seguimiento', (_req, res) => {
-  res.sendFile(path.join(__dirname, 'public', 'seguimiento.html'));
+  res.sendFile(path.join(__dirname, 'seguimiento.html'));
 });
 
 // -------------------------------------------------------------------

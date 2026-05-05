@@ -6,6 +6,7 @@ const multer = require('multer');
 const path = require('path');
 const fs = require('fs');
 const { query } = require('../database-config');
+const { verificarAuth } = require('../middleware/auth');
 
 // ─── Multer para documentos del timeline ─────────────────────────────────────
 const storage = multer.diskStorage({
@@ -304,10 +305,13 @@ router.delete('/timeline/:id', async (req, res) => {
 //  Endpoint mejorado: busca en las 3 fuentes + devuelve timeline unificado
 // ═══════════════════════════════════════════════════════════════════════════════
 
-router.get('/seguimiento-completo/:codigo', async (req, res) => {
+router.get('/seguimiento-completo/:codigo', verificarAuth, async (req, res) => {
     try {
         const codigo = decodeURIComponent(req.params.codigo || '').trim();
         if (!codigo) return res.status(400).json({ success: false, error: 'Código requerido' });
+
+        const userId = req.usuario.id;
+        const isAdmin = req.usuario.tipo === 'admin';
 
         const upper = codigo.toUpperCase();
 
@@ -322,6 +326,11 @@ router.get('/seguimiento-completo/:codigo', async (req, res) => {
 
         if (rows && rows.length > 0) {
             const exp = rows[0];
+
+            // SEGURIDAD: Solo el dueño o un admin pueden ver
+            if (!isAdmin && exp.usuario_id !== userId) {
+                return res.status(403).json({ success: false, error: 'Acceso denegado: Este expediente no le pertenece.' });
+            }
 
             // Partes procesales
             const partes = await query(
@@ -386,6 +395,11 @@ router.get('/seguimiento-completo/:codigo', async (req, res) => {
         if (mpRows && mpRows.length > 0) {
             const mp = mpRows[0];
 
+            // SEGURIDAD: Solo el dueño o un admin pueden ver
+            if (!isAdmin && mp.usuario_id !== userId) {
+                return res.status(403).json({ success: false, error: 'Acceso denegado: Esta presentación no le pertenece.' });
+            }
+
             // Parsear JSON
             ['demandante', 'demandado', 'documentos'].forEach(k => {
                 if (mp[k] && typeof mp[k] === 'string') {
@@ -444,6 +458,11 @@ router.get('/seguimiento-completo/:codigo', async (req, res) => {
 
         if (solRows && solRows.length > 0) {
             const sol = solRows[0];
+
+            // SEGURIDAD: Solo el dueño o un admin pueden ver
+            if (!isAdmin && sol.usuario_id !== userId) {
+                return res.status(403).json({ success: false, error: 'Acceso denegado: Esta solicitud no le pertenece.' });
+            }
 
             // Parsear documentos
             let docsArr = [];
