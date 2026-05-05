@@ -77,6 +77,41 @@ function buildForeignKey(fuente) {
 //  Obtener timeline completo de cualquier fuente
 // ═══════════════════════════════════════════════════════════════════════════════
 
+// ═══════════════════════════════════════════════════════════════════════════════
+//  GET /api/resumen-actividad
+//  Obtener los últimos movimientos registrados en todo el sistema
+// ═══════════════════════════════════════════════════════════════════════════════
+router.get('/resumen-actividad', verificarAuth, async (req, res) => {
+    try {
+        const movimientos = await query(`
+            SELECT 
+                st.*, 
+                u.nombre AS creado_por_nombre,
+                COALESCE(e.numero, mp.numero_registro, s.id) AS codigo_referencia,
+                CASE 
+                    WHEN st.expediente_id IS NOT NULL THEN 'expediente'
+                    WHEN st.mesa_partes_id IS NOT NULL THEN 'mesa_partes'
+                    WHEN st.solicitud_id IS NOT NULL THEN 'solicitud'
+                END AS fuente_tipo
+            FROM seguimiento_timeline st
+            LEFT JOIN usuarios u ON st.creado_por = u.id
+            LEFT JOIN expedientes e ON st.expediente_id = e.id
+            LEFT JOIN mesa_partes mp ON st.mesa_partes_id = mp.id
+            LEFT JOIN solicitudes s ON st.solicitud_id = s.id
+            ORDER BY st.id DESC
+            LIMIT 10
+        `);
+
+        res.json({
+            success: true,
+            data: movimientos
+        });
+    } catch (err) {
+        console.error('Error GET resumen-actividad:', err);
+        res.status(500).json({ success: false, error: err.message });
+    }
+});
+
 router.get('/:fuente/:id/timeline', async (req, res) => {
     try {
         const { fuente, id } = req.params;

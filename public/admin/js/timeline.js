@@ -29,30 +29,42 @@ const TimelineManager = {
         }
     },
 
-    // ── Render del modal completo ──
+    // ── Render del modal completo con Eje Cronológico Definido ──
     renderModal(titulo) {
         let overlay = document.getElementById('timeline-overlay');
         if (overlay) overlay.remove();
 
         overlay = document.createElement('div');
         overlay.id = 'timeline-overlay';
-        overlay.style.cssText = 'position:fixed;inset:0;background:rgba(0,0,0,0.6);z-index:30000;display:flex;align-items:center;justify-content:center;backdrop-filter:blur(4px);animation:fadeIn .2s ease';
+        overlay.style.cssText = `
+            position: fixed; inset: 0; 
+            background: rgba(0,0,0,0.45); 
+            z-index: 30000; 
+            display: flex; align-items: center; justify-content: center; 
+            backdrop-filter: blur(10px); -webkit-backdrop-filter: blur(10px);
+            animation: fadeIn 0.3s ease;
+        `;
         overlay.onclick = (e) => { if (e.target === overlay) overlay.remove(); };
 
         const count = this.movimientos.length;
         overlay.innerHTML = `
-        <div style="background:#fff;border-radius:20px;width:95%;max-width:900px;max-height:90vh;display:flex;flex-direction:column;box-shadow:0 30px 80px rgba(0,0,0,0.3);overflow:hidden">
-            <div style="padding:28px 35px;background:linear-gradient(135deg,#1a1a1a,#2a2a2a);color:#fff;display:flex;justify-content:space-between;align-items:center">
+        <div style="background: #ffffff; border-radius: 24px; width: 95%; max-width: 880px; max-height: 88vh; display: flex; flex-direction: column; box-shadow: 0 40px 120px rgba(0,0,0,0.2); overflow: hidden; border: 1px solid rgba(0,0,0,0.08);">
+            <!-- Header Corporativo -->
+            <div style="padding: 30px 45px; background: #ffffff; border-bottom: 1px solid #f0f0f0; display: flex; justify-content: space-between; align-items: center;">
                 <div>
-                    <h2 style="font-size:20px;font-weight:700;margin:0">📋 ${titulo}</h2>
-                    <p style="font-size:13px;color:#aaa;margin-top:4px">${count} movimiento${count!==1?'s':''} registrado${count!==1?'s':''}</p>
+                    <h2 style="font-size: 20px; font-weight: 800; color: #1a1a1a; margin: 0; font-family: 'Outfit', sans-serif; display: flex; align-items: center; gap: 12px;">
+                        <span style="width: 10px; height: 10px; background: var(--color-gold); border-radius: 50%; box-shadow: 0 0 10px rgba(212, 175, 55, 0.5);"></span>
+                        ${titulo}
+                    </h2>
+                    <p style="font-size: 13px; color: #888; margin-top: 4px; font-weight: 500; letter-spacing: 0.2px;">${count} movimientos cronológicos registrados</p>
                 </div>
-                <div style="display:flex;gap:10px">
-                    <button onclick="TimelineManager.mostrarFormulario()" style="background:linear-gradient(135deg,#d4af37,#f1d582);color:#1a1a1a;border:none;padding:10px 20px;border-radius:10px;font-weight:700;cursor:pointer;font-size:13px">+ Agregar Movimiento</button>
-                    <button onclick="document.getElementById('timeline-overlay').remove()" style="background:rgba(255,255,255,0.1);color:#fff;border:1px solid rgba(255,255,255,0.2);padding:10px 18px;border-radius:10px;cursor:pointer;font-size:13px">✕ Cerrar</button>
+                <div style="display: flex; gap: 15px;">
+                    <button onclick="TimelineManager.mostrarFormulario()" style="background: #000; color: #fff; border: none; padding: 12px 24px; border-radius: 12px; font-weight: 700; cursor: pointer; font-size: 13px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(0,0,0,0.1);" onmouseover="this.style.transform='translateY(-2px)';" onmouseout="this.style.transform='translateY(0)';">+ Nuevo Movimiento</button>
+                    <button onclick="document.getElementById('timeline-overlay').remove()" style="background: #f8f9fa; color: #adb5bd; border: none; width: 42px; height: 42px; border-radius: 12px; cursor: pointer; font-size: 18px; display: flex; align-items: center; justify-content: center; transition: all 0.3s;" onmouseover="this.style.background='#fff0f0'; this.style.color='#e74c3c';">✕</button>
                 </div>
             </div>
-            <div id="timeline-body" style="padding:25px 35px;overflow-y:auto;flex:1">
+            <!-- Cuerpo con Diferenciación de Línea -->
+            <div id="timeline-body" style="padding: 40px 50px; overflow-y: auto; flex: 1; background: #ffffff;">
                 ${this.renderMovimientos()}
             </div>
         </div>`;
@@ -60,13 +72,11 @@ const TimelineManager = {
         document.body.appendChild(overlay);
     },
 
-    // ── Render de la lista de movimientos ──
+    // ── Render de movimientos con diferenciación clara ──
     renderMovimientos() {
         if (!this.movimientos.length) {
-            return `<div style="text-align:center;padding:60px 20px;color:#999">
-                <div style="font-size:48px;margin-bottom:15px">📭</div>
-                <p style="font-size:16px;font-weight:600">No hay movimientos registrados</p>
-                <p style="font-size:13px;margin-top:8px">Haz click en "+ Agregar Movimiento" para crear el primero.</p>
+            return `<div style="text-align: center; padding: 100px 0; color: #ccc;">
+                <p style="font-size: 15px; font-weight: 500;">No hay historial de movimientos disponible.</p>
             </div>`;
         }
 
@@ -75,41 +85,67 @@ const TimelineManager = {
         return this.movimientos.map((m, i) => {
             const color = colores[m.tipo_documento] || '#d4af37';
             const fecha = m.fecha_documento ? new Date(m.fecha_documento).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' }) : '—';
-            const notifV = m.fecha_notificacion_virtual ? new Date(m.fecha_notificacion_virtual).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : null;
-            const notifF = m.fecha_notificacion_fisica ? new Date(m.fecha_notificacion_fisica).toLocaleDateString('es-PE',{day:'2-digit',month:'short'}) : null;
 
             return `
-            <div style="display:flex;gap:20px;margin-bottom:${i<this.movimientos.length-1?'0':'0'}px;position:relative">
-                <div style="display:flex;flex-direction:column;align-items:center;min-width:40px">
-                    <div style="width:14px;height:14px;border-radius:50%;background:${color};border:3px solid ${color}33;flex-shrink:0;z-index:1"></div>
-                    ${i < this.movimientos.length-1 ? '<div style="width:2px;flex:1;background:linear-gradient(to bottom,'+color+'44,#eee);min-height:30px"></div>' : ''}
+            <div style="display: flex; gap: 35px; position: relative; margin-bottom: 0;">
+                <!-- Eje de Diferenciación Visual -->
+                <div style="display: flex; flex-direction: column; align-items: center; width: 24px; position: relative;">
+                    <!-- Punto de Unión con Sombra -->
+                    <div style="width: 12px; height: 12px; border-radius: 50%; background: #fff; border: 3px solid ${color}; margin-top: 6px; z-index: 3; box-shadow: 0 0 0 4px #fff;"></div>
+                    
+                    <!-- Línea Conectora Dinámica -->
+                    ${i < this.movimientos.length-1 ? `
+                        <div style="width: 2px; flex: 1; background: linear-gradient(to bottom, ${color} 0%, #f0f0f0 100%); z-index: 1; opacity: 0.6; margin: 5px 0;"></div>
+                    ` : ''}
                 </div>
-                <div style="flex:1;background:#fafafa;border:1px solid #eee;border-radius:14px;padding:18px 22px;margin-bottom:16px;transition:all .2s;border-left:4px solid ${color}" onmouseover="this.style.boxShadow='0 4px 15px rgba(0,0,0,0.08)'" onmouseout="this.style.boxShadow='none'">
-                    <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:8px">
-                        <div>
-                            <span style="background:${color}18;color:${color};padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;text-transform:uppercase">${m.tipo_documento}</span>
-                            <span style="color:#999;font-size:12px;margin-left:10px">${fecha}</span>
-                            ${m.numero_documento ? `<span style="color:#666;font-size:12px;margin-left:8px;font-weight:600">${m.numero_documento}</span>` : ''}
+
+                <!-- Contenedor de Movimiento con Acento Lateral -->
+                <div style="flex: 1; padding-bottom: 50px; position: relative;">
+                    <!-- Barra de acento lateral sutil para agrupar el movimiento -->
+                    <div style="position: absolute; left: -35px; top: 25px; bottom: 50px; width: 2px; background: ${color}; opacity: 0.08; border-radius: 2px;"></div>
+
+                    <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 12px;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <span style="font-size: 11px; font-weight: 800; color: ${color}; text-transform: uppercase; letter-spacing: 1.2px; background: ${color}08; padding: 4px 12px; border-radius: 6px; border: 1px solid ${color}15;">${m.tipo_documento}</span>
+                            <span style="font-size: 13px; color: #999; font-weight: 500;">${fecha}</span>
+                            ${m.numero_documento ? `<span style="font-size: 13px; color: #1a1a1a; font-weight: 800; font-family: 'JetBrains Mono', monospace;"># ${m.numero_documento}</span>` : ''}
                         </div>
-                        <div style="display:flex;gap:6px">
-                            <button onclick="TimelineManager.mostrarFormulario(${m.id})" style="background:#f0f0f0;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px" title="Editar">✏️</button>
-                            <button onclick="TimelineManager.eliminar(${m.id})" style="background:#fee;border:none;padding:5px 10px;border-radius:6px;cursor:pointer;font-size:11px" title="Eliminar">🗑️</button>
+                        <div style="display: flex; gap: 8px;">
+                            <!-- Botones de Acción Visibles y Profesionales -->
+                            <button onclick="TimelineManager.mostrarFormulario(${m.id})" 
+                                    style="background: #f8f9fa; border: 1px solid #e9ecef; padding: 6px 12px; border-radius: 8px; cursor: pointer; color: #495057; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; transition: all 0.2s;"
+                                    onmouseover="this.style.background='#fff'; this.style.borderColor='#dee2e6'; this.style.boxShadow='0 2px 5px rgba(0,0,0,0.05)';" onmouseout="this.style.background='#f8f9fa'; this.style.borderColor='#e9ecef'; this.style.boxShadow='none';">
+                                <span>✏️</span> EDITAR
+                            </button>
+                            <button onclick="TimelineManager.eliminar(${m.id})" 
+                                    style="background: #fff5f5; border: 1px solid #ffe3e3; padding: 6px 12px; border-radius: 8px; cursor: pointer; color: #e03131; font-size: 11px; font-weight: 700; display: flex; align-items: center; gap: 6px; transition: all 0.2s;"
+                                    onmouseover="this.style.background='#fff'; this.style.borderColor='#ffc9c9'; this.style.boxShadow='0 2px 5px rgba(224, 49, 49, 0.1)';" onmouseout="this.style.background='#fff5f5'; this.style.borderColor='#ffe3e3'; this.style.boxShadow='none';">
+                                <span>🗑️</span> ELIMINAR
+                            </button>
                         </div>
                     </div>
-                    ${m.asunto ? `<p style="font-weight:600;font-size:14px;color:#1a1a1a;margin-bottom:6px">${m.asunto}</p>` : ''}
-                    ${m.sumilla ? `<p style="font-size:13px;color:#555;margin-bottom:8px">${m.sumilla}</p>` : ''}
-                    <div style="display:flex;flex-wrap:wrap;gap:12px;font-size:12px;color:#777">
-                        ${m.presentado_por ? `<span>👤 ${m.presentado_por}${m.tipo_parte ? ' <em>('+m.tipo_parte+')</em>' : ''}</span>` : ''}
-                        ${m.tiene_documento ? `<a href="${m.documento_ruta}" target="_blank" style="color:#d4af37;text-decoration:none;font-weight:600">📎 ${m.documento_nombre || 'Documento'}</a>` : ''}
+
+                    <div style="padding-left: 2px;">
+                        ${m.asunto ? `<h4 style="font-size: 17px; font-weight: 800; color: #1a1a1a; margin: 0 0 6px 0; letter-spacing: -0.3px;">${m.asunto}</h4>` : ''}
+                        ${m.sumilla ? `<p style="font-size: 14px; color: #555; line-height: 1.6; margin: 0 0 15px 0; font-weight: 400;">${m.sumilla}</p>` : ''}
+                        
+                        <div style="display: flex; flex-wrap: wrap; gap: 20px; font-size: 12px; color: #777; align-items: center;">
+                            ${m.presentado_por ? `<span style="display: flex; align-items: center; gap: 8px;"><span style="color: #ccc;">•</span> 👤 <strong style="color: #444;">${m.presentado_por}</strong> <small style="color: #aaa;">(${m.tipo_parte || 'Parte'})</small></span>` : ''}
+                            ${m.tiene_documento ? `<a href="${m.documento_ruta}" target="_blank" style="color: var(--color-gold); text-decoration: none; font-weight: 800; display: flex; align-items: center; gap: 8px; background: #fffdf2; padding: 4px 12px; border-radius: 8px; border: 1px solid rgba(212, 175, 55, 0.1);">📎 VER ANEXO</a>` : ''}
+                        </div>
+
+                        ${(m.fecha_notificacion_virtual || m.fecha_notificacion_fisica || m.destinatario_notificacion) ? `
+                        <div style="margin-top: 20px; padding: 15px 20px; background: #fcfcfc; border-radius: 12px; border-left: 3px solid #eee; font-size: 12px; color: #666; display: flex; flex-direction: column; gap: 5px;">
+                            <span style="font-weight: 800; color: #000; text-transform: uppercase; font-size: 10px; letter-spacing: 1px; margin-bottom: 2px;">Notificación Procesal</span>
+                            <div style="display: flex; gap: 15px; flex-wrap: wrap;">
+                                ${m.fecha_notificacion_virtual ? `<span><strong>Virtual:</strong> ${new Date(m.fecha_notificacion_virtual).toLocaleDateString('es-PE')}</span>` : ''}
+                                ${m.fecha_notificacion_fisica ? `<span><strong>Física:</strong> ${new Date(m.fecha_notificacion_fisica).toLocaleDateString('es-PE')}</span>` : ''}
+                                ${m.destinatario_notificacion ? `<span><strong>Destinatario:</strong> ${m.destinatario_notificacion}</span>` : ''}
+                            </div>
+                        </div>` : ''}
                     </div>
-                    ${(notifV || notifF || m.destinatario_notificacion) ? `
-                    <div style="margin-top:10px;padding-top:10px;border-top:1px dashed #ddd;font-size:12px;color:#888;display:flex;flex-wrap:wrap;gap:12px">
-                        📬 <strong>Notificación:</strong>
-                        ${notifV ? `Virtual: ${notifV}` : ''} ${notifF ? `| Física: ${notifF}` : ''}
-                        ${m.forma_entrega ? `| ${m.forma_entrega}` : ''}
-                        ${m.destinatario_notificacion ? `→ ${m.destinatario_notificacion}` : ''}
-                    </div>` : ''}
-                    ${m.observaciones ? `<p style="margin-top:8px;font-size:12px;color:#999;font-style:italic">💬 ${m.observaciones}</p>` : ''}
+                    
+                    ${i < this.movimientos.length - 1 ? `<div style="margin-top: 40px; height: 1px; background: linear-gradient(to right, #f0f0f0, transparent); width: 100%;"></div>` : ''}
                 </div>
             </div>`;
         }).join('');
