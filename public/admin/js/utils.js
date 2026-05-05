@@ -3,6 +3,26 @@
  * Funciones auxiliares compartidas por todos los módulos
  */
 
+// Loader Global Pro Max
+function showLoader(text = 'CARGANDO') {
+    if (document.querySelector('.loader-wrapper')) return;
+    const loader = document.createElement('div');
+    loader.className = 'loader-wrapper';
+    loader.innerHTML = `
+        <div class="loader-premium"></div>
+        <div class="loader-text">${text}</div>
+    `;
+    document.body.appendChild(loader);
+}
+
+function hideLoader() {
+    const loader = document.querySelector('.loader-wrapper');
+    if (loader) {
+        loader.style.opacity = '0';
+        setTimeout(() => loader.remove(), 400);
+    }
+}
+
 // Función para obtener icono de archivo
 function obtenerIconoArchivo(tipo) {
     if (tipo.includes('pdf')) return '📄';

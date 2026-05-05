@@ -9,6 +9,7 @@ const CasillaUnificada = {
     data: [],
     stats: {},
     filtroActual: 'todos',
+    abortController: null,
 
     // Configuración de tipos
     tipos: {
@@ -299,11 +300,23 @@ const CasillaUnificada = {
      * Ver detalle según tipo
      */
     async verDetalle(tipo, id) {
+        // Abortar cualquier petición previa para evitar conflictos
+        if (this.abortController) {
+            this.abortController.abort();
+        }
+        this.abortController = new AbortController();
+
+        showLoader('ANALIZANDO REGISTRO');
+
         try {
             console.log(`🔍 Cargando detalle: ${tipo} - ${id}`);
 
-            const response = await fetch(`/api/casilla-electronica/${tipo}/${id}`);
+            const response = await fetch(`/api/casilla-electronica/${tipo}/${id}`, {
+                signal: this.abortController.signal
+            });
             const data = await response.json();
+
+            hideLoader();
 
             if (data.success) {
                 this.mostrarModal(tipo, data.data);
@@ -318,6 +331,11 @@ const CasillaUnificada = {
                 }
             }
         } catch (error) {
+            hideLoader();
+            if (error.name === 'AbortError') {
+                console.log('📥 Petición abortada por nueva carga');
+                return;
+            }
             console.error('❌ Error:', error);
             this.mostrarError('Error de conexión al obtener detalles');
         }
@@ -354,32 +372,62 @@ const CasillaUnificada = {
      */
     modalRegistro(usuario) {
         return `
-            <div class="modal" id="casillaModal" style="display: block;">
-                <div class="modal-content" style="max-width: 700px;">
-                    <div class="modal-header">
-                        <h2>📝 Registro de Usuario</h2>
-                        <button class="expediente-close" onclick="CasillaUnificada.cerrarModal()">&times;</button>
-                    </div>
-                    <div class="modal-body">
-                        <div class="expediente-info-grid">
-                            <div class="expediente-info-card">
-                                <h3>👤 Información del Usuario</h3>
-                                ${this.renderizarCampo('Nombre', usuario.nombre)}
-                                ${this.renderizarCampo('Email', usuario.email)}
-                                ${this.renderizarCampo('Teléfono', usuario.telefono)}
-                                ${this.renderizarCampo('Tipo', usuario.tipo)}
-                                ${this.renderizarCampo('Estado', usuario.activo ? 'Activo' : 'Inactivo')}
-                                ${this.renderizarCampo('Fecha Registro', new Date(usuario.fecha_registro).toLocaleString('es-ES'))}
-                            </div>
-                            <div class="expediente-info-card">
-                                <h3>📊 Actividad</h3>
-                                ${this.renderizarCampo('Presentaciones', usuario.presentaciones_count || 0)}
-                                ${this.renderizarCampo('Expedientes', usuario.expedientes_count || 0)}
+            <div class="modal" id="casillaModal" style="display: block; background: rgba(0,0,0,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 99999; animation: fadeIn 0.3s ease-out;">
+                <div class="modal-content" style="max-width: 850px; border-radius: 35px; border: 1px solid rgba(212, 175, 55, 0.4); box-shadow: 0 50px 120px rgba(0,0,0,0.7); overflow: hidden; background: #ffffff; animation: modalSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 5vh;">
+                    <!-- Header Premium -->
+                    <div class="modal-header" style="background: linear-gradient(135deg, #050505 0%, #151515 100%); padding: 35px 50px; border-bottom: 4px solid var(--color-gold); display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden;">
+                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('https://www.transparenttextures.com/patterns/dark-matter.png'); opacity: 0.15; pointer-events: none;"></div>
+                        <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
+                            <div style="width: 65px; height: 65px; background: rgba(212, 175, 55, 0.15); border: 2px solid rgba(212, 175, 55, 0.4); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: var(--color-gold); font-size: 32px; box-shadow: 0 15px 30px rgba(0,0,0,0.3);">👤</div>
+                            <div>
+                                <h2 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 800; letter-spacing: -0.8px; text-transform: uppercase; font-family: 'Outfit', sans-serif;">Gestión de Usuario</h2>
+                                <span style="color: var(--color-gold); font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase; opacity: 0.9;">PERFIL ADMINISTRATIVO</span>
                             </div>
                         </div>
+                        <button class="expediente-close" onclick="CasillaUnificada.cerrarModal()" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.08); color: #ffffff; border: 1px solid rgba(255,255,255,0.15); font-size: 32px; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center;">&times;</button>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn-close" onclick="CasillaUnificada.cerrarModal()">Cerrar</button>
+                    
+                    <div class="modal-body" style="padding: 50px; background: #ffffff;">
+                        <div style="display: grid; grid-template-columns: 1fr 0.8fr; gap: 35px; margin-bottom: 40px;">
+                            <div class="expediente-info-card" style="background: #ffffff; border-radius: 28px; padding: 35px; box-shadow: 0 15px 50px rgba(0,0,0,0.04); border: 1px solid rgba(0,0,0,0.06); position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--color-gold);"></div>
+                                <h3 style="color: #000; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px;">
+                                    <span style="font-size: 20px;">🛡️</span> Datos Principales
+                                </h3>
+                                <div style="display: grid; grid-template-columns: 1fr; gap: 20px;">
+                                    ${this.renderizarCampoModerno('Nombre Completo', usuario.nombre)}
+                                    ${this.renderizarCampoModerno('Correo Electrónico', `<a href="mailto:${usuario.email}" style="color:#3498db; text-decoration:none; font-weight:600;">${usuario.email}</a>`)}
+                                    ${this.renderizarCampoModerno('Identificador de Cuenta', `<span style="font-family:'JetBrains Mono'; font-weight:800; color:#d4af37;"># ${usuario.id}</span>`)}
+                                </div>
+                            </div>
+
+                            <div style="display: flex; flex-direction: column; gap: 25px;">
+                                <div class="expediente-info-card" style="background: #fdfdfd; border-radius: 28px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+                                    <h3 style="color: #000; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Estatus & Seguridad</h3>
+                                    ${this.renderizarCampoModerno('Tipo de Perfil', `<span style="padding:4px 12px; background:#000; color:#fff; border-radius:8px; font-size:11px; font-weight:800;">${usuario.tipo.toUpperCase()}</span>`)}
+                                    ${this.renderizarCampoModerno('Estado Operativo', usuario.activo ? '<span style="color:#27ae60; font-weight:800;">● ACTIVO</span>' : '<span style="color:#e74c3c; font-weight:800;">○ INACTIVO</span>')}
+                                </div>
+                                
+                                <div class="expediente-info-card" style="background: #fdfdfd; border-radius: 28px; padding: 30px; box-shadow: 0 10px 30px rgba(0,0,0,0.02); border: 1px solid rgba(0,0,0,0.05); position: relative; overflow: hidden;">
+                                    <h3 style="color: #000; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 20px;">Estadísticas</h3>
+                                    <div style="display: flex; gap: 20px;">
+                                        <div style="flex:1; text-align:center; padding:15px; background:rgba(0,0,0,0.02); border-radius:15px;">
+                                            <div style="font-size:24px; font-weight:900; color:#d4af37;">${usuario.presentaciones_count || 0}</div>
+                                            <div style="font-size:10px; font-weight:800; color:#999; text-transform:uppercase;">Presentaciones</div>
+                                        </div>
+                                        <div style="flex:1; text-align:center; padding:15px; background:rgba(0,0,0,0.02); border-radius:15px;">
+                                            <div style="font-size:24px; font-weight:900; color:#000;">${usuario.expedientes_count || 0}</div>
+                                            <div style="font-size:10px; font-weight:800; color:#999; text-transform:uppercase;">Expedientes</div>
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div style="display: flex; justify-content: center; gap: 20px;">
+                            <button class="btn" style="background: #1a1a1a; color: white; padding: 18px 45px; border-radius: 18px; font-weight: 800; font-size: 13px; min-width: 200px; transition: all 0.3s;" onmouseover="this.style.background='#000'; this.style.transform='translateY(-3px)';" onmouseout="this.style.background='#1a1a1a'; this.style.transform='translateY(0)';" onclick="CasillaUnificada.cerrarModal()">CERRAR PERFIL</button>
+                            <button class="btn" style="background: #eee; color: #333; padding: 18px 45px; border-radius: 18px; font-weight: 800; font-size: 13px; min-width: 200px; transition: all 0.3s;" onmouseover="this.style.background='#ddd'; this.style.transform='translateY(-3px)';" onmouseout="this.style.background='#eee'; this.style.transform='translateY(0)';" onclick="window.location.href='/admin/usuarios?id=${usuario.id}'">EDITAR USUARIO</button>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -494,10 +542,11 @@ const CasillaUnificada = {
                                 <div style="display: flex; gap: 12px;">
                                     <!-- Botón Timeline -->
                                     <button class="btn" 
-                                            style="background: #ffffff; color: #1a1a1a; border: 1px solid rgba(0,0,0,0.1); padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 10px; transition: all 0.3s;"
-                                            onmouseover="this.style.background='#f8f9fa'; this.style.borderColor='rgba(0,0,0,0.2)';" onmouseout="this.style.background='#ffffff'; this.style.borderColor='rgba(0,0,0,0.1)';"
+                                            style="background: #1a1a1a; color: white; padding: 20px 45px; border-radius: 20px; font-weight: 800; font-size: 14px; min-width: 200px; display: flex; align-items: center; justify-content: center; gap: 12px; transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.15);" 
+                                            onmouseover="this.style.background='#000'; this.style.transform='translateY(-3px)';" 
+                                            onmouseout="this.style.background='#1a1a1a'; this.style.transform='translateY(0)';" 
                                             onclick="CasillaUnificada.cerrarModal(); TimelineManager.abrir('mesa-partes','${presentacion.id}','Mesa de Partes: ${presentacion.numero_registro}')">
-                                        <span style="font-size: 16px;">📜</span> TIMELINE
+                                        <span style="font-size: 18px;">📋</span> SEGUIMINE
                                     </button>
 
                                     <!-- Botón Responder -->
@@ -646,17 +695,19 @@ const CasillaUnificada = {
      */
     modalGenerico(datos) {
         return `
-            <div class="modal" id="casillaModal" style="display: block;">
-                <div class="modal-content">
-                    <div class="modal-header">
-                        <h2>📄 Detalles</h2>
-                        <button class="expediente-close" onclick="CasillaUnificada.cerrarModal()">&times;</button>
+            <div class="modal" id="casillaModal" style="display: block; background: rgba(0,0,0,0.85); backdrop-filter: blur(10px);">
+                <div class="modal-content" style="max-width: 800px; border-radius: 30px; border: 1px solid rgba(212, 175, 55, 0.3); overflow: hidden; background: #fff; animation: modalSlideUp 0.5s ease-out;">
+                    <div class="modal-header" style="background: #000; padding: 25px 40px; border-bottom: 3px solid #d4af37; display: flex; justify-content: space-between; align-items: center;">
+                        <h2 style="margin: 0; color: #fff; font-size: 20px; font-weight: 800; letter-spacing: 1px; text-transform: uppercase;">📄 Detalles del Registro</h2>
+                        <button class="expediente-close" onclick="CasillaUnificada.cerrarModal()" style="color:#fff;">&times;</button>
                     </div>
-                    <div class="modal-body">
-                        <pre>${JSON.stringify(datos, null, 2)}</pre>
+                    <div class="modal-body" style="padding: 40px; max-height: 70vh; overflow-y: auto;">
+                        <div style="background: #f8f9fa; border-radius: 20px; padding: 25px; border: 1px solid #eee;">
+                            <pre style="margin:0; font-family:'JetBrains Mono'; font-size:13px; color:#333; line-height:1.6; white-space: pre-wrap; word-break: break-all;">${JSON.stringify(datos, null, 4)}</pre>
+                        </div>
                     </div>
-                    <div class="modal-footer">
-                        <button class="btn-close" onclick="CasillaUnificada.cerrarModal()">Cerrar</button>
+                    <div style="padding: 30px; display: flex; justify-content: center; background: #fdfdfd; border-top: 1px solid #eee;">
+                        <button class="btn" style="background: #000; color: #fff; padding: 15px 40px; border-radius: 15px; font-weight: 700; transition: all 0.3s;" onmouseover="this.style.transform='translateY(-2px)'" onmouseout="this.style.transform='translateY(0)'" onclick="CasillaUnificada.cerrarModal()">ENTENDIDO</button>
                     </div>
                 </div>
             </div>
@@ -687,7 +738,7 @@ const CasillaUnificada = {
         const icono = nuevoEstado === 'Aprobado' ? '✅' : '❌';
 
         const modalHTML = `
-            <div id="${modalId}" style="display:flex; position:fixed; z-index:40000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter: blur(10px); align-items:center; justify-content:center; animation: fadeIn 0.3s ease-out;">
+            <div id="${modalId}" style="display:flex; position:fixed; z-index:100000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter: blur(10px); align-items:center; justify-content:center; animation: fadeIn 0.3s ease-out;">
                 <div style="background:#ffffff; width:90%; max-width:500px; border-radius:30px; overflow:hidden; box-shadow:0 30px 70px rgba(0,0,0,0.5); border: 1px solid rgba(0,0,0,0.05); transform: translateY(20px); animation: modalSlideUp 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275) forwards;">
                     <div style="background:${color}; padding:40px; text-align:center;">
                         <div style="font-size:60px; margin-bottom:15px; animation: scaleIn 0.5s ease-out;">${icono}</div>
@@ -885,13 +936,16 @@ const CasillaUnificada = {
     },
 
     /**
-     * Responder a Mesa de Partes
+     * Responder a Mesa de Partes (UI Pro Max)
      */
     async responderMesaPartes(presentacionId, usuarioId, numeroRegistro) {
+        showLoader('PREPARANDO FORMULARIO');
         try {
             // Obtener datos de la presentación
             const response = await fetch(`/api/mesa-partes/${presentacionId}`);
             const data = await response.json();
+
+            hideLoader();
 
             if (!data.success) {
                 alert('Error obteniendo datos de la presentación');
@@ -907,53 +961,93 @@ const CasillaUnificada = {
 
             // Crear modal de respuesta
             const modalHTML = `
-                <div id="modalResponderMesaPartes" style="display:block;position:fixed;z-index:30000;left:0;top:0;width:100%;height:100%;background:rgba(0,0,0,0.7);">
-                    <div style="background:#fff;margin:5% auto;padding:30px;width:90%;max-width:600px;border-radius:12px;box-shadow:0 4px 20px rgba(0,0,0,0.3);">
-                        <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:20px;border-bottom:2px solid #f0f0f0;padding-bottom:15px;">
-                            <h2 style="margin:0;color:#000;font-size:22px;">💬 Responder Mesa de Partes</h2>
-                            <button onclick="CasillaUnificada.cerrarModalRespuesta()" style="background:none;border:none;font-size:28px;cursor:pointer;color:#666;">&times;</button>
+                <div id="modalResponderMesaPartes" style="display:flex; position:fixed; z-index:30000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); justify-content:center; align-items:center; animation: modalFadeIn 0.3s ease-out;">
+                    <div style="background:#ffffff; width:95%; max-width:650px; border-radius:32px; box-shadow:0 30px 100px rgba(0,0,0,0.5); border:1px solid rgba(212, 175, 55, 0.3); overflow:hidden; animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+                        <!-- Header Premium -->
+                        <div style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); padding: 30px 40px; border-bottom: 3px solid #d4af37; display: flex; justify-content: space-between; align-items: center; position: relative;">
+                            <div style="display: flex; align-items: center; gap: 15px; position: relative; z-index: 1;">
+                                <div style="width: 48px; height: 48px; background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #d4af37; font-size: 24px;">💬</div>
+                                <div>
+                                    <h2 style="margin: 0; color: #fff; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase;">Responder Mesa de Partes</h2>
+                                    <span style="color: rgba(212, 175, 55, 0.8); font-size: 11px; font-weight: 700; letter-spacing: 1px;">GESTIÓN ADMINISTRATIVA TMARC</span>
+                                </div>
+                            </div>
+                            <button onclick="CasillaUnificada.cerrarModalRespuesta()" style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); font-size: 24px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center;">&times;</button>
                         </div>
                         
-                        <div style="background:#f8f9fa;padding:15px;border-radius:8px;margin-bottom:20px;">
-                            <p style="margin:5px 0;color:#333;"><strong>Número:</strong> ${numeroRegistro}</p>
-                            <p style="margin:5px 0;color:#333;"><strong>Solicitante:</strong> ${demandante.nombre || 'No especificado'}</p>
-                            <p style="margin:5px 0;color:#333;"><strong>Tipo:</strong> ${presentacion.tipo_presentacion || 'No especificado'}</p>
+                        <div style="padding: 40px;">
+                            <!-- Info Card (Glass) -->
+                            <div style="background: #f8f9fa; border: 1px solid rgba(0,0,0,0.05); padding: 25px; border-radius: 20px; margin-bottom: 30px; position: relative; overflow: hidden;">
+                                <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #d4af37;"></div>
+                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px;">
+                                    <div>
+                                        <label style="display: block; font-size: 10px; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Expediente / Registro</label>
+                                        <span style="font-family: 'JetBrains Mono', monospace; font-weight: 700; color: #333; font-size: 14px;">${numeroRegistro}</span>
+                                    </div>
+                                    <div>
+                                        <label style="display: block; font-size: 10px; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Tipo de Presentación</label>
+                                        <span style="font-weight: 700; color: #333; font-size: 14px;">${presentacion.tipo_presentacion || 'No especificado'}</span>
+                                    </div>
+                                    <div style="grid-column: span 2;">
+                                        <label style="display: block; font-size: 10px; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Interesado / Solicitante</label>
+                                        <span style="font-weight: 700; color: #333; font-size: 14px; display: flex; align-items: center; gap: 8px;">
+                                            <div style="width: 20px; height: 20px; background: #eee; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 10px;">👤</div>
+                                            ${demandante.nombre || 'No especificado'}
+                                        </span>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <form id="formResponderMesaPartes" onsubmit="CasillaUnificada.enviarRespuestaMesaPartes(event, '${presentacionId}', '${usuarioId}')" style="display: flex; flex-direction: column; gap: 25px;">
+                                <div>
+                                    <label style="display:block; margin-bottom:10px; color:#1a1a1a; font-weight:800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Asunto de la Respuesta</label>
+                                    <input type="text" id="respuesta-mp-asunto" required 
+                                        style="width:100%; padding:15px 20px; border:2px solid #eee; border-radius:15px; font-size:15px; transition: all 0.3s; font-weight: 600;"
+                                        placeholder="Ej: Respuesta a su presentación ${numeroRegistro}"
+                                        onfocus="this.style.borderColor='#d4af37'; this.style.boxShadow='0 0 0 4px rgba(212, 175, 55, 0.1)';"
+                                        onblur="this.style.borderColor='#eee'; this.style.boxShadow='none';">
+                                </div>
+
+                                <div>
+                                    <label style="display:block; margin-bottom:10px; color:#1a1a1a; font-weight:800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">Cuerpo del Mensaje</label>
+                                    <textarea id="respuesta-mp-mensaje" required rows="6"
+                                        style="width:100%; padding:15px 20px; border:2px solid #eee; border-radius:18px; font-size:15px; resize:vertical; transition: all 0.3s; font-weight: 500; line-height: 1.6;"
+                                        placeholder="Escriba su respuesta formal aquí..."
+                                        onfocus="this.style.borderColor='#d4af37'; this.style.boxShadow='0 0 0 4px rgba(212, 175, 55, 0.1)';"
+                                        onblur="this.style.borderColor='#eee'; this.style.boxShadow='none';"></textarea>
+                                </div>
+
+                                <div>
+                                    <label style="display:block; margin-bottom:10px; color:#1a1a1a; font-weight:800; font-size: 12px; text-transform: uppercase; letter-spacing: 1px;">📎 Documento Adjunto (PDF/Doc/Imágenes)</label>
+                                    <div style="position: relative;">
+                                        <input type="file" id="respuesta-mp-archivo" 
+                                            style="width:100%; padding:12px 15px; border:2px dashed #ddd; border-radius:15px; font-size:13px; background: #fafafa;"
+                                            accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
+                                        <div style="margin-top: 8px; font-size: 11px; color: #888; display: flex; justify-content: space-between; font-weight: 500;">
+                                            <span>Formatos: PDF, Word, JPG, PNG</span>
+                                            <span>Tamaño máx: 10MB</span>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <!-- Botones de Acción -->
+                                <div style="display:flex; gap:15px; margin-top:15px;">
+                                    <button type="button" onclick="CasillaUnificada.cerrarModalRespuesta()" 
+                                        style="flex: 1; padding:18px; background:#f5f5f5; color:#666; border:none; border-radius:18px; cursor:pointer; font-size:14px; font-weight: 800; transition: all 0.3s;"
+                                        onmouseover="this.style.background='#eee'; this.style.color='#333';"
+                                        onmouseout="this.style.background='#f5f5f5'; this.style.color='#666';">
+                                        ❌ Cancelar
+                                    </button>
+                                    <button type="submit" 
+                                        style="flex: 2; padding:18px; background: linear-gradient(135deg, #27ae60 0%, #2ecc71 100%); color:#fff; border:none; border-radius:18px; cursor:pointer; font-size:14px; font-weight: 800; display: flex; align-items: center; justify-content: center; gap: 10px; transition: all 0.3s; box-shadow: 0 10px 20px rgba(39, 174, 96, 0.2);"
+                                        onmouseover="this.style.transform='translateY(-3px)'; this.style.boxShadow='0 15px 30px rgba(39, 174, 96, 0.3)';"
+                                        onmouseout="this.style.transform='translateY(0)'; this.style.boxShadow='0 10px 20px rgba(39, 174, 96, 0.2)';"
+                                        onclick="this.innerHTML='<div class=\'loader-small\'></div> Enviando...'">
+                                        🚀 ENVIAR RESPUESTA OFICIAL
+                                    </button>
+                                </div>
+                            </form>
                         </div>
-
-                        <form id="formResponderMesaPartes" onsubmit="CasillaUnificada.enviarRespuestaMesaPartes(event, '${presentacionId}', '${usuarioId}')">
-                            <div style="margin-bottom:20px;">
-                                <label style="display:block;margin-bottom:8px;color:#333;font-weight:600;">Asunto de la respuesta:</label>
-                                <input type="text" id="respuesta-mp-asunto" required 
-                                    style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;"
-                                    placeholder="Ej: Respuesta a su presentación ${numeroRegistro}">
-                            </div>
-
-                            <div style="margin-bottom:20px;">
-                                <label style="display:block;margin-bottom:8px;color:#333;font-weight:600;">Mensaje:</label>
-                                <textarea id="respuesta-mp-mensaje" required rows="6"
-                                    style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;resize:vertical;"
-                                    placeholder="Escriba su respuesta aquí..."></textarea>
-                            </div>
-
-                            <div style="margin-bottom:20px;">
-                                <label style="display:block;margin-bottom:8px;color:#333;font-weight:600;">📎 Adjuntar archivo (opcional):</label>
-                                <input type="file" id="respuesta-mp-archivo" 
-                                    style="width:100%;padding:12px;border:1px solid #ddd;border-radius:8px;font-size:14px;"
-                                    accept=".pdf,.doc,.docx,.jpg,.jpeg,.png">
-                                <small style="color:#666;font-size:12px;">Formatos permitidos: PDF, Word, Imágenes (máx. 10MB)</small>
-                            </div>
-
-                            <div style="display:flex;gap:10px;justify-content:flex-end;">
-                                <button type="button" onclick="CasillaUnificada.cerrarModalRespuesta()" 
-                                    style="padding:12px 24px;background:#6c757d;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">
-                                    Cancelar
-                                </button>
-                                <button type="submit" 
-                                    style="padding:12px 24px;background:#4CAF50;color:#fff;border:none;border-radius:8px;cursor:pointer;font-size:14px;">
-                                    📤 Enviar Respuesta
-                                </button>
-                            </div>
-                        </form>
                     </div>
                 </div>
             `;
