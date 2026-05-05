@@ -115,14 +115,18 @@ async function resetearBaseDatos() {
 
         // Eliminar todas las tablas
         const tablas = [
-            'logs_auditoria',
+            'notificaciones_procesales',
+            'actos_procesales',
             'respuestas_admin',
             'notificaciones',
             'partes_procesales',
             'documentos',
+            'mesa_partes',
             'solicitudes',
             'expedientes',
             'smtp_config',
+            'configuracion_sistema',
+            'logs_auditoria',
             'usuarios'
         ];
 
