@@ -496,6 +496,8 @@ async function cargarTablaSolicitudes() {
                     <td>
                         <button class="btn btn-primary" style="padding:4px 8px;font-size:12px;margin-right:5px;"
                             onclick="verDetalleSolicitud('${s.id}')" title="Ver detalles">👁️</button>
+                        <button class="btn btn-primary" style="padding:4px 8px;font-size:12px;margin-right:5px;background:linear-gradient(135deg,#d4af37,#f1d582);color:#1a1a1a;"
+                            onclick="TimelineManager.abrir('solicitudes','${s.id}','Solicitud: ${s.id}')" title="Ver Timeline">📋</button>
                         <button class="btn btn-primary" style="padding:4px 8px;font-size:12px;margin-right:5px;background:#4CAF50;"
                             onclick="responderSolicitud('${s.id}')" title="Responder">💬</button>
                         <button class="btn btn-primary" style="padding:4px 8px;font-size:12px;margin-right:5px;"

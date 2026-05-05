@@ -1046,6 +1046,14 @@
                 </div>
                 SOLICITUDES
             </div>
+            <div class="nav-item" onclick="showSection('seguimiento', this)">
+                <div class="nav-icon">
+                    <svg viewBox="0 0 24 24">
+                        <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z" />
+                    </svg>
+                </div>
+                SEGUIMIENTO
+            </div>
             <div class="nav-item" onclick="showSection('configuracion', this)">
                 <div class="nav-icon">
                     <svg viewBox="0 0 24 24">
@@ -1400,6 +1408,81 @@
         </div>
 
         <!-- CONFIGURACIÓN -->
+
+        <!-- SEGUIMIENTO UNIFICADO -->
+        <div class="content-section" id="seguimiento">
+            <div class="header">
+                <div>
+                    <h1>
+                        <span class="header-icon">
+                            <svg viewBox="0 0 24 24">
+                                <path d="M12 2C6.5 2 2 6.5 2 12s4.5 10 10 10 10-4.5 10-10S17.5 2 12 2zm0 18c-4.41 0-8-3.59-8-8s3.59-8 8-8 8 3.59 8 8-3.59 8-8 8zm.5-13H11v6l5.2 3.2.8-1.3-4.5-2.7V7z" />
+                            </svg>
+                        </span>
+                        Seguimiento Unificado
+                    </h1>
+                    <p class="subtitle">Búsqueda universal de expedientes, mesa de partes y solicitudes con timeline completo.</p>
+                </div>
+                <div class="btn-group">
+                    <a href="/seguimiento" target="_blank" class="btn btn-primary" style="text-decoration:none;display:inline-flex;align-items:center;gap:6px">🌐 Portal Público</a>
+                </div>
+            </div>
+
+            <!-- Buscador -->
+            <div style="margin: 30px 0; display:flex; gap:12px; align-items:center">
+                <input type="text" id="seguimiento-search" placeholder="🔍 Buscar por N° Expediente, N° Registro MP o ID Solicitud..."
+                    style="flex:1; padding:14px 20px; background:#fff; border:2px solid #e0e0e0; border-radius:14px; color:#333; font-size:15px; font-family:inherit; outline:none; transition:all 0.3s;"
+                    onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#e0e0e0'">
+                <button class="btn btn-primary" onclick="buscarSeguimientoAdmin()" style="padding:14px 28px; font-size:15px; white-space:nowrap">🔍 Buscar</button>
+            </div>
+
+            <!-- Resultado -->
+            <div id="seguimiento-loading" style="display:none; text-align:center; padding:40px; color:#999;">
+                <div style="font-size:32px;margin-bottom:10px">⏳</div>
+                <p style="font-weight:600">Consultando registros...</p>
+            </div>
+
+            <div id="seguimiento-no-result" style="display:none">
+                <div class="table-container" style="text-align:center; padding:50px; color:#999;">
+                    <div style="font-size:48px;margin-bottom:15px">🔍</div>
+                    <p style="font-size:16px; font-weight:600; color:#333; margin-bottom:8px">No se encontraron resultados</p>
+                    <p>Intente con otro código de expediente, mesa de partes o solicitud.</p>
+                </div>
+            </div>
+
+            <div id="seguimiento-result" style="display:none">
+                <!-- Fuente -->
+                <div style="margin-bottom:20px; display:flex; align-items:center; gap:12px;">
+                    <span id="seg-fuente" style="background:linear-gradient(135deg,#d4af37,#f1d582); color:#1a1a1a; padding:6px 16px; border-radius:8px; font-weight:700; font-size:13px; text-transform:uppercase"></span>
+                    <span id="seg-total" style="color:#999; font-size:14px"></span>
+                </div>
+
+                <!-- Datos Generales -->
+                <div class="table-container" style="margin-bottom:24px">
+                    <h3 style="color:#000; margin-bottom:20px; display:flex; align-items:center; gap:10px">📋 Datos del Proceso <span id="seg-estado" class="status-badge" style="font-size:11px"></span></h3>
+                    <div id="seg-datos" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:16px"></div>
+                </div>
+
+                <!-- Partes -->
+                <div class="table-container" id="seg-partes-panel" style="margin-bottom:24px; display:none">
+                    <h3 style="color:#000; margin-bottom:20px">👥 Partes Procesales</h3>
+                    <table>
+                        <thead><tr><th>Tipo</th><th>Nombre</th><th>Documento</th><th>Contacto</th></tr></thead>
+                        <tbody id="seg-partes-body"></tbody>
+                    </table>
+                </div>
+
+                <!-- Timeline -->
+                <div class="table-container" style="margin-bottom:24px">
+                    <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:20px">
+                        <h3 style="color:#000; display:flex; align-items:center; gap:10px">📅 Movimientos <span id="seg-mov-count" style="color:#999; font-size:13px; font-weight:400"></span></h3>
+                        <button class="btn btn-primary" id="seg-btn-add" style="display:none; padding:6px 14px; font-size:12px; background:linear-gradient(135deg,#d4af37,#f1d582); color:#1a1a1a;" onclick="seguimientoAgregarMov()">+ Agregar Movimiento</button>
+                    </div>
+                    <div id="seg-timeline"></div>
+                </div>
+            </div>
+        </div>
+
         <div class="content-section" id="configuracion">
             <div class="header">
                 <h1>
@@ -2227,6 +2310,7 @@
     <script src="js/casilla-unificada.js"></script>
     <script src="js/dashboard.js"></script>
     <script src="js/configuracion.js"></script>
+    <script src="js/timeline.js"></script>
 
     <!-- 5. Inicialización (debe cargar al final) -->
     <script src="js/init.js"></script>
@@ -2313,6 +2397,151 @@
         document.addEventListener('DOMContentLoaded', function () {
             setTimeout(cargarNotificacionesAdmin, 2000);
         });
+    </script>
+
+    <!-- Seguimiento Admin Logic -->
+    <script>
+        // Enter key para buscar
+        document.addEventListener('DOMContentLoaded', () => {
+            const input = document.getElementById('seguimiento-search');
+            if (input) input.addEventListener('keydown', e => { if (e.key === 'Enter') buscarSeguimientoAdmin(); });
+        });
+
+        let _segData = null; // almacena el resultado actual
+
+        async function buscarSeguimientoAdmin() {
+            const codigo = document.getElementById('seguimiento-search')?.value?.trim();
+            if (!codigo) return;
+
+            document.getElementById('seguimiento-result').style.display = 'none';
+            document.getElementById('seguimiento-no-result').style.display = 'none';
+            document.getElementById('seguimiento-loading').style.display = 'block';
+
+            try {
+                const res = await fetch(`/api/seguimiento-completo/${encodeURIComponent(codigo)}`);
+                const data = await res.json();
+                document.getElementById('seguimiento-loading').style.display = 'none';
+
+                if (!data.success) {
+                    document.getElementById('seguimiento-no-result').style.display = 'block';
+                    return;
+                }
+
+                _segData = data;
+                renderSeguimientoAdmin(data);
+                document.getElementById('seguimiento-result').style.display = 'block';
+            } catch (e) {
+                document.getElementById('seguimiento-loading').style.display = 'none';
+                document.getElementById('seguimiento-no-result').style.display = 'block';
+                console.error('Error seguimiento:', e);
+            }
+        }
+
+        function renderSeguimientoAdmin(data) {
+            const { fuente, datos_generales: dg, partes_procesales: partes, timeline, total_movimientos } = data;
+            const esc = t => { if (!t) return ''; const d = document.createElement('div'); d.textContent = t; return d.innerHTML; };
+            const fmtD = d => d ? new Date(d).toLocaleDateString('es-PE', { day:'2-digit', month:'short', year:'numeric' }) : '—';
+
+            // Fuente
+            const fMap = { expediente: '📁 Expediente', mesa_partes: '📨 Mesa de Partes', solicitud: '📋 Solicitud' };
+            document.getElementById('seg-fuente').textContent = fMap[fuente] || fuente;
+            document.getElementById('seg-total').textContent = `${total_movimientos} movimiento${total_movimientos !== 1 ? 's' : ''}`;
+
+            // Estado
+            const estado = dg.estado || 'Nuevo';
+            document.getElementById('seg-estado').textContent = estado;
+            document.getElementById('seg-estado').className = `status-badge status-${estado.toLowerCase().replace(/\s/g, '-').replace('á','a').replace('é','e')}`;
+
+            // Datos
+            const campos = [];
+            if (dg.numero) campos.push(['N° Expediente', dg.numero]);
+            if (dg.sede) campos.push(['Sede', dg.sede]);
+            if (dg.especialidad) campos.push(['Especialidad', dg.especialidad]);
+            if (dg.materia) campos.push(['Materia', dg.materia]);
+            if (dg.organo_jurisdiccional) campos.push(['Órgano', dg.organo_jurisdiccional]);
+            if (dg.juez) campos.push(['Juez', dg.juez]);
+            if (dg.tipo_servicio) campos.push(['Tipo Servicio', dg.tipo_servicio]);
+            if (dg.tipo) campos.push(['Tipo', dg.tipo]);
+            if (dg.asunto) campos.push(['Asunto', dg.asunto]);
+            if (dg.cuantia) campos.push(['Cuantía', `S/ ${dg.cuantia}`]);
+            if (dg.responsable) campos.push(['Responsable', dg.responsable]);
+            if (dg.presentante) campos.push(['Presentante', dg.presentante]);
+            if (dg.fecha_creacion) campos.push(['Fecha', fmtD(dg.fecha_creacion)]);
+            if (dg.sumilla) campos.push(['Sumilla', dg.sumilla]);
+
+            document.getElementById('seg-datos').innerHTML = campos.map(([l, v]) =>
+                `<div style="padding:12px 16px; background:#f8f9fa; border-radius:10px; border:1px solid rgba(0,0,0,0.04)">
+                    <div style="font-size:10px; color:#999; text-transform:uppercase; letter-spacing:1.5px; font-weight:700; margin-bottom:4px">${l}</div>
+                    <div style="font-size:14px; font-weight:500; color:#1a1a1a">${esc(v)}</div>
+                </div>`
+            ).join('');
+
+            // Partes
+            if (partes && partes.length > 0) {
+                document.getElementById('seg-partes-panel').style.display = 'block';
+                document.getElementById('seg-partes-body').innerHTML = partes.map(p =>
+                    `<tr>
+                        <td><span class="status-badge" style="background:rgba(212,175,55,0.1);color:#d4af37;font-size:11px">${esc(p.tipo_parte||'N/A')}</span></td>
+                        <td style="font-weight:600">${esc(p.nombre_completo || p.nombre || 'N/A')}</td>
+                        <td>${esc(p.documento_identidad || p.documento_numero || '—')}</td>
+                        <td>${esc(p.correo || p.telefono || '—')}</td>
+                    </tr>`
+                ).join('');
+            } else {
+                document.getElementById('seg-partes-panel').style.display = 'none';
+            }
+
+            // Timeline
+            document.getElementById('seg-mov-count').textContent = `(${timeline.length})`;
+            document.getElementById('seg-btn-add').style.display = 'inline-flex';
+
+            const colores = { 'Resolución':'#e74c3c', 'Decreto':'#3498db', 'Carta':'#2ecc71', 'Escrito':'#9b59b6', 'Oficio':'#e67e22', 'Acta':'#1abc9c', 'Auto':'#34495e', 'Cédula':'#f39c12' };
+
+            if (timeline.length > 0) {
+                document.getElementById('seg-timeline').innerHTML = `
+                <table style="width:100%">
+                    <thead><tr>
+                        <th style="width:40px">N°</th><th style="width:100px">Fecha</th><th style="width:110px">Tipo</th><th>Sumilla / Asunto</th><th style="width:120px">Notificación</th><th style="width:80px">Doc</th>
+                    </tr></thead>
+                    <tbody>${timeline.map((m, i) => {
+                        const c = colores[m.tipo_documento] || '#d4af37';
+                        const nv = m.fecha_notificacion_virtual ? fmtD(m.fecha_notificacion_virtual) : '';
+                        const nf = m.fecha_notificacion_fisica ? fmtD(m.fecha_notificacion_fisica) : '';
+                        return `<tr>
+                            <td style="text-align:center;color:#999">${i+1}</td>
+                            <td>${fmtD(m.fecha_documento)}</td>
+                            <td><span style="background:${c}18;color:${c};padding:3px 8px;border-radius:5px;font-size:11px;font-weight:700">${esc(m.tipo_documento)}</span>
+                                ${m.numero_documento ? `<br><small style="color:#999">${esc(m.numero_documento)}</small>` : ''}</td>
+                            <td>
+                                ${m.asunto ? `<strong>${esc(m.asunto)}</strong><br>` : ''}
+                                ${m.sumilla ? `<span style="color:#666;font-size:12px">${esc(m.sumilla)}</span>` : ''}
+                                ${m.presentado_por ? `<br><small style="color:#d4af37">👤 ${esc(m.presentado_por)}</small>` : ''}
+                            </td>
+                            <td style="font-size:12px">${nv || nf || '—'}${m.forma_entrega ? `<br><small>${esc(m.forma_entrega)}</small>` : ''}</td>
+                            <td style="text-align:center">${m.tiene_documento ? `<a href="${m.documento_ruta}" target="_blank" style="color:#d4af37;font-weight:600">📥</a>` : '—'}</td>
+                        </tr>`;
+                    }).join('')}</tbody>
+                </table>`;
+            } else {
+                document.getElementById('seg-timeline').innerHTML = '<div style="text-align:center;padding:40px;color:#999"><div style="font-size:40px;margin-bottom:10px">📭</div><p>No hay movimientos registrados.</p></div>';
+            }
+        }
+
+        function seguimientoAgregarMov() {
+            if (!_segData) return;
+            const fMap = { expediente: 'expedientes', mesa_partes: 'mesa-partes', solicitud: 'solicitudes' };
+            const fuente = fMap[_segData.fuente] || _segData.fuente;
+            const id = _segData.datos_generales.id;
+            const titulo = `${_segData.fuente}: ${_segData.datos_generales.numero || id}`;
+
+            // Use TimelineManager but reload seguimiento after
+            TimelineManager.currentFuente = fuente;
+            TimelineManager.currentId = id;
+            TimelineManager.mostrarFormulario();
+        }
+
+        window.buscarSeguimientoAdmin = buscarSeguimientoAdmin;
+        window.seguimientoAgregarMov = seguimientoAgregarMov;
     </script>
 
 </body>

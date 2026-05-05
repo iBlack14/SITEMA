@@ -204,10 +204,16 @@ const CasillaUnificada = {
                 </td>
                 <td style="text-align: center;">
                     <button class="btn btn-primary" 
-                            style="padding: 6px 12px; font-size: 12px;" 
+                            style="padding: 6px 12px; font-size: 12px; margin-right: 4px;" 
                             onclick="CasillaUnificada.verDetalle('${item.tipo}', '${item.referencia_id}')"
                             title="Ver detalles">
                         👁️ Ver
+                    </button>
+                    <button class="btn btn-primary" 
+                            style="padding: 6px 12px; font-size: 12px; background:linear-gradient(135deg,#d4af37,#f1d582);color:#1a1a1a;" 
+                            onclick="TimelineManager.abrir('${item.tipo === 'mesa_partes' ? 'mesa-partes' : item.tipo === 'expediente' ? 'expedientes' : 'solicitudes'}', '${item.referencia_id}', '${tipo.nombre}: ${item.referencia_id}')"
+                            title="Ver Timeline">
+                        📋
                     </button>
                 </td>
             </tr>
@@ -438,6 +444,11 @@ const CasillaUnificada = {
                         ` : ''}
                         <div class="expediente-info-card">
                             <h3>⚙️ Acciones</h3>
+                            <button class="btn btn-primary" 
+                                    style="background:linear-gradient(135deg,#d4af37,#f1d582);color:#1a1a1a;margin-right:10px;"
+                                    onclick="CasillaUnificada.cerrarModal();TimelineManager.abrir('mesa-partes','${presentacion.id}','Mesa de Partes: ${presentacion.numero_registro}')">
+                                📋 Ver Timeline
+                            </button>
                             <button class="btn btn-primary" 
                                     style="background:#4CAF50; margin-right: 10px;"
                                     onclick="CasillaUnificada.responderMesaPartes('${presentacion.id}', '${presentacion.usuario_id}', '${presentacion.numero_registro}')">

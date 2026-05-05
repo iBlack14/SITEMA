@@ -115,6 +115,7 @@ async function resetearBaseDatos() {
 
         // Eliminar todas las tablas
         const tablas = [
+            'seguimiento_timeline',
             'notificaciones_procesales',
             'actos_procesales',
             'respuestas_admin',
@@ -468,20 +469,81 @@ async function inicializarBaseDatos(reset = false) {
             )
         `);
 
+        // ═══════════════════════════════════════════════════════════════
+        // TABLA DE SEGUIMIENTO TIMELINE (polimórfica: Exp + MP + Sol)
+        // ═══════════════════════════════════════════════════════════════
+        await query(`
+            CREATE TABLE IF NOT EXISTS seguimiento_timeline (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                
+                -- Vínculo polimórfico (uno de estos se llena)
+                expediente_id VARCHAR(20),
+                mesa_partes_id INT,
+                solicitud_id VARCHAR(20),
+                
+                -- Datos del movimiento
+                fecha_documento DATE NOT NULL,
+                fecha_presentacion DATE,
+                fecha_emision DATE,
+                
+                -- Identificación del documento
+                tipo_documento VARCHAR(100) NOT NULL,
+                numero_documento VARCHAR(100),
+                asunto VARCHAR(300),
+                sumilla TEXT,
+                
+                -- Partes involucradas
+                presentado_por VARCHAR(200),
+                tipo_parte VARCHAR(50),
+                
+                -- Notificaciones
+                fecha_notificacion_virtual DATE,
+                fecha_notificacion_fisica DATE,
+                forma_entrega VARCHAR(100),
+                destinatario_notificacion VARCHAR(200),
+                
+                -- Documentos adjuntos
+                tiene_documento TINYINT(1) DEFAULT 0,
+                documento_nombre VARCHAR(255),
+                documento_archivo VARCHAR(255),
+                documento_ruta VARCHAR(500),
+                
+                -- Observaciones
+                observaciones TEXT,
+                
+                -- Auditoría
+                creado_por INT,
+                fecha_creacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                actualizado_por INT,
+                fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                
+                INDEX idx_st_expediente (expediente_id),
+                INDEX idx_st_mesa_partes (mesa_partes_id),
+                INDEX idx_st_solicitud (solicitud_id),
+                INDEX idx_st_fecha (fecha_documento),
+                INDEX idx_st_tipo (tipo_documento),
+                
+                FOREIGN KEY (expediente_id) REFERENCES expedientes(id) ON DELETE CASCADE,
+                FOREIGN KEY (mesa_partes_id) REFERENCES mesa_partes(id) ON DELETE CASCADE,
+                FOREIGN KEY (creado_por) REFERENCES usuarios(id) ON DELETE SET NULL
+            )
+        `);
+        console.log('✅ Tabla seguimiento_timeline verificada');
+
         // Las configuraciones iniciales ahora se gestionan vía .env para mayor seguridad y flexibilidad
 
         console.log('✅ Todas las tablas verificadas/creadas');
 
         // Insertar usuarios por defecto si no existen o actualizar si han cambiado en .env
         const adminUser = process.env.ADMIN_USER || 'admin';
-        const adminEmail = process.env.ADMIN_EMAIL || 'admin@sistema.gov';
+        const adminEmail = process.env.ADMIN_EMAIL || 'admin@sblxkstudio.com';
         const adminPass = process.env.ADMIN_PASSWORD || 'admin123';
         const hashedAdminPass = await bcrypt.hash(adminPass, 10);
 
         try {
             // Solo insertar el administrador si no existe ningún usuario admin
             const adminExistente = await query("SELECT id FROM usuarios WHERE tipo = 'admin' LIMIT 1");
-            
+
             if (adminExistente.length === 0) {
                 console.log('👤 Creando administrador inicial...');
                 await query(`
@@ -521,6 +583,34 @@ async function inicializarBaseDatos(reset = false) {
                 console.log('✅ Columna casilla_electronica agregada a solicitudes');
             } else {
                 console.log('ℹ️  Columna casilla_electronica ya existe en solicitudes');
+            }
+
+            // ── Columnas de seguimiento para mesa_partes ──
+            if (!(await columnaExiste('mesa_partes', 'numero_expediente_externo'))) {
+                await query('ALTER TABLE mesa_partes ADD COLUMN numero_expediente_externo VARCHAR(50)');
+                console.log('✅ Columna numero_expediente_externo agregada a mesa_partes');
+            }
+            if (!(await columnaExiste('mesa_partes', 'tipo_servicio'))) {
+                await query("ALTER TABLE mesa_partes ADD COLUMN tipo_servicio VARCHAR(50) DEFAULT 'Arbitraje'");
+                console.log('✅ Columna tipo_servicio agregada a mesa_partes');
+            }
+            if (!(await columnaExiste('mesa_partes', 'responsable'))) {
+                await query('ALTER TABLE mesa_partes ADD COLUMN responsable VARCHAR(150)');
+                console.log('✅ Columna responsable agregada a mesa_partes');
+            }
+            if (!(await columnaExiste('mesa_partes', 'sede'))) {
+                await query('ALTER TABLE mesa_partes ADD COLUMN sede VARCHAR(100)');
+                console.log('✅ Columna sede agregada a mesa_partes');
+            }
+
+            // ── Columnas de seguimiento para solicitudes ──
+            if (!(await columnaExiste('solicitudes', 'responsable'))) {
+                await query('ALTER TABLE solicitudes ADD COLUMN responsable VARCHAR(150)');
+                console.log('✅ Columna responsable agregada a solicitudes');
+            }
+            if (!(await columnaExiste('solicitudes', 'sede'))) {
+                await query('ALTER TABLE solicitudes ADD COLUMN sede VARCHAR(100)');
+                console.log('✅ Columna sede agregada a solicitudes');
             }
         } catch (alterError) {
             console.log('⚠️  Error agregando columna casilla_electronica:', alterError.message);

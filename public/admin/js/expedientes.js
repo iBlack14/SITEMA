@@ -397,6 +397,7 @@ async function cargarExpedientesTabla() {
                             <td>${expediente.fecha_actualizacion ? new Date(expediente.fecha_actualizacion).toLocaleDateString('es-ES') : (expediente.fecha_creacion ? new Date(expediente.fecha_creacion).toLocaleDateString('es-ES') : 'N/A')}</td>
                             <td>
                                 <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; margin-right: 5px;" onclick="verDetalleExpediente('${expediente.id || expediente.numero}')" title="Ver detalles">👁️ Ver</button>
+                                <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; margin-right: 5px; background:linear-gradient(135deg,#d4af37,#f1d582);color:#1a1a1a;" onclick="TimelineManager.abrir('expedientes','${expediente.id}','Expediente: ${expediente.numero || expediente.id}')" title="Ver Timeline">📋 Timeline</button>
                                 <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; background:#4CAF50;" onclick="responderExpediente('${expediente.id || expediente.numero}')" title="Responder">💬 Responder</button>
                             </td>
                         </tr>

@@ -104,6 +104,7 @@ const casillaElectronicaRoutes = require('./casilla-electronica');
 const estadisticasRoutes = require('./estadisticas');
 const configuracionRoutes = require('./configuracion');
 const actosRoutes = require('./actos-procesales');
+const timelineRoutes = require('./timeline');
 
 // Usar rutas modulares
 router.use('/auth', authRoutes);
@@ -125,6 +126,12 @@ router.use('/configuracion', configuracionRoutes);
 // GET/POST /api/expedientes/:id/notificaciones-procesales
 // PUT/DELETE /api/notificaciones-procesales/:id
 router.use('/', actosRoutes);
+
+// Rutas de timeline universal (Expedientes + Mesa de Partes + Solicitudes)
+// GET/POST /api/{expedientes|mesa-partes|solicitudes}/:id/timeline
+// PUT/DELETE /api/timeline/:id
+// GET /api/seguimiento-completo/:codigo
+router.use('/', timelineRoutes);
 
 // Mantener algunos endpoints legacy que podrían estar siendo usados
 // Estos serán migrados gradualmente a los módulos específicos

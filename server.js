@@ -129,6 +129,11 @@ app.get('/admin/login', (_req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'admin', 'login.html'));
 });
 
+// Portal público de seguimiento (sin autenticación)
+app.get('/seguimiento', (_req, res) => {
+  res.sendFile(path.join(__dirname, 'public', 'seguimiento.html'));
+});
+
 // -------------------------------------------------------------------
 // Salud y diagnóstico rápido
 // -------------------------------------------------------------------
