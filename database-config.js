@@ -18,13 +18,14 @@ const dbConfig = {
     password: process.env.DB_PASSWORD,
     database: process.env.DB_NAME,
     port: parseInt(process.env.DB_PORT || '3306'),
-    connectionLimit: 10,
+    connectionLimit: 20,
+    waitForConnections: true,
     queueLimit: 0,
     connectTimeout: 60000
 };
 
 // Debug: mostrar configuración (sin mostrar password)
-console.log('🔧 Database config:', {
+console.log('📡 [SISTEMA] Conectando a Base de Datos:', {
     host: dbConfig.host,
     user: dbConfig.user,
     database: dbConfig.database,
@@ -37,6 +38,13 @@ const pool = mysql.createPool(dbConfig);
 // Función para ejecutar consultas
 function query(sql, params = []) {
     return new Promise((resolve, reject) => {
+        // Si no hay pool (modo SQLite), usamos lógica alternativa si fuera necesario
+        // Pero por ahora, asumimos que si llegamos aquí el pool debería existir
+        if (!pool) {
+            console.warn('⚠️ Intentando ejecutar consulta sin conexión activa');
+            return resolve([]);
+        }
+
         pool.getConnection((err, connection) => {
             if (err) {
                 console.error('Error conectando a la base de datos:', err);
@@ -64,10 +72,10 @@ async function columnaExiste(tabla, columna) {
         const resultado = await query(`
             SELECT COUNT(*) as count 
             FROM INFORMATION_SCHEMA.COLUMNS 
-            WHERE TABLE_SCHEMA = '${process.env.DB_NAME}' 
+            WHERE TABLE_SCHEMA = ? 
             AND TABLE_NAME = ? 
             AND COLUMN_NAME = ?
-        `, [tabla, columna]);
+        `, [process.env.DB_NAME, tabla, columna]);
         return resultado[0].count > 0;
     } catch (error) {
         console.error(`Error verificando columna ${columna} en tabla ${tabla}:`, error);
@@ -81,10 +89,10 @@ async function indiceExiste(tabla, indice) {
         const resultado = await query(`
             SELECT COUNT(*) as count 
             FROM INFORMATION_SCHEMA.STATISTICS 
-            WHERE TABLE_SCHEMA = '${process.env.DB_NAME}' 
+            WHERE TABLE_SCHEMA = ? 
             AND TABLE_NAME = ? 
             AND INDEX_NAME = ?
-        `, [tabla, indice]);
+        `, [process.env.DB_NAME, tabla, indice]);
         return resultado[0].count > 0;
     } catch (error) {
         console.error(`Error verificando índice ${indice} en tabla ${tabla}:`, error);
@@ -98,7 +106,7 @@ async function resetearBaseDatos() {
         console.log('🔄 Reseteando base de datos...');
 
         // Usar la base de datos
-        await query(`USE ${process.env.DB_NAME}`);
+        await query(`USE \`${process.env.DB_NAME}\``);
 
         // Deshabilitar foreign keys temporalmente
         await query('SET FOREIGN_KEY_CHECKS = 0');
@@ -146,12 +154,12 @@ async function resetearBaseDatos() {
 // Función para inicializar la base de datos y tablas
 async function inicializarBaseDatos(reset = false) {
     try {
-        // Crear base de datos si no existe
-        await query(`CREATE DATABASE IF NOT EXISTS ${process.env.DB_NAME} CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
+        // Crear base de datos si no existe (con backticks)
+        await query(`CREATE DATABASE IF NOT EXISTS \`${process.env.DB_NAME}\` CHARACTER SET utf8mb4 COLLATE utf8mb4_unicode_ci`);
         console.log('✅ Base de datos verificada/creada');
 
-        // Usar la base de datos
-        await query(`USE ${process.env.DB_NAME}`);
+        // Usar la base de datos (con backticks)
+        await query(`USE \`${process.env.DB_NAME}\``);
 
         // Resetear si se solicita
         if (reset) {
@@ -166,6 +174,7 @@ async function inicializarBaseDatos(reset = false) {
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 nombre VARCHAR(100) NOT NULL,
+                telefono VARCHAR(20),
                 tipo ENUM('admin', 'usuario') DEFAULT 'usuario',
                 activo TINYINT(1) DEFAULT 1,
                 fecha_registro TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
@@ -176,7 +185,13 @@ async function inicializarBaseDatos(reset = false) {
             )
         `);
 
-        // Agregar columna updated_at si no existe (para bases de datos existentes)
+        // Agregar columnas faltantes a usuarios si no existen
+        const tieneTelefono = await columnaExiste('usuarios', 'telefono');
+        if (!tieneTelefono) {
+            console.log('➕ Agregando columna telefono a tabla usuarios...');
+            await query(`ALTER TABLE usuarios ADD COLUMN telefono VARCHAR(20) AFTER nombre`);
+        }
+
         const tieneUpdatedAt = await columnaExiste('usuarios', 'updated_at');
         if (!tieneUpdatedAt) {
             console.log('➕ Agregando columna updated_at a tabla usuarios...');
@@ -185,6 +200,40 @@ async function inicializarBaseDatos(reset = false) {
                 ADD COLUMN updated_at TIMESTAMP NULL ON UPDATE CURRENT_TIMESTAMP
             `);
             console.log('✅ Columna updated_at agregada');
+        }
+
+        // Crear tabla de mesa_partes (NUEVA)
+        console.log('📦 Verificando/Creando tabla mesa_partes...');
+        await query(`
+            CREATE TABLE IF NOT EXISTS mesa_partes (
+                id INT AUTO_INCREMENT PRIMARY KEY,
+                numero_registro VARCHAR(20) UNIQUE NOT NULL,
+                usuario_id INT,
+                tipo_presentacion VARCHAR(100) DEFAULT 'Arbitraje',
+                materia VARCHAR(100) DEFAULT 'General',
+                demandante JSON,
+                demandado JSON,
+                documentos JSON,
+                cuantia DECIMAL(15,2),
+                sumilla TEXT,
+                estado ENUM('Pendiente', 'En Revisión', 'Aprobado', 'Rechazado') DEFAULT 'Pendiente',
+                fecha_presentacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
+                fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP,
+                observaciones TEXT,
+                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL,
+                INDEX idx_numero_registro (numero_registro),
+                INDEX idx_usuario_id (usuario_id),
+                INDEX idx_estado (estado)
+            )
+        `);
+        console.log('✅ Tabla mesa_partes verificada');
+
+        // Asegurar columnas extra en mesa_partes si ya existía
+        if (!(await columnaExiste('mesa_partes', 'cuantia'))) {
+            await query('ALTER TABLE mesa_partes ADD COLUMN cuantia DECIMAL(15,2) AFTER documentos');
+        }
+        if (!(await columnaExiste('mesa_partes', 'sumilla'))) {
+            await query('ALTER TABLE mesa_partes ADD COLUMN sumilla TEXT AFTER cuantia');
         }
 
         // Crear tabla de expedientes
@@ -386,21 +435,29 @@ async function inicializarBaseDatos(reset = false) {
             )
         `);
 
-        // Crear tabla de logs de auditoría
+        // Crear tabla de configuración del sistema
         await query(`
-            CREATE TABLE IF NOT EXISTS logs_auditoria (
+            CREATE TABLE IF NOT EXISTS configuracion_sistema (
                 id INT AUTO_INCREMENT PRIMARY KEY,
-                usuario_id INT,
-                accion VARCHAR(100) NOT NULL,
-                tabla_afectada VARCHAR(50),
-                registro_id VARCHAR(50),
-                detalles JSON,
-                ip_address VARCHAR(45),
-                user_agent TEXT,
-                fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
-                FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
+                categoria VARCHAR(50) NOT NULL,
+                clave VARCHAR(50) NOT NULL UNIQUE,
+                valor TEXT,
+                descripcion VARCHAR(255),
+                fecha_actualizacion TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
         `);
+
+        // Insertar configuraciones iniciales
+        const configExistente = await query('SELECT COUNT(*) as count FROM configuracion_sistema');
+        if (configExistente[0].count === 0) {
+            await query(`
+                INSERT INTO configuracion_sistema (categoria, clave, valor, descripcion) VALUES
+                ('general', 'nombre_institucion', 'TMARC', 'Nombre de la institución'),
+                ('general', 'logo_url', '/img/logo.png', 'URL del logo'),
+                ('notificaciones', 'email_soporte', 'soporte@tmarc.org', 'Email de contacto'),
+                ('sistema', 'mantenimiento', 'false', 'Estado de mantenimiento')
+            `);
+        }
 
         console.log('✅ Todas las tablas verificadas/creadas');
 

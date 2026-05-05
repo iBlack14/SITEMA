@@ -183,4 +183,26 @@ router.post('/batch', async (req, res) => {
     }
 });
 
+/**
+ * GET /api/configuracion/smtp
+ * Obtener configuración SMTP (From Email)
+ */
+router.get('/smtp', async (req, res) => {
+    try {
+        const smtpConfigManager = require('../smtp-config-manager');
+        const config = smtpConfigManager.obtenerConfig();
+        
+        // Retornar el email configurado en el .env (vía el manager)
+        res.json({
+            success: true,
+            data: {
+                fromEmail: config.fromEmail || process.env.SMTP_FROM_EMAIL || ''
+            }
+        });
+    } catch (error) {
+        console.error('Error obteniendo config SMTP:', error);
+        res.status(500).json({ success: false, error: 'Error interno' });
+    }
+});
+
 module.exports = router;

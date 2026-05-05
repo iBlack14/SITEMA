@@ -154,11 +154,11 @@ const DashboardModule = {
         await this.cargarEstadisticas();
         await this.cargarActividades();
 
-        // Auto-refresh cada 30 segundos
+        // Auto-refresh optimizado (cada 5 minutos)
         setInterval(() => {
             this.cargarEstadisticas();
             this.cargarActividades();
-        }, 30000);
+        }, 300000);
     }
 };
 

@@ -25,7 +25,7 @@
 }
 
 .table thead {
-    background: rgba(255, 255, 255, 0.02);
+    background: var(--color-surface-soft);
 }
 
 .table thead th {
@@ -41,7 +41,7 @@
 }
 
 .table tbody tr {
-    border-bottom: 1px solid rgba(255, 255, 255, 0.03);
+    border-bottom: 1px solid var(--color-silver);
     transition: var(--transition-fast);
 }
 
@@ -53,7 +53,7 @@
 .table tbody td {
     padding: 20px;
     font-size: 14px;
-    color: #DDD;
+    color: var(--color-text);
 }
 
 /* Status Badges in Table */
@@ -89,9 +89,9 @@
     width: 40px;
     height: 40px;
     border-radius: 12px;
-    background: var(--glass-bg);
+    background: var(--color-surface);
     border: 1px solid var(--glass-border);
-    color: #FFF;
+    color: var(--color-text);
     display: flex;
     align-items: center;
     justify-content: center;

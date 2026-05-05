@@ -85,10 +85,34 @@ class ConfiguracionModule {
                 const nombreInput = document.getElementById('profile-nombre');
                 const emailInput = document.getElementById('profile-email');
                 const telefonoInput = document.getElementById('profile-telefono');
+                const fotoInput = document.getElementById('profile-foto');
+                const previewImg = document.getElementById('profile-preview');
 
                 if (nombreInput) nombreInput.value = this.userProfile.nombre || '';
                 if (emailInput) emailInput.value = this.userProfile.email || '';
                 if (telefonoInput) telefonoInput.value = this.userProfile.telefono || '';
+                
+                if (fotoInput) {
+                    const filenameSpan = document.getElementById('foto-filename');
+                    // Real-time preview listener for file upload
+                    fotoInput.addEventListener('change', (e) => {
+                        if (e.target.files.length > 0) {
+                            const file = e.target.files[0];
+                            if (filenameSpan) filenameSpan.textContent = file.name;
+                            
+                            // Vista previa local antes de subir
+                            if (previewImg) {
+                                const reader = new FileReader();
+                                reader.onload = (event) => previewImg.src = event.target.result;
+                                reader.readAsDataURL(file);
+                            }
+                        }
+                    });
+                }
+                
+                if (previewImg && this.userProfile.foto_perfil) {
+                    previewImg.src = this.userProfile.foto_perfil;
+                }
 
                 console.log(' Perfil cargado correctamente');
             }
@@ -119,29 +143,58 @@ class ConfiguracionModule {
      */
     async handleProfileUpdate(e) {
         e.preventDefault();
-     
-
+        const usuarioId = sessionStorage.getItem('userId');
+        
         console.log('💾 Guardando cambios del perfil...');
 
         const formData = new FormData(e.target);
+        
+        // 1. Manejar subida de foto si existe un archivo seleccionado
+        const fotoInput = document.getElementById('profile-foto');
+        let fotoUrl = null;
+
+        if (fotoInput && fotoInput.files.length > 0) {
+            console.log('📤 Subiendo nueva imagen de perfil con reemplazo...');
+            const fotoData = new FormData();
+            fotoData.append('avatar', fotoInput.files[0]);
+
+            try {
+                const uploadRes = await fetch(`/api/usuarios/${usuarioId}/avatar`, {
+                    method: 'POST',
+                    body: fotoData
+                });
+                const uploadResult = await uploadRes.json();
+                if (uploadResult.success) {
+                    fotoUrl = uploadResult.data.foto_perfil;
+                    console.log('✅ Foto subida y antigua eliminada:', fotoUrl);
+                }
+            } catch (err) {
+                console.error('❌ Error subiendo foto:', err);
+            }
+        }
+
         const updatedData = {
             nombre: formData.get('nombre'),
             email: formData.get('email'),
             telefono: formData.get('telefono') || ''
         };
 
+        if (fotoUrl) {
+            updatedData.foto_perfil = fotoUrl;
+        }
+
         console.log('📝 Datos a actualizar:', updatedData);
 
         // Validation
         if (!updatedData.nombre || !updatedData.email) {
-            alert('Por favor, complete los campos obligatorios (Nombre y Email).');
+            this.dashboard.showError('Por favor, complete los campos obligatorios (Nombre y Email).');
             return;
         }
 
         // Email validation
         const emailRegex = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
         if (!emailRegex.test(updatedData.email)) {
-            alert('Por favor, ingrese un correo electrónico válido.');
+            this.dashboard.showError('Por favor, ingrese un correo electrónico válido.');
             return;
         }
 
@@ -149,7 +202,7 @@ class ConfiguracionModule {
             const usuarioId = sessionStorage.getItem('userId');
 
             if (!usuarioId) {
-                alert('Error: No se encontró el ID de usuario');
+                this.dashboard.showError('Error: No se encontró el ID de usuario');
                 return;
             }
 
@@ -172,7 +225,7 @@ class ConfiguracionModule {
                 sessionStorage.setItem('userName', updatedData.nombre);
                 sessionStorage.setItem('userEmail', updatedData.email);
                 
-                alert('✅ Perfil actualizado correctamente');
+                this.dashboard.showToast('✅ Perfil actualizado correctamente');
                 console.log('✅ Perfil actualizado');
                 
                 // Recargar datos
@@ -182,7 +235,7 @@ class ConfiguracionModule {
             }
         } catch (error) {
             console.error('❌ Error updating profile:', error);
-            alert('❌ Error actualizando perfil: ' + error.message);
+            this.dashboard.showError('❌ Error actualizando perfil: ' + error.message);
         }
     }
 

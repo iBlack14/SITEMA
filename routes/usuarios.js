@@ -1,6 +1,36 @@
 const express = require('express');
 const router = express.Router();
 const UsuarioModel = require('../models/usuario-model');
+const multer = require('multer');
+const path = require('path');
+const fs = require('fs');
+
+// Configuración de almacenamiento para avatars
+const storage = multer.diskStorage({
+    destination: function (req, file, cb) {
+        const uploadDir = path.join(__dirname, '../uploads/avatars');
+        if (!fs.existsSync(uploadDir)) {
+            fs.mkdirSync(uploadDir, { recursive: true });
+        }
+        cb(null, uploadDir);
+    },
+    filename: function (req, file, cb) {
+        const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
+        cb(null, 'avatar-' + req.params.id + '-' + uniqueSuffix + path.extname(file.originalname));
+    }
+});
+
+const upload = multer({
+    storage: storage,
+    limits: { fileSize: 5 * 1024 * 1024 }, // 5MB max
+    fileFilter: (req, file, cb) => {
+        if (file.mimetype.startsWith('image/')) {
+            cb(null, true);
+        } else {
+            cb(new Error('Solo se permiten imágenes'));
+        }
+    }
+});
 
 // ========== ENDPOINTS DE USUARIOS ==========
 
@@ -292,6 +322,46 @@ router.delete('/:id', async (req, res) => {
         });
     } catch (error) {
         console.error('Error eliminando usuario:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
+// Actualizar avatar con limpieza de archivos antiguos
+router.post('/:id/avatar', upload.single('avatar'), async (req, res) => {
+    try {
+        const { id } = req.params;
+        if (!req.file) {
+            return res.status(400).json({ error: 'No se subió ningún archivo' });
+        }
+
+        // Obtener usuario actual para ver si tiene avatar anterior
+        const usuarioActual = await UsuarioModel.obtenerPorId(id);
+        if (usuarioActual && usuarioActual.foto_perfil) {
+            // Si la foto anterior es local (/uploads/avatars/...), la borramos
+            if (usuarioActual.foto_perfil.startsWith('/uploads/avatars/')) {
+                const oldPath = path.join(__dirname, '..', usuarioActual.foto_perfil);
+                if (fs.existsSync(oldPath)) {
+                    try {
+                        fs.unlinkSync(oldPath);
+                        console.log('🗑️ Imagen de perfil antigua eliminada:', oldPath);
+                    } catch (err) {
+                        console.error('⚠️ Error eliminando imagen antigua:', err);
+                    }
+                }
+            }
+        }
+
+        // Guardar nueva ruta en la base de datos
+        const nuevaRuta = `/uploads/avatars/${req.file.filename}`;
+        await UsuarioModel.actualizarUsuario(id, { foto_perfil: nuevaRuta });
+
+        res.json({
+            success: true,
+            message: 'Avatar actualizado y limpieza completada',
+            data: { foto_perfil: nuevaRuta }
+        });
+    } catch (error) {
+        console.error('Error subiendo avatar:', error);
         res.status(500).json({ error: 'Error interno del servidor' });
     }
 });

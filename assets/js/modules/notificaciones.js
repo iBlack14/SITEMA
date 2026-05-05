@@ -12,7 +12,7 @@ class NotificacionesModule {
             no_leidas: 0,
             urgentes: 0
         };
-        this.emailSistema = 'sistema@tmarc.pe'; // Email por defecto
+        this.emailSistema = ''; // Se cargará dinámicamente desde el .env vía API
 
         this.init();
     }
@@ -31,16 +31,14 @@ class NotificacionesModule {
     async cargarConfiguracionEmail() {
         try {
             const response = await fetch('/api/configuracion/smtp');
+            if (!response.ok) throw new Error('Not admin or not found');
             const data = await response.json();
             
             if (data.success && data.data && data.data.fromEmail) {
                 this.emailSistema = data.data.fromEmail;
-                console.log('✅ Email del sistema cargado:', this.emailSistema);
-            } else {
-                console.log('ℹ️ Usando email por defecto:', this.emailSistema);
             }
         } catch (error) {
-            console.warn('⚠️ No se pudo cargar configuración SMTP, usando email por defecto');
+            // Silencioso para usuarios normales
         }
     }
 

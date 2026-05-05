@@ -117,7 +117,7 @@ class DashboardSections {
                 <div class="card">
                     <h3 class="card-title text-gold">📋 Historial de Solicitudes</h3>
                     <div class="table-wrapper">
-                        <table class="table">
+                        <table class="table" id="solicitudes-table">
                             <thead>
                                 <tr>
                                     <th>ID</th>
@@ -131,6 +131,11 @@ class DashboardSections {
                                 <tr><td colspan="5" class="text-center text-muted">Cargando datos...</td></tr>
                             </tbody>
                         </table>
+                        <div id="no-solicitudes" style="display: none; padding: 40px; text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 20px;">📂</div>
+                            <h4 class="text-gold">No hay solicitudes registradas</h4>
+                            <p class="text-muted">Inicie una nueva gestión utilizando el botón superior.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -161,7 +166,7 @@ class DashboardSections {
                 <div class="card">
                     <h3 class="card-title text-gold">📥 Buzón de Notificaciones</h3>
                     <div class="table-wrapper">
-                        <table class="table">
+                        <table class="table" id="notificaciones-table">
                             <thead>
                                 <tr>
                                     <th>Remitente</th>
@@ -175,6 +180,11 @@ class DashboardSections {
                                 <tr><td colspan="5" class="text-center text-muted">Accediendo a la casilla...</td></tr>
                             </tbody>
                         </table>
+                        <div id="no-notificaciones" style="display: none; padding: 40px; text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 20px;">✉️</div>
+                            <h4 class="text-gold">Buzón de notificaciones vacío</h4>
+                            <p class="text-muted">No tiene notificaciones procesales pendientes en este momento.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -206,7 +216,7 @@ class DashboardSections {
                 <div class="card">
                     <h3 class="card-title text-gold">🔍 Listado de Expedientes</h3>
                     <div class="table-wrapper">
-                        <table class="table">
+                        <table class="table" id="expedientes-table">
                             <thead>
                                 <tr>
                                     <th>Expediente Nº</th>
@@ -220,6 +230,11 @@ class DashboardSections {
                                 <tr><td colspan="5" class="text-center text-muted">Sincronizando expedientes...</td></tr>
                             </tbody>
                         </table>
+                        <div id="no-expedientes" style="display: none; padding: 40px; text-align: center;">
+                            <div style="font-size: 48px; margin-bottom: 20px;">🔍</div>
+                            <h4 class="text-gold">No se encontraron expedientes</h4>
+                            <p class="text-muted">Aún no tiene expedientes registrados en su historial institucional.</p>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -277,33 +292,83 @@ class DashboardSections {
         section.innerHTML = `
             <div class="header fade-in">
                 <h1 class="text-gold">Configuración del Sistema</h1>
-                <p class="text-muted">Gestione su perfil y preferencias de seguridad.</p>
+                <p class="text-muted">Gestione su identidad digital y preferencias de seguridad institucional.</p>
             </div>
 
-            <div class="stats-grid fade-in" style="grid-template-columns: 1fr 1fr;">
-                <div class="card">
-                    <h3 class="card-title text-gold">👤 Perfil Institucional</h3>
-                    <form id="profileForm" style="display: flex; flex-direction: column; gap: 16px;">
-                        <div class="form-group">
-                            <label class="stat-label">Nombre Completo</label>
-                            <input type="text" id="profile-nombre" class="form-input" name="nombre" readonly>
+            <div class="stats-grid fade-in" style="grid-template-columns: 1.2fr 0.8fr; gap: 24px; margin-top: 24px;">
+                <!-- Card de Perfil -->
+                <div class="card" style="padding: 30px; border-radius: 20px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
+                    <h3 class="card-title text-gold" style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 12c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm0 2c-2.67 0-8 1.34-8 4v2h16v-2c0-2.66-5.33-4-8-4z"/></svg>
+                        Perfil Institucional
+                    </h3>
+                    
+                    <form id="profileForm" style="display: flex; flex-direction: column; gap: 20px;">
+                        <div style="display: flex; align-items: center; gap: 30px; padding: 20px; background: rgba(212, 175, 55, 0.03); border-radius: 16px; border: 1px solid rgba(212, 175, 55, 0.1);">
+                            <div class="profile-preview-container" style="position: relative; width: 100px; height: 100px; flex-shrink: 0;">
+                                <img id="profile-preview" src="assets/img/default-avatar.svg" style="width: 100%; height: 100%; border-radius: 50%; object-fit: cover; border: 3px solid var(--color-primary); box-shadow: 0 0 20px rgba(212, 175, 55, 0.2);">
+                                <div style="position: absolute; bottom: 0; right: 0; background: var(--color-primary); color: white; border-radius: 50%; width: 30px; height: 30px; display: flex; align-items: center; justify-content: center; border: 3px solid #1a1a1a; cursor: pointer;" onclick="document.getElementById('profile-foto').click()">
+                                    <svg viewBox="0 0 24 24" width="14" height="14" fill="currentColor"><path d="M3 4V1h2v3h3v2H5v3H3V6H0V4h3zm3 6V7h3V4h7l1.83 2H21c1.1 0 2 .9 2 2v12c0 1.1-.9 2-2 2H5c-1.1 0-2-.9-2-2V10h3zm7 9c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-3.2-5c0 1.77 1.43 3.2 3.2 3.2s3.2-1.43 3.2-3.2-1.43-3.2-3.2-3.2-3.2 1.43-3.2 3.2z"/></svg>
+                                </div>
+                            </div>
+                            <div style="flex: 1;">
+                                <label class="stat-label" style="font-weight: 600; color: var(--color-primary);">FOTOGRAFÍA DE PERFIL</label>
+                                <p class="text-muted" style="font-size: 11px; margin-bottom: 12px;">Se recomienda una imagen cuadrada de máx. 2MB (JPG, PNG).</p>
+                                <input type="file" id="profile-foto" name="avatar" accept="image/*" style="display: none;">
+                                <span id="foto-filename" class="text-muted" style="font-size: 11px; font-style: italic;">Ninguna imagen seleccionada</span>
+                            </div>
                         </div>
-                        <div class="form-group">
-                            <label class="stat-label">Email de Contacto</label>
-                            <input type="email" id="profile-email" class="form-input" name="email">
+
+                        <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                            <div class="form-group">
+                                <label class="stat-label">NOMBRE COMPLETO</label>
+                                <input type="text" id="profile-nombre" class="form-input" name="nombre" readonly style="background: rgba(0,0,0,0.1); cursor: not-allowed;">
+                            </div>
+                            <div class="form-group">
+                                <label class="stat-label">TELÉFONO DE CONTACTO</label>
+                                <input type="text" id="profile-telefono" class="form-input" name="telefono" placeholder="+51 000 000 000">
+                            </div>
                         </div>
-                        <button type="submit" class="btn btn-primary">Actualizar Perfil</button>
+
+                        <div class="form-group">
+                            <label class="stat-label">CORREO ELECTRÓNICO INSTITUCIONAL</label>
+                            <input type="email" id="profile-email" class="form-input" name="email" placeholder="usuario@tmarc.com.pe">
+                        </div>
+
+                        <div style="margin-top: 10px;">
+                            <button type="submit" class="btn btn-primary" style="padding: 12px 40px; font-weight: 600; width: fit-content;">💾 GUARDAR CAMBIOS DE PERFIL</button>
+                        </div>
                     </form>
                 </div>
 
-                <div class="card">
-                    <h3 class="card-title text-gold">🔐 Seguridad</h3>
-                    <form id="securityForm" style="display: flex; flex-direction: column; gap: 16px;">
+                <!-- Card de Seguridad -->
+                <div class="card" style="padding: 30px; border-radius: 20px; background: rgba(255,255,255,0.02); backdrop-filter: blur(10px);">
+                    <h3 class="card-title text-gold" style="display: flex; align-items: center; gap: 12px; margin-bottom: 24px;">
+                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M12 1L3 5v6c0 5.55 3.84 10.74 9 12 5.16-1.26 9-6.45 9-12V5l-9-4zm0 10.99h7c-.53 4.12-3.28 7.79-7 8.94V12H5V6.3l7-3.11v8.8z"/></svg>
+                        Seguridad
+                    </h3>
+                    <p class="text-muted" style="font-size: 13px; margin-bottom: 24px;">Actualice su contraseña periódicamente para mantener la integridad de sus datos.</p>
+                    
+                    <form id="securityForm" style="display: flex; flex-direction: column; gap: 20px;">
                         <div class="form-group">
-                            <label class="stat-label">Nueva Contraseña</label>
-                            <input type="password" class="form-input" name="newPassword" placeholder="••••••••">
+                            <label class="stat-label">CONTRASEÑA ACTUAL</label>
+                            <input type="password" id="currentPassword" name="currentPassword" class="form-input" placeholder="••••••••" required>
                         </div>
-                        <button type="submit" class="btn btn-secondary">Cambiar Contraseña</button>
+                        
+                        <div style="height: 1px; background: rgba(255,255,255,0.05); margin: 10px 0;"></div>
+                        
+                        <div class="form-group">
+                            <label class="stat-label">NUEVA CONTRASEÑA</label>
+                            <input type="password" id="newPassword" name="newPassword" class="form-input" placeholder="••••••••" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">CONFIRMAR NUEVA CONTRASEÑA</label>
+                            <input type="password" id="confirmPassword" name="confirmPassword" class="form-input" placeholder="••••••••" required>
+                        </div>
+                        
+                        <div style="margin-top: 10px;">
+                            <button type="submit" class="btn btn-secondary" style="padding: 12px 30px; width: 100%; border: 1px solid var(--color-primary);">🛡️ ACTUALIZAR CONTRASEÑA</button>
+                        </div>
                     </form>
                 </div>
             </div>
@@ -319,9 +384,9 @@ class DashboardSections {
             section.classList.add('active');
         }
 
-        const mainContent = document.querySelector('.main-content');
-        if (mainContent) {
-            mainContent.appendChild(section);
+        const contentArea = document.getElementById('content-area');
+        if (contentArea) {
+            contentArea.appendChild(section);
         }
 
         return section;

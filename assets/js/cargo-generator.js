@@ -8,7 +8,8 @@ const CargoGenerator = {
             solicitante = '',
             fecha = '',
             folios = '',
-            descripcion = 'Solicitud de arbitraje entre privados',
+            tipo_servicio = 'Arbitraje',
+            asunto = '',
             token = '' // Token temporal para QR
         } = datos;
 
@@ -248,8 +249,12 @@ const CargoGenerator = {
                 <div class="info-value">${solicitante || 'No especificado'}</div>
             </div>
             <div class="info-item">
-                <div class="info-label">Tipo de servicio:</div>
-                <div class="info-value">${descripcion}</div>
+                <div class="info-label">Servicio:</div>
+                <div class="info-value">${tipo_servicio}</div>
+            </div>
+            <div class="info-item">
+                <div class="info-label">Asunto:</div>
+                <div class="info-value">${asunto}</div>
             </div>
             <div class="info-item">
                 <div class="info-label">Fecha de presentación:</div>

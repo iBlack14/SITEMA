@@ -7,32 +7,36 @@
 @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
 
 :root {
-    /* 🎨 Primary Palette - Golden Authority */
+    /* 🎨 Primary Palette - Light Institutional */
     --color-primary: #D4AF37;
-    --color-primary-light: #F4D03F;
-    --color-primary-dark: #B8941F;
+    --color-primary-light: #E5C354;
+    --color-primary-dark: #A6892C;
     
-    /* 🌑 Surface & Background */
-    --color-bg: #0D0D0D;
-    --color-surface: #141414;
-    --color-surface-soft: #1E1E1E;
-    --color-surface-lighter: #2A2A2A;
+    /* ⚪ Surface & Background (Light) */
+    --color-bg: #F0F2F5;
+    --color-surface: #FFFFFF;
+    --color-surface-soft: #F8FAFC;
+    --color-surface-lighter: #EDF2F7;
+    
+    /* 🌑 Text Colors */
+    --color-text: #1A202C;
+    --color-text-muted: #718096;
     
     /* ❄️ Accent & Silver */
-    --color-silver: #C0C0C0;
-    --color-silver-muted: #808080;
+    --color-silver: #E2E8F0;
+    --color-silver-muted: #A0AEC0;
     
-    /* 💎 Glassmorphism Tokens */
-    --glass-bg: rgba(255, 255, 255, 0.03);
-    --glass-border: rgba(255, 255, 255, 0.08);
-    --glass-border-gold: rgba(212, 175, 55, 0.2);
-    --glass-blur: blur(20px);
+    /* 💎 Glassmorphism Tokens (Light Mode) */
+    --glass-bg: rgba(255, 255, 255, 0.85);
+    --glass-border: rgba(0, 0, 0, 0.05);
+    --glass-border-gold: rgba(212, 175, 55, 0.3);
+    --glass-blur: blur(25px);
     
     /* 🟢 Status Colors */
-    --color-success: #4CAF50;
-    --color-warning: #FF9800;
-    --color-error: #F44336;
-    --color-info: #2196F3;
+    --color-success: #38A169;
+    --color-warning: #DD6B20;
+    --color-error: #E53E3E;
+    --color-info: #3182CE;
     
     /* 📏 Spacing System (8dp) */
     --space-1: 4px;
@@ -46,13 +50,13 @@
     --font-header: 'Outfit', sans-serif;
     --font-body: 'Inter', sans-serif;
     
-    /* 🛡️ Shadows */
-    --shadow-premium: 0 20px 40px rgba(0, 0, 0, 0.4);
-    --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.15);
+    /* 🛡️ Shadows (Soft & Deep) */
+    --shadow-premium: 0 10px 30px rgba(0, 0, 0, 0.04);
+    --shadow-glow: 0 0 20px rgba(212, 175, 55, 0.1);
     
     /* 🎭 Gradients */
     --gradiente-dorado: linear-gradient(135deg, #D4AF37 0%, #F4D03F 50%, #B8941F 100%);
-    --gradiente-dorado-texto: linear-gradient(180deg, #FFFFFF 0%, #D4AF37 100%);
+    --gradiente-dorado-texto: linear-gradient(180deg, #1A202C 0%, #D4AF37 100%);
     
     /* 🔄 Transitions */
     --transition-smooth: all 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
@@ -68,15 +72,18 @@
     -moz-osx-font-smoothing: grayscale;
 }
 
-body {
+/* 🏗️ Layout Engine - Master Structure */
+body.pro-max-theme {
+    display: flex;
+    min-height: 100vh;
     font-family: var(--font-body);
     background-color: var(--color-bg);
-    color: #FFFFFF;
-    min-height: 100vh;
+    color: var(--color-text);
     line-height: 1.6;
     overflow-x: hidden;
-    background-image: radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.05) 0%, transparent 50%),
-                      radial-gradient(circle at 100% 100%, rgba(192, 192, 192, 0.05) 0%, transparent 50%);
+    background-image: radial-gradient(circle at 0% 0%, rgba(212, 175, 55, 0.03) 0%, transparent 40%),
+                      radial-gradient(circle at 100% 100%, rgba(49, 130, 206, 0.03) 0%, transparent 40%);
+    background-attachment: fixed;
 }
 
 /* 📜 Custom Scrollbar */
@@ -99,11 +106,63 @@ body {
     background: var(--color-primary);
 }
 
-/* 🏷️ Typography Utilities */
+.dashboard-wrapper {
+    display: flex;
+    width: 100%;
+    min-height: 100vh;
+    background-color: var(--color-bg);
+}
+
+.main-content {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    padding: var(--space-4) var(--space-6);
+    min-height: 100vh;
+    transition: var(--transition-smooth);
+    width: 100%;
+    background-color: var(--color-bg);
+}
+
+/* Contenedor Maestro - Centrado y con ancho optimizado para lectura */
+.content-container {
+    max-width: 1400px;
+    width: 100%;
+    margin: 0 auto; /* Centrado perfecto en el espacio restante */
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-5);
+    padding-bottom: var(--space-6);
+}
+
+.top-bar {
+    height: 70px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 0 var(--space-4);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+    border-radius: 20px;
+    position: sticky;
+    top: 20px;
+    z-index: 900;
+    box-shadow: var(--shadow-premium);
+}
+
+/* 📊 Stats Grid System */
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+    gap: var(--space-4);
+    width: 100%;
+}
 h1, h2, h3, h4, h5, h6 {
     font-family: var(--font-header);
     letter-spacing: -0.02em;
     font-weight: 700;
+    margin-bottom: var(--space-2);
 }
 
 .text-gold { color: var(--color-primary); }
@@ -133,10 +192,41 @@ h1, h2, h3, h4, h5, h6 {
     to { transform: rotate(360deg); }
 }
 
+/* 🏗️ Layout Engine */
+
+
 /* 📱 Responsive Adjustments */
+@media (max-width: 1024px) {
+    .sidebar {
+        transform: translateX(-100%);
+    }
+    .sidebar.active {
+        transform: translateX(0);
+    }
+    .main-content {
+        margin-left: 0 !important;
+        padding: var(--space-3);
+    }
+    .top-bar {
+        top: 0;
+        border-radius: 0;
+    }
+}
+
 @media (max-width: 768px) {
     :root {
         --space-4: 16px;
         --space-5: 24px;
     }
+}
+
+/* ========== CONTENT SECTIONS ========== */
+.content-section {
+    display: none;
+    width: 100%;
+}
+
+.content-section.active {
+    display: block;
+    animation: fadeIn 0.5s cubic-bezier(0.2, 0.8, 0.2, 1);
 }

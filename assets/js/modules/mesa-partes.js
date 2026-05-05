@@ -9,13 +9,14 @@ class MesaPartesModule {
         this.documentos = [];
         this.currentFilters = {};
 
+        console.log('📂 Mesa de Partes Module Initialized');
         this.init();
     }
 
     /**
      * Initialize mesa de partes module
      */
-    init() {
+    async init() {
         this.setupEventListeners();
     }
 
@@ -24,9 +25,12 @@ class MesaPartesModule {
      */
     setupEventListeners() {
         // Presentar documento button
-        const presentarBtn = document.querySelector('#mesa [onclick*="Subir"]');
+        const presentarBtn = document.querySelector('[onclick*="presentarDocumento"]');
         if (presentarBtn) {
-            presentarBtn.addEventListener('click', () => this.presentarDocumento());
+            presentarBtn.addEventListener('click', (e) => {
+                e.preventDefault();
+                this.presentarDocumento();
+            });
         }
 
         // File upload for mesa de partes
@@ -80,8 +84,11 @@ class MesaPartesModule {
      */
     mostrarDocumentosPresentados(documentos) {
         const tableBody = document.querySelector('#mesa-tbody');
+        
+        // Si el DOM no está listo (sucede durante la inicialización rápida), reintentar
         if (!tableBody) {
-            console.warn('⚠️ No se encontró tbody de mesa de partes');
+            console.log('⏳ DOM de Mesa de Partes no listo, reintentando renderizado...');
+            setTimeout(() => this.mostrarDocumentosPresentados(documentos), 500);
             return;
         }
 
@@ -266,55 +273,79 @@ class MesaPartesModule {
         modal.id = 'modalPresentarDocumento';
 
         modal.innerHTML = `
-            <div class="modal-content">
+            <div class="modal-content" style="max-width: 600px;">
                 <div class="modal-header">
-                    <span>Presentar Documento</span>
-                    <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('active'); document.body.style.overflow = '';">×</button>
+                    <span class="text-gold">📤 Nueva Presentación Procesal</span>
+                    <button class="modal-close" onclick="closeAllModals()">
+                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
+                    </button>
                 </div>
                 <div class="modal-body">
-                    <div class="form-group-modal">
-                        <label>Tipo de Documento</label>
-                        <select id="tipoDocumentoMesa" class="form-select-modal">
-                            <option value="solicitud">Solicitud</option>
-                            <option value="consulta">Consulta</option>
-                            <option value="reclamo">Reclamo</option>
-                            <option value="otro">Otro</option>
-                        </select>
-                    </div>
+                    <p class="text-muted" style="margin-bottom: 24px;">Complete los datos para el registro oficial de su documento en la Mesa de Partes Virtual.</p>
+                    
+                    <div style="display: grid; gap: 24px;">
+                        <div class="form-group">
+                            <label class="stat-label" style="display: block; margin-bottom: 8px;">Tipo de Documento</label>
+                            <select id="tipoDocumentoMesa" class="form-select">
+                                <option value="SOLICITUD">SOLICITUD</option>
+                                <option value="DEMANDA">DEMANDA / ESCRITO</option>
+                                <option value="SUBSANACION">SUBSANACIÓN</option>
+                                <option value="RECURSO">RECURSO DE APELACIÓN</option>
+                                <option value="OTRO">OTRO DOCUMENTO</option>
+                            </select>
+                        </div>
 
-                    <div class="form-group-modal">
-                        <label>Archivo PDF</label>
-                        <div class="file-upload">
-                            <label for="fileMesa" class="file-upload-label">Seleccionar archivo</label>
-                            <input type="file" id="fileMesa" accept=".pdf" style="display: none;">
-                            <span id="fileNameMesa" style="margin-left: 15px; color: #999;"></span>
+                        <div class="form-group">
+                            <label class="stat-label" style="display: block; margin-bottom: 8px;">Descripción o Sumilla</label>
+                            <textarea id="descripcionMesa" class="form-textarea" rows="3" placeholder="Breve descripción del contenido del documento..."></textarea>
+                        </div>
+
+                        <div class="form-group">
+                            <label class="stat-label" style="display: block; margin-bottom: 8px;">Documento PDF (Firma Digital)</label>
+                            <div class="file-upload-zone" style="border: 2px dashed var(--glass-border); border-radius: 16px; padding: 40px; text-align: center; cursor: pointer; transition: var(--transition-fast); background: rgba(212, 175, 55, 0.03);">
+                                <input type="file" id="fileMesa" accept=".pdf" style="display: none;">
+                                <div id="upload-ui">
+                                    <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--color-primary)" style="margin-bottom: 12px; opacity: 0.8;">
+                                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
+                                    </svg>
+                                    <p style="font-weight: 600; color: var(--color-text);">Haga clic para seleccionar archivo</p>
+                                    <p style="font-size: 12px; color: var(--color-silver-muted);">Solo archivos PDF hasta 20MB</p>
+                                </div>
+                                <div id="file-selected-ui" style="display: none;">
+                                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--color-success);">
+                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
+                                        <span id="fileNameMesa" style="font-weight: 700;"></span>
+                                    </div>
+                                    <button type="button" class="btn btn-secondary btn-sm" style="margin-top: 10px;" onclick="document.getElementById('fileMesa').value=''; document.getElementById('upload-ui').style.display='block'; document.getElementById('file-selected-ui').style.display='none'; event.stopPropagation();">Cambiar archivo</button>
+                                </div>
+                            </div>
                         </div>
                     </div>
-
-                    <div class="form-group-modal">
-                        <label>Descripción</label>
-                        <textarea id="descripcionMesa" class="form-textarea-modal" placeholder="Descripción del documento..."></textarea>
-                    </div>
-
-                    <div class="modal-actions">
-                        <button type="button" class="btn-modal btn-modal-secondary" onclick="this.closest('.modal-overlay').classList.remove('active'); document.body.style.overflow = '';">Cancelar</button>
-                        <button type="button" class="btn-modal btn-modal-primary" onclick="mesaPartesModule.submitDocumento()">Presentar</button>
-                    </div>
+                </div>
+                <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 16px; padding: 24px 30px; margin-top: 10px;">
+                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()" style="padding: 12px 30px; font-weight: 600; font-size: 13px;">CANCELAR</button>
+                    <button type="button" class="btn btn-primary" onclick="window.mesaPartesModule.submitDocumento()" id="btnSubmitMesa" style="padding: 12px 40px; font-weight: 700; font-size: 13px; text-transform: uppercase;">
+                        Presentar Documento
+                    </button>
                 </div>
             </div>
         `;
 
-        // Setup file input handler
-        const fileInput = modal.querySelector('#fileMesa');
-        const fileName = modal.querySelector('#fileNameMesa');
+        // Logic for file selection UI
+        const zone = modal.querySelector('.file-upload-zone');
+        const input = modal.querySelector('#fileMesa');
+        const uiNormal = modal.querySelector('#upload-ui');
+        const uiSelected = modal.querySelector('#file-selected-ui');
+        const nameSpan = modal.querySelector('#fileNameMesa');
 
-        fileInput.addEventListener('change', (e) => {
+        zone.onclick = () => input.click();
+        input.onchange = (e) => {
             if (e.target.files.length > 0) {
-                fileName.textContent = e.target.files[0].name;
-            } else {
-                fileName.textContent = '';
+                nameSpan.textContent = e.target.files[0].name;
+                uiNormal.style.display = 'none';
+                uiSelected.style.display = 'block';
             }
-        });
+        };
 
         return modal;
     }

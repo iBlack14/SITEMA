@@ -557,6 +557,7 @@ router.get('/usuarios/existe/:email', async (req, res) => {
             success: true,
             data: {
                 existe: existeEnMySQL,
+                id: existeEnMySQL ? usuarios.find(u => u.email === email).id : null,
                 enMySQL: existeEnMySQL,
                 enLocalStorage: false,
                 detalles: {

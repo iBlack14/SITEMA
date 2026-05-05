@@ -101,7 +101,10 @@ const RegistroUsuario = {
         try {
             const response = await fetch(`/api/usuarios/existe/${encodeURIComponent(email)}`);
             const data = await response.json();
-            return data.success && data.data.existe;
+            return {
+                existe: data.success && data.data.existe,
+                id: data.data?.id || null
+            };
         } catch (error) {
             console.error('Error verificando usuario:', error);
             return false;
@@ -116,13 +119,14 @@ const RegistroUsuario = {
             console.log('🔍 Verificando si el usuario ya existe...');
             
             // Verificar si ya existe
-            const existe = await this.verificarUsuarioExiste(credenciales.email);
+            const verificacion = await this.verificarUsuarioExiste(credenciales.email);
             
-            if (existe) {
+            if (verificacion.existe) {
                 console.warn('⚠️ Usuario ya existe:', credenciales.email);
                 return {
                     success: true, 
                     yaExistia: true,
+                    id: verificacion.id,
                     message: 'Usuario ya registrado previamente'
                 };
             }

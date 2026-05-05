@@ -12,7 +12,6 @@ class ExpedientesModule {
 
     async init() {
         console.log('📂 Expedientes Module Initialized');
-        await this.loadExpedientesUsuario();
     }
 
     async loadExpedientesUsuario() {
@@ -106,35 +105,159 @@ class ExpedientesModule {
 
     crearNuevoExpediente() {
         const content = `
-            <form id="formNuevoExpediente" class="fade-in">
-                <div class="stats-grid" style="grid-template-columns: 1fr 1fr;">
-                    <div class="form-group">
-                        <label class="stat-label">Sede Judicial</label>
-                        <select class="form-select" id="new-sede" required>
-                            <option value="LIMA">LIMA</option>
-                            <option value="TRUJILLO">TRUJILLO</option>
-                        </select>
-                    </div>
-                    <div class="form-group">
-                        <label class="stat-label">Materia</label>
-                        <select class="form-select" id="new-materia" required>
-                            <option value="ARBITRAJE">ARBITRAJE</option>
-                            <option value="CONCILIACION">CONCILIACIÓN</option>
-                        </select>
+            <form id="formNuevoExpediente" class="fade-in cej-form" style="max-height: 85vh; overflow-y: auto; padding: 20px;">
+                <!-- Sección 1: Datos Generales -->
+                <div class="form-section" style="margin-bottom: 24px;">
+                    <h4 style="color: var(--color-primary); border-bottom: 2px solid rgba(212, 175, 55, 0.2); padding-bottom: 8px; margin-bottom: 16px;">🏛️ Datos Generales</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label class="stat-label">Sede</label>
+                            <select id="exp-sede" class="form-select" required>
+                                <option value="">(Seleccionar)</option>
+                                <option value="LIMA">LIMA</option>
+                                <option value="TRUJILLO">TRUJILLO</option>
+                                <option value="LORETO">LORETO</option>
+                                <option value="HUARAZ">HUARAZ</option>
+                                <option value="CAJAMARCA">CAJAMARCA</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">Especialidad</label>
+                            <select id="exp-especialidad" class="form-select" required>
+                                <option value="">(Seleccionar)</option>
+                                <option value="ARBITRAJE">ARBITRAJE</option>
+                                <option value="JUNTA DE PREVENCION">JUNTA DE PREVENCION Y RESOLUCION DE DISPUTAS</option>
+                                <option value="CONCILIACION">CONCILIACION EXTRAJUDICIAL</option>
+                                <option value="ARBITRAJE DE EMERGENCIA">ARBITRAJE DE EMERGENCIA</option>
+                                <option value="ARBITRAJE EXPRESS">ARBITRAJE EXPRESS</option>
+                                <option value="ARBITRAJE ENTRE PRIVADOS">ARBITRAJE ENTRE PRIVADOS</option>
+                                <option value="CENTRO DE FORMACION">CENTRO DE FORMACION Y CAPACITACION</option>
+                            </select>
+                        </div>
                     </div>
                 </div>
-                <div class="form-group" style="margin-top: 16px;">
-                    <label class="stat-label">Sumilla del Proceso</label>
-                    <textarea class="form-textarea" id="new-sumilla" rows="4" placeholder="Describa el asunto del expediente..."></textarea>
+
+                <!-- Sección 2: Datos del Expediente -->
+                <div class="form-section" style="margin-bottom: 24px;">
+                    <h4 style="color: var(--color-primary); border-bottom: 2px solid rgba(212, 175, 55, 0.2); padding-bottom: 8px; margin-bottom: 16px;">📂 Datos del Expediente</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label class="stat-label">Motivo de Ingreso</label>
+                            <input type="text" id="exp-motivo" class="form-input" value="DEMANDA" readonly>
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">Proceso</label>
+                            <select id="exp-proceso" class="form-select" required onchange="document.getElementById('exp-proceso-otro-cont').style.display = this.value === 'OTRO' ? 'block' : 'none'">
+                                <option value="">(Seleccionar)</option>
+                                <option value="CONOCIMIENTO">CONOCIMIENTO</option>
+                                <option value="ABREVIADO">ABREVIADO</option>
+                                <option value="SUMARISIMO">SUMARÍSIMO</option>
+                                <option value="OTRO">OTRO (ESPECIFICAR)</option>
+                            </select>
+                            <div id="exp-proceso-otro-cont" style="display: none; margin-top: 8px;">
+                                <input type="text" id="exp-proceso-otro" class="form-input" placeholder="Escriba el proceso...">
+                            </div>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label class="stat-label">Materia</label>
+                            <select id="exp-materia" class="form-select" required onchange="document.getElementById('exp-materia-otro-cont').style.display = this.value === 'OTRO' ? 'block' : 'none'">
+                                <option value="">(Seleccionar)</option>
+                                <option value="OBLIGACION">OBLIGACIÓN DE DAR SUMA DE DINERO</option>
+                                <option value="DESALOJO">DESALOJO</option>
+                                <option value="INDEMNIZACION">INDEMNIZACIÓN</option>
+                                <option value="OTRO">OTRO (ESPECIFICAR)</option>
+                            </select>
+                            <div id="exp-materia-otro-cont" style="display: none; margin-top: 8px;">
+                                <input type="text" id="exp-materia-otro" class="form-input" placeholder="Escriba la materia...">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">Cuantía (S/.)</label>
+                            <div style="display: flex; gap: 10px; align-items: center;">
+                                <input type="number" id="exp-cuantia" class="form-input" value="0.00" step="0.01">
+                                <label style="font-size: 10px; white-space: nowrap; display: flex; align-items: center; gap: 4px; color: var(--text-muted);">
+                                    <input type="checkbox" id="exp-indeterminado" onchange="document.getElementById('exp-cuantia').disabled = this.checked"> 
+                                    INDETERMINADO
+                                </label>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="stat-label" style="display: flex; justify-content: space-between;">
+                            Sumilla 
+                            <span style="font-size: 10px;">Caracteres restantes: <span id="sumilla-count">255</span></span>
+                        </label>
+                        <textarea id="exp-sumilla" class="form-input" rows="3" maxlength="255" placeholder="Ingrese la sumilla del expediente..." oninput="document.getElementById('sumilla-count').textContent = 255 - this.value.length"></textarea>
+                    </div>
                 </div>
-                <div style="margin-top: 24px; display: flex; gap: 12px; justify-content: flex-end;">
+
+                <!-- Sección 3: Datos de Presentante -->
+                <div class="form-section" style="margin-bottom: 24px;">
+                    <h4 style="color: var(--color-primary); border-bottom: 2px solid rgba(212, 175, 55, 0.2); padding-bottom: 8px; margin-bottom: 16px;">👤 Datos de Presentante</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label class="stat-label">Tipo de Presentante</label>
+                            <select id="exp-tipo-pres" class="form-select">
+                                <option value="ABOGADO">ABOGADO</option>
+                                <option value="PARTICULAR">PARTICULAR</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">Nombre del Presentante</label>
+                            <input type="text" id="exp-presentante" class="form-input" placeholder="Nombre completo">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label class="stat-label">Nº Colegiatura</label>
+                            <input type="text" id="exp-colegiatura" class="form-input" placeholder="C.A.L. 00000">
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">Colegio de Abogados</label>
+                            <select id="exp-colegio" class="form-select">
+                                <option value="LA LIBERTAD">LA LIBERTAD</option>
+                                <option value="LIMA">LIMA</option>
+                                <option value="AREQUIPA">AREQUIPA</option>
+                            </select>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div class="form-group">
+                            <label class="stat-label">Casilla Física / Oficina</label>
+                            <input type="text" id="exp-casilla-f" class="form-input" placeholder="Oficina - Casilla">
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">Casilla Electrónica</label>
+                            <input type="text" id="exp-casilla-e" class="form-input" placeholder="00000">
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 4: Documentos -->
+                <div class="form-section" style="margin-bottom: 24px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 12px; border: 1px dashed var(--color-primary);">
+                    <h4 style="color: var(--color-primary); margin-bottom: 12px; font-size: 14px;">📄 Documentos Adjuntos (Máx 5MB - PDF Firmado)</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
+                        <div>
+                            <label class="stat-label">Documento Principal</label>
+                            <input type="file" id="exp-file-p" class="form-input" accept=".pdf" required>
+                        </div>
+                        <div>
+                            <label class="stat-label">Anexos</label>
+                            <input type="file" id="exp-file-a" class="form-input" accept=".pdf" multiple>
+                        </div>
+                    </div>
+                </div>
+
+                <div style="display: flex; justify-content: flex-end; gap: 12px; margin-top: 20px;">
                     <button type="button" class="btn btn-secondary" onclick="closeAllModals()">Cancelar</button>
-                    <button type="submit" class="btn btn-primary">Registrar Expediente</button>
+                    <button type="submit" id="btnSubmitExp" class="btn btn-primary" style="padding: 12px 32px;">Registrar Expediente</button>
                 </div>
             </form>
         `;
 
-        this.dashboard.openModal('Nuevo Registro Procesal', content);
+        this.dashboard.openModal('🏛️ Nueva Presentación de Expediente', content);
         
         const form = document.getElementById('formNuevoExpediente');
         if (form) {
@@ -144,15 +267,71 @@ class ExpedientesModule {
 
     async handleSubmit(e) {
         e.preventDefault();
-        // Logic for submitting new case
-        Swal.fire({
-            title: 'Éxito',
-            text: 'El expediente ha sido registrado satisfactoriamente.',
-            icon: 'success',
-            confirmButtonColor: '#D4AF37'
-        });
-        closeAllModals();
-        await this.loadExpedientesUsuario();
+        const btn = document.getElementById('btnSubmitExp');
+        const originalText = btn.textContent;
+
+        try {
+            btn.disabled = true;
+            btn.textContent = 'Enviando...';
+
+            const materiaSel = document.getElementById('exp-materia').value;
+            const materia = materiaSel === 'OTRO' ? document.getElementById('exp-materia-otro').value : materiaSel;
+            
+            const procesoSel = document.getElementById('exp-proceso').value;
+            const proceso = procesoSel === 'OTRO' ? document.getElementById('exp-proceso-otro').value : procesoSel;
+
+            const formData = new FormData();
+            formData.append('sede', document.getElementById('exp-sede').value);
+            formData.append('especialidad', document.getElementById('exp-especialidad').value);
+            formData.append('motivo_ingreso', document.getElementById('exp-motivo').value);
+            formData.append('proceso', proceso);
+            formData.append('materia', materia);
+            formData.append('cuantia', document.getElementById('exp-indeterminado').checked ? 0 : document.getElementById('exp-cuantia').value);
+            formData.append('indeterminado', document.getElementById('exp-indeterminado').checked ? 1 : 0);
+            formData.append('sumilla', document.getElementById('exp-sumilla').value);
+            formData.append('tipo_presentante', document.getElementById('exp-tipo-pres').value);
+            formData.append('presentante', document.getElementById('exp-presentante').value);
+            formData.append('colegiatura', document.getElementById('exp-colegiatura').value);
+            formData.append('colegio_abogados', document.getElementById('exp-colegio').value);
+            formData.append('casilla_fisica', document.getElementById('exp-casilla-f').value);
+            formData.append('casilla_electronica', document.getElementById('exp-casilla-e').value);
+            formData.append('usuario_id', sessionStorage.getItem('userId') || '2');
+
+            // Files
+            const fileP = document.getElementById('exp-file-p');
+            if (fileP.files.length > 0) formData.append('documentos_principales', fileP.files[0]);
+            
+            const fileA = document.getElementById('exp-file-a');
+            if (fileA.files.length > 0) {
+                Array.from(fileA.files).forEach(f => formData.append('anexos', f));
+            }
+
+            const response = await fetch('/api/expedientes', {
+                method: 'POST',
+                body: formData
+            });
+
+            const result = await response.json();
+
+            if (result.success) {
+                Swal.fire({
+                    title: '¡Expediente Presentado!',
+                    text: 'El registro se ha realizado con éxito en la Mesa de Partes Virtual.',
+                    icon: 'success',
+                    confirmButtonColor: '#D4AF37'
+                });
+                closeAllModals();
+                await this.loadExpedientesUsuario();
+            } else {
+                throw new Error(result.error || 'Error en el registro');
+            }
+        } catch (error) {
+            console.error('❌ Error:', error);
+            Swal.fire({ title: 'Error', text: error.message, icon: 'error' });
+        } finally {
+            btn.disabled = false;
+            btn.textContent = originalText;
+        }
     }
 }
 

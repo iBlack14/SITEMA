@@ -66,25 +66,14 @@ router.get('/dashboard', async (req, res) => {
             stats.expedientes = { total: 0, activos: 0, finalizados: 0 };
         }
 
-        // 4. MESA DE PARTES
-        try {
-            const mesaPartes = await query(`
-                SELECT COUNT(*) as total,
-                       SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END) as pendientes,
-                       SUM(CASE WHEN estado = 'Aprobado' THEN 1 ELSE 0 END) as aprobados,
-                       SUM(CASE WHEN estado = 'Rechazado' THEN 1 ELSE 0 END) as rechazados
-                FROM mesa_partes
-            `);
-            stats.mesa_partes = {
-                total: mesaPartes[0].total || 0,
-                pendientes: mesaPartes[0].pendientes || 0,
-                aprobados: mesaPartes[0].aprobados || 0,
-                rechazados: mesaPartes[0].rechazados || 0
-            };
-        } catch (error) {
-            console.warn('⚠️ Error obteniendo mesa_partes:', error.message);
-            stats.mesa_partes = { total: 0, pendientes: 0, aprobados: 0, rechazados: 0 };
-        }
+        // 4. MESA DE PARTES (Consolidado con solicitudes si es necesario, o eliminado si es redundante)
+        // Nota: mesa_partes no existe como tabla física, se usa 'solicitudes'
+        stats.mesa_partes = {
+            total: stats.solicitudes.total,
+            pendientes: stats.solicitudes.pendientes,
+            aprobados: stats.solicitudes.aprobadas,
+            rechazados: stats.solicitudes.rechazadas
+        };
 
         // 5. NOTIFICACIONES
         try {
@@ -163,8 +152,8 @@ router.get('/actividades-recientes', async (req, res) => {
             console.warn('⚠️ Error obteniendo solicitudes recientes:', error.message);
         }
 
-        // 3. Mesa de Partes recientes
-        try {
+        // 3. Mesa de Partes (Omitido por redundancia con solicitudes)
+        /* try {
             const mesaPartes = await query(`
                 SELECT 
                     'mesa_partes' as tipo,
@@ -180,7 +169,7 @@ router.get('/actividades-recientes', async (req, res) => {
             actividades = actividades.concat(mesaPartes);
         } catch (error) {
             console.warn('⚠️ Error obteniendo mesa_partes recientes:', error.message);
-        }
+        } */
 
         // Ordenar por fecha y limitar
         actividades.sort((a, b) => new Date(b.fecha) - new Date(a.fecha));
@@ -246,22 +235,11 @@ router.get('/usuario/:id', async (req, res) => {
             stats.expedientes = { total: 0, activos: 0 };
         }
 
-        // 3. MESA DE PARTES DEL USUARIO
-        try {
-            const mesaPartes = await query(`
-                SELECT COUNT(*) as total,
-                       SUM(CASE WHEN estado = 'Pendiente' THEN 1 ELSE 0 END) as pendientes
-                FROM mesa_partes
-                WHERE usuario_id = ?
-            `, [id]);
-            stats.mesa_partes = {
-                total: mesaPartes[0].total || 0,
-                pendientes: mesaPartes[0].pendientes || 0
-            };
-        } catch (error) {
-            console.warn('⚠️ Error obteniendo mesa_partes del usuario:', error.message);
-            stats.mesa_partes = { total: 0, pendientes: 0 };
-        }
+        // 3. MESA DE PARTES DEL USUARIO (Vinculado a solicitudes)
+        stats.mesa_partes = {
+            total: stats.solicitudes.total,
+            pendientes: stats.solicitudes.pendientes
+        };
 
         // 4. NOTIFICACIONES DEL USUARIO
         try {
@@ -346,8 +324,8 @@ router.get('/usuario/:id/actividades', async (req, res) => {
             console.warn('⚠️ Error obteniendo expedientes:', error.message);
         }
 
-        // 3. Mesa de Partes del usuario
-        try {
+        // 3. Mesa de Partes del usuario (Omitido por redundancia)
+        /* try {
             const mesaPartes = await query(`
                 SELECT 
                     'mesa_partes' as tipo,
@@ -362,7 +340,7 @@ router.get('/usuario/:id/actividades', async (req, res) => {
             actividades = actividades.concat(mesaPartes);
         } catch (error) {
             console.warn('⚠️ Error obteniendo mesa_partes:', error.message);
-        }
+        } */
 
         // 4. Notificaciones del usuario
         try {

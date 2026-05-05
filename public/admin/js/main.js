@@ -732,22 +732,37 @@ document.addEventListener('DOMContentLoaded', async function() {
         // Cargar configuración SMTP
         cargarConfigSMTP();
 
-        // Actualizar contadores cada 30 segundos
-        setInterval(async () => {
+        // Optimización de Polling: Solo actualizar cuando la pestaña es visible
+        // o cada 5 minutos (evita saturación del servidor)
+        let lastUpdate = Date.now();
+        const REFRESH_INTERVAL = 300000; // 5 minutos
+
+        async function refreshDashboardData() {
+            console.log('🔄 Actualizando datos del dashboard (Optimizado)...');
             await actualizarContadores();
-            // También actualizar contadores del sistema de conexión
-            if (window.conexionDatos) {
-                await window.conexionDatos.actualizarContadores();
+            await refreshSolicitudesTable();
+            await cargarExpedientesTabla();
+            if (window.conexionDatos) await window.conexionDatos.actualizarContadores();
+            lastUpdate = Date.now();
+        }
+
+        // Actualizar al enfocar la pestaña si ha pasado tiempo suficiente
+        document.addEventListener('visibilitychange', () => {
+            if (document.visibilityState === 'visible') {
+                const timeSinceLastUpdate = Date.now() - lastUpdate;
+                if (timeSinceLastUpdate > 60000) { // Al menos 1 minuto desde la última
+                    refreshDashboardData();
+                }
             }
-        }, 30000);
+        });
 
-        // Simular notificaciones cada 45 segundos
-        setInterval(actualizarNotificaciones, 45000);
+        // Intervalo de seguridad largo
+        setInterval(refreshDashboardData, REFRESH_INTERVAL);
 
-        // Verificar nuevas solicitudes cada 5 segundos
-        setInterval(async () => {
-            await verificarNuevasSolicitudes();
-        }, 5000);
+        // Notificaciones simuladas (solo visual)
+        setInterval(actualizarNotificaciones, 120000); 
+
+        console.log('✅ Admin dashboard inicializado con estrategia de ahorro de recursos');
 
         console.log('✅ Admin dashboard inicializado correctamente');
     } catch (error) {
