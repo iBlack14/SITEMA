@@ -12,8 +12,8 @@ const smtpConfigManager = require('../smtp-config-manager');
 async function registrarAuditoria(tabla, registro_id, accion, usuario_id, datos_anteriores, datos_nuevos) {
     try {
         const sql = `
-            INSERT INTO logs_auditoria (tabla_afectada, registro_id, accion, usuario_id, detalles, ip_address, user_agent)
-            VALUES (?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO logs_auditoria (tabla_afectada, registro_id, accion, usuario_id, detalles, ip_direccion)
+            VALUES (?, ?, ?, ?, ?, ?)
         `;
 
         const detalles = {
@@ -21,7 +21,7 @@ async function registrarAuditoria(tabla, registro_id, accion, usuario_id, datos_
             nuevos: datos_nuevos
         };
 
-        await query(sql, [tabla, registro_id, accion, usuario_id, JSON.stringify(detalles), null, null]);
+        await query(sql, [tabla, registro_id, accion, usuario_id, JSON.stringify(detalles), null]);
     } catch (error) {
         console.error('Error registrando auditoría:', error);
         // No lanzar error para no interrumpir la operación principal

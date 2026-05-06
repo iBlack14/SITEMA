@@ -360,13 +360,14 @@ async function inicializarBaseDatos(reset = false) {
         // Crear tabla de notificaciones
         await query(`
             CREATE TABLE IF NOT EXISTS notificaciones (
-                id VARCHAR(20) PRIMARY KEY,
+                id VARCHAR(50) PRIMARY KEY,
                 usuario_id INT,
                 tipo ENUM('respuesta_admin', 'sistema', 'urgente') DEFAULT 'sistema',
                 titulo VARCHAR(200) NOT NULL,
                 mensaje TEXT NOT NULL,
                 expediente_id VARCHAR(20),
                 solicitud_id VARCHAR(20),
+                archivo_adjunto JSON,
                 leida TINYINT(1) DEFAULT 0,
                 fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP
             )
@@ -640,8 +641,22 @@ async function inicializarBaseDatos(reset = false) {
                 await query('ALTER TABLE expedientes ADD COLUMN documentos JSON AFTER fecha_actualizacion');
                 console.log('✅ Columna documentos agregada a expedientes');
             }
+
+            // ── Columna archivo_adjunto para notificaciones ──
+            if (!(await columnaExiste('notificaciones', 'archivo_adjunto'))) {
+                await query('ALTER TABLE notificaciones ADD COLUMN archivo_adjunto JSON AFTER solicitud_id');
+                console.log('✅ Columna archivo_adjunto agregada a notificaciones');
+            }
+
+            // ── Ampliar tamaño del ID de notificaciones ──
+            try {
+                await query('ALTER TABLE notificaciones MODIFY id VARCHAR(50)');
+                console.log('✅ Columna id de notificaciones ampliada a VARCHAR(50)');
+            } catch (e) {
+                console.log('⚠️  Error ampliando id de notificaciones:', e.message);
+            }
         } catch (alterError) {
-            console.log('⚠️  Error agregando columna casilla_electronica:', alterError.message);
+            console.log('⚠️  Error agregando columnas:', alterError.message);
         }
 
         // Crear índices para mejorar rendimiento de forma segura
