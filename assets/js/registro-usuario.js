@@ -103,7 +103,7 @@ const RegistroUsuario = {
             const data = await response.json();
             return {
                 existe: data.success && data.data.existe,
-                id: data.data?.id || null
+                id: data.data?.detalles?.mysql?.id || null
             };
         } catch (error) {
             console.error('Error verificando usuario:', error);
@@ -165,6 +165,7 @@ const RegistroUsuario = {
                     return {
                         success: true, 
                         yaExistia: true,
+                        id: data.id || null,
                         message: data.error
                     };
                 }

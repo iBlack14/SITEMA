@@ -471,7 +471,8 @@ async function inicializarBaseDatos(reset = false) {
                 tabla_afectada VARCHAR(50),
                 registro_id VARCHAR(50),
                 detalles TEXT,
-                ip_direccion VARCHAR(45),
+                ip_address VARCHAR(45),
+                user_agent TEXT,
                 fecha TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 FOREIGN KEY (usuario_id) REFERENCES usuarios(id) ON DELETE SET NULL
             )
@@ -711,6 +712,21 @@ async function inicializarBaseDatos(reset = false) {
             if (!(await indiceExiste('logs_auditoria', 'idx_logs_fecha'))) {
                 await query('CREATE INDEX idx_logs_fecha ON logs_auditoria(fecha)');
                 console.log('✅ Índice idx_logs_fecha creado');
+            }
+
+            // Columnas para logs_auditoria
+            if (!(await columnaExiste('logs_auditoria', 'ip_address'))) {
+                if (await columnaExiste('logs_auditoria', 'ip_direccion')) {
+                    await query('ALTER TABLE logs_auditoria CHANGE COLUMN ip_direccion ip_address VARCHAR(45)');
+                    console.log('✅ Columna ip_direccion renombrada a ip_address en logs_auditoria');
+                } else {
+                    await query('ALTER TABLE logs_auditoria ADD COLUMN ip_address VARCHAR(45) AFTER detalles');
+                    console.log('✅ Columna ip_address agregada a logs_auditoria');
+                }
+            }
+            if (!(await columnaExiste('logs_auditoria', 'user_agent'))) {
+                await query('ALTER TABLE logs_auditoria ADD COLUMN user_agent TEXT AFTER ip_address');
+                console.log('✅ Columna user_agent agregada a logs_auditoria');
             }
 
             console.log('✅ Todos los índices verificados/creados');

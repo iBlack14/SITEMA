@@ -75,17 +75,16 @@ router.get('/existe/:email', async (req, res) => {
         const { email } = req.params;
 
         // Buscar en MySQL
-        const usuarios = await UsuarioModel.obtenerTodos({ busqueda: email });
-        const existeEnMySQL = usuarios.some(u => u.email === email);
+        const usuario = await UsuarioModel.obtenerPorUsernameOEmail(email);
+        const existe = !!usuario;
 
         res.json({
             success: true,
             data: {
-                existe: existeEnMySQL,
-                enMySQL: existeEnMySQL,
-                enLocalStorage: false,
+                existe: existe,
+                id: existe ? usuario.id : null,
                 detalles: {
-                    mysql: existeEnMySQL ? usuarios.find(u => u.email === email) : null,
+                    mysql: usuario,
                     localStorage: null
                 }
             }
@@ -124,11 +123,14 @@ router.post('/', async (req, res) => {
         }
 
         // Verificar si email ya existe
-        const emailExiste = await UsuarioModel.emailExiste(datosUsuario.email);
-        if (emailExiste) {
+        const usuarioExistente = await UsuarioModel.obtenerTodos({ busqueda: datosUsuario.email });
+        const userFound = usuarioExistente.find(u => u.email === datosUsuario.email);
+        
+        if (userFound) {
             console.warn('⚠️ Email ya existe:', datosUsuario.email);
             return res.status(409).json({
-                error: 'El email ya está registrado'
+                error: 'El email ya está registrado',
+                id: userFound.id
             });
         }
 

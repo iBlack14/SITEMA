@@ -349,6 +349,10 @@ class DashboardApp {
         this.showToast(message, 'error');
     }
 
+    showSuccess(message) {
+        this.showToast(message, 'success');
+    }
+
     openModal(title, contentHtml) {
         const modal = document.getElementById('modalGeneral');
         const titleEl = document.getElementById('modalTitle');

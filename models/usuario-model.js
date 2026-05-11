@@ -186,6 +186,25 @@ class UsuarioModel {
         try {
             // Obtener datos actuales para auditoría
             const usuarioActual = await this.obtenerPorId(id);
+            if (!usuarioActual) {
+                throw new Error('Usuario no encontrado');
+            }
+
+            // Si se está cambiando el email, verificar que no esté en uso por otro usuario
+            if (datosUsuario.email && datosUsuario.email !== usuarioActual.email) {
+                const emailExiste = await this.emailExiste(datosUsuario.email, id);
+                if (emailExiste) {
+                    throw new Error('El correo electrónico ya está registrado por otro usuario');
+                }
+            }
+
+            // Si se está cambiando el username, verificar que no esté en uso por otro usuario
+            if (datosUsuario.username && datosUsuario.username !== usuarioActual.username) {
+                const usernameExiste = await this.usernameExiste(datosUsuario.username, id);
+                if (usernameExiste) {
+                    throw new Error('El nombre de usuario ya está en uso');
+                }
+            }
 
             const camposPermitidos = ['username', 'email', 'nombre', 'tipo', 'activo'];
             let sql = 'UPDATE usuarios SET ';
@@ -200,7 +219,7 @@ class UsuarioModel {
             });
 
             if (campos.length === 0) {
-                throw new Error('No hay campos para actualizar');
+                return { affectedRows: 0 };
             }
 
             sql += campos.join(', ');
