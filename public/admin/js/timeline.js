@@ -177,95 +177,164 @@ const TimelineManager = {
 
         Swal.fire({
             title: editId ? '✏️ Editar Movimiento' : '📋 Nuevo Movimiento',
-            width: 700,
+            width: 800,
+            background: '#ffffff',
+            showConfirmButton: true,
+            showCancelButton: true,
+            confirmButtonText: editId ? '💾 Guardar Cambios' : '💾 Registrar Movimiento',
+            cancelButtonText: 'Cancelar',
+            confirmButtonColor: '#000000',
+            cancelButtonColor: '#f8f9fa',
+            customClass: {
+                popup: 'premium-swal-popup',
+                title: 'premium-swal-title',
+                confirmButton: 'premium-swal-confirm',
+                cancelButton: 'premium-swal-cancel'
+            },
             html: `
-            <div style="text-align:left;font-size:13px">
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:4px">Tipo de Documento *</label>
-                        <select id="tl_tipo_documento" class="swal2-input" style="width:100%;margin:0;font-size:13px">
-                            <option value="">Seleccionar...</option>
-                            ${['Resolución','Decreto','Carta','Escrito','Oficio','Acta','Auto','Cédula','Otro'].map(t => `<option value="${t}" ${data.tipo_documento===t?'selected':''}>${t}</option>`).join('')}
-                        </select>
+            <style>
+                .premium-form-container { text-align: left; font-family: 'Outfit', sans-serif; color: #1a1a1a; padding: 10px 5px; }
+                .form-section { margin-bottom: 25px; background: #fcfcfc; border: 1px solid #f0f0f0; border-radius: 16px; padding: 20px; }
+                .section-title { font-size: 11px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; color: #d4af37; margin-bottom: 15px; display: flex; align-items: center; gap: 8px; }
+                .section-title::after { content: ''; flex: 1; height: 1px; background: linear-gradient(to right, #eee, transparent); }
+                
+                .form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; }
+                .form-grid-3 { display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 15px; }
+                .form-group { margin-bottom: 0; }
+                
+                .premium-label { font-size: 12px; font-weight: 700; color: #444; margin-bottom: 8px; display: block; letter-spacing: 0.2px; }
+                .premium-input { 
+                    width: 100% !important; height: 48px !important; background: #fff !important; 
+                    border: 1px solid #e2e8f0 !important; border-radius: 12px !important; 
+                    padding: 0 16px !important; font-size: 14px !important; color: #1a202c !important;
+                    transition: all 0.3s ease !important; margin: 0 !important; box-sizing: border-box !important;
+                }
+                .premium-input:focus { border-color: #d4af37 !important; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1) !important; outline: none !important; }
+                
+                .premium-textarea { 
+                    width: 100% !important; background: #fff !important; border: 1px solid #e2e8f0 !important; 
+                    border-radius: 12px !important; padding: 12px 16px !important; font-size: 14px !important; 
+                    min-height: 80px !important; transition: all 0.3s ease !important; margin: 0 !important;
+                    box-sizing: border-box !important;
+                }
+                .premium-textarea:focus { border-color: #d4af37 !important; box-shadow: 0 0 0 4px rgba(212, 175, 55, 0.1) !important; outline: none !important; }
+            </style>
+            
+            <div class="premium-form-container">
+                <!-- Sección 1: Datos del Documento -->
+                <div class="form-section">
+                    <div class="section-title">📂 Información del Documento</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="premium-label">Tipo de Documento *</label>
+                            <select id="tl_tipo_documento" class="premium-input" onchange="const el = document.getElementById('tl_otro_tipo_container'); if(this.value==='Otro'){ el.style.display='block'; } else { el.style.display='none'; }">
+                                <option value="">Seleccionar tipo...</option>
+                                ${['Resolución','Decreto','Carta','Escrito','Oficio','Acta','Auto','Cédula'].map(t => `<option value="${t}" ${data.tipo_documento===t?'selected':''}>${t}</option>`).join('')}
+                                <option value="Otro" ${data.tipo_documento && !['Resolución','Decreto','Carta','Escrito','Oficio','Acta','Auto','Cédula'].includes(data.tipo_documento) ? 'selected' : ''}>Otro (Especificar...)</option>
+                            </select>
+                            <div id="tl_otro_tipo_container" style="display: ${data.tipo_documento && !['Resolución','Decreto','Carta','Escrito','Oficio','Acta','Auto','Cédula'].includes(data.tipo_documento) ? 'block' : 'none'}; margin-top: 10px;">
+                                <input id="tl_tipo_documento_otro" class="premium-input" placeholder="¿Qué tipo de documento es?" value="${data.tipo_documento && !['Resolución','Decreto','Carta','Escrito','Oficio','Acta','Auto','Cédula'].includes(data.tipo_documento) ? data.tipo_documento : ''}">
+                            </div>
+                        </div>
+                        <div class="form-group">
+                            <label class="premium-label">Número de Registro / Referencia</label>
+                            <input id="tl_numero_documento" class="premium-input" value="${data.numero_documento||''}" placeholder="Ej: RES N° 001-2026">
+                        </div>
                     </div>
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:4px">Número Documento</label>
-                        <input id="tl_numero_documento" class="swal2-input" style="width:100%;margin:0;font-size:13px" value="${data.numero_documento||''}" placeholder="Ej: RES N° 001-2026">
-                    </div>
-                </div>
-                <div style="margin-bottom:14px">
-                    <label style="font-weight:600;display:block;margin-bottom:4px">Asunto</label>
-                    <input id="tl_asunto" class="swal2-input" style="width:100%;margin:0;font-size:13px" value="${data.asunto||''}" placeholder="Descripción breve del movimiento">
-                </div>
-                <div style="margin-bottom:14px">
-                    <label style="font-weight:600;display:block;margin-bottom:4px">Sumilla</label>
-                    <textarea id="tl_sumilla" class="swal2-textarea" style="width:100%;margin:0;font-size:13px;height:60px" placeholder="Detalle adicional">${data.sumilla||''}</textarea>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:4px">Fecha Documento *</label>
-                        <input type="date" id="tl_fecha_documento" class="swal2-input" style="width:100%;margin:0;font-size:13px" value="${fmtDate(data.fecha_documento)}">
-                    </div>
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:4px">Fecha Presentación</label>
-                        <input type="date" id="tl_fecha_presentacion" class="swal2-input" style="width:100%;margin:0;font-size:13px" value="${fmtDate(data.fecha_presentacion)}">
-                    </div>
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:4px">Fecha Emisión</label>
-                        <input type="date" id="tl_fecha_emision" class="swal2-input" style="width:100%;margin:0;font-size:13px" value="${fmtDate(data.fecha_emision)}">
-                    </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-bottom:14px">
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:4px">Presentado por</label>
-                        <input id="tl_presentado_por" class="swal2-input" style="width:100%;margin:0;font-size:13px" value="${data.presentado_por||''}" placeholder="Nombre de la parte">
-                    </div>
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:4px">Tipo Parte</label>
-                        <select id="tl_tipo_parte" class="swal2-input" style="width:100%;margin:0;font-size:13px">
-                            <option value="">Seleccionar...</option>
-                            ${['demandante','demandado','tribunal','secretaria','perito','otro'].map(t => `<option value="${t}" ${data.tipo_parte===t?'selected':''}>${t.charAt(0).toUpperCase()+t.slice(1)}</option>`).join('')}
-                        </select>
-                    </div>
-                </div>
-                <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;margin-bottom:14px">
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:4px">Notif. Virtual</label>
-                        <input type="date" id="tl_notif_virtual" class="swal2-input" style="width:100%;margin:0;font-size:13px" value="${fmtDate(data.fecha_notificacion_virtual)}">
-                    </div>
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:4px">Notif. Física</label>
-                        <input type="date" id="tl_notif_fisica" class="swal2-input" style="width:100%;margin:0;font-size:13px" value="${fmtDate(data.fecha_notificacion_fisica)}">
-                    </div>
-                    <div>
-                        <label style="font-weight:600;display:block;margin-bottom:4px">Forma Entrega</label>
-                        <select id="tl_forma_entrega" class="swal2-input" style="width:100%;margin:0;font-size:13px">
-                            <option value="">Seleccionar...</option>
-                            ${['Electrónica','Física','Mixta','Edicto'].map(t => `<option value="${t}" ${data.forma_entrega===t?'selected':''}>${t}</option>`).join('')}
-                        </select>
+                    <div style="margin-top: 15px;">
+                        <label class="premium-label">Asunto Principal</label>
+                        <input id="tl_asunto" class="premium-input" value="${data.asunto||''}" placeholder="Ej: Presentación de demanda, Resolución de admisión...">
                     </div>
                 </div>
-                <div style="margin-bottom:14px">
-                    <label style="font-weight:600;display:block;margin-bottom:4px">Destinatario Notificación</label>
-                    <input id="tl_destinatario" class="swal2-input" style="width:100%;margin:0;font-size:13px" value="${data.destinatario_notificacion||''}" placeholder="A quién se notifica">
+
+                <!-- Sección 2: Fechas y Plazos -->
+                <div class="form-section">
+                    <div class="section-title">📅 Cronología y Plazos</div>
+                    <div class="form-grid-3">
+                        <div class="form-group">
+                            <label class="premium-label">Fecha Doc. *</label>
+                            <input type="date" id="tl_fecha_documento" class="premium-input" value="${fmtDate(data.fecha_documento)}">
+                        </div>
+                        <div class="form-group">
+                            <label class="premium-label">Presentación</label>
+                            <input type="date" id="tl_fecha_presentacion" class="premium-input" value="${fmtDate(data.fecha_presentacion)}">
+                        </div>
+                        <div class="form-group">
+                            <label class="premium-label">Emisión</label>
+                            <input type="date" id="tl_fecha_emision" class="premium-input" value="${fmtDate(data.fecha_emision)}">
+                        </div>
+                    </div>
                 </div>
-                ${!editId ? `<div style="margin-bottom:14px">
-                    <label style="font-weight:600;display:block;margin-bottom:4px">📎 Documento Adjunto (PDF/DOC)</label>
-                    <input type="file" id="tl_documento" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" style="font-size:13px">
-                </div>` : ''}
-                <div>
-                    <label style="font-weight:600;display:block;margin-bottom:4px">Observaciones</label>
-                    <textarea id="tl_observaciones" class="swal2-textarea" style="width:100%;margin:0;font-size:13px;height:50px">${data.observaciones||''}</textarea>
+
+                <!-- Sección 3: Partes y Notificaciones -->
+                <div class="form-section">
+                    <div class="section-title">👤 Intervinientes y Notificación</div>
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label class="premium-label">Presentado Por</label>
+                            <input id="tl_presentado_por" class="premium-input" value="${data.presentado_por||''}" placeholder="Nombre completo">
+                        </div>
+                        <div class="form-group">
+                            <label class="premium-label">Tipo de Parte</label>
+                            <select id="tl_tipo_parte" class="premium-input">
+                                <option value="">Seleccionar rol...</option>
+                                ${['demandante','demandado','tribunal','secretaria','perito','otro'].map(t => `<option value="${t}" ${data.tipo_parte===t?'selected':''}>${t.charAt(0).toUpperCase()+t.slice(1)}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <div class="form-grid-3" style="margin-top: 15px;">
+                        <div class="form-group">
+                            <label class="premium-label">Notif. Virtual</label>
+                            <input type="date" id="tl_notif_virtual" class="premium-input" value="${fmtDate(data.fecha_notificacion_virtual)}">
+                        </div>
+                        <div class="form-group">
+                            <label class="premium-label">Notif. Física</label>
+                            <input type="date" id="tl_notif_fisica" class="premium-input" value="${fmtDate(data.fecha_notificacion_fisica)}">
+                        </div>
+                        <div class="form-group">
+                            <label class="premium-label">Forma</label>
+                            <select id="tl_forma_entrega" class="premium-input">
+                                <option value="">Modo...</option>
+                                ${['Electrónica','Física','Mixta','Edicto'].map(t => `<option value="${t}" ${data.forma_entrega===t?'selected':''}>${t}</option>`).join('')}
+                            </select>
+                        </div>
+                    </div>
+                </div>
+
+                <!-- Sección 4: Detalles y Adjuntos -->
+                <div class="form-section" style="margin-bottom: 0;">
+                    <div class="section-title">📝 Detalles Finales</div>
+                    <div style="margin-bottom: 15px;">
+                        <label class="premium-label">Resumen / Sumilla</label>
+                        <textarea id="tl_sumilla" class="premium-textarea" placeholder="Resumen ejecutivo del movimiento...">${data.sumilla||''}</textarea>
+                    </div>
+                    
+                    ${!editId ? `
+                    <div style="margin-bottom: 15px;">
+                        <label class="premium-label">Archivo Adjunto (Máx. 1GB)</label>
+                        <div class="file-upload-wrapper">
+                            <input type="file" id="tl_documento" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png" class="premium-input" style="padding-top: 10px !important;">
+                        </div>
+                    </div>
+                    ` : ''}
+                    
+                    <div>
+                        <label class="premium-label">Observaciones Privadas</label>
+                        <textarea id="tl_observaciones" class="premium-textarea" placeholder="Notas internas para el equipo...">${data.observaciones||''}</textarea>
+                    </div>
                 </div>
             </div>`,
-            showCancelButton: true,
-            confirmButtonText: editId ? '💾 Guardar Cambios' : '💾 Crear Movimiento',
-            cancelButtonText: 'Cancelar',
-            confirmButtonColor: '#d4af37',
             preConfirm: () => {
-                const tipo = document.getElementById('tl_tipo_documento').value;
+                const tipoSel = document.getElementById('tl_tipo_documento').value;
+                const tipoOtro = document.getElementById('tl_tipo_documento_otro').value;
+                const tipoFinal = tipoSel === 'Otro' ? tipoOtro : tipoSel;
+
                 const fecha = document.getElementById('tl_fecha_documento').value;
-                if (!tipo || !fecha) { Swal.showValidationMessage('Tipo de documento y fecha son obligatorios'); return false; }
+                if (!tipoFinal || !fecha) { 
+                    Swal.showValidationMessage('El tipo de documento y la fecha son campos obligatorios'); 
+                    return false; 
+                }
                 return true;
             }
         }).then(async (result) => {
@@ -278,7 +347,11 @@ const TimelineManager = {
     async guardar(editId) {
         try {
             const formData = new FormData();
-            formData.append('tipo_documento', document.getElementById('tl_tipo_documento').value);
+            const tipoSel = document.getElementById('tl_tipo_documento').value;
+            const tipoOtro = document.getElementById('tl_tipo_documento_otro').value;
+            const tipoFinal = tipoSel === 'Otro' ? tipoOtro : tipoSel;
+            
+            formData.append('tipo_documento', tipoFinal);
             formData.append('numero_documento', document.getElementById('tl_numero_documento').value);
             formData.append('asunto', document.getElementById('tl_asunto').value);
             formData.append('sumilla', document.getElementById('tl_sumilla').value);
