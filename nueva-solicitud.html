@@ -5,9 +5,11 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mesa de Partes Virtual | TMARC</title>
-    
+
     <!-- Google Fonts: Outfit for titles, Inter for body -->
-    <link href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap" rel="stylesheet">
+    <link
+        href="https://fonts.googleapis.com/css2?family=Outfit:wght@300;400;600;700&family=Inter:wght@300;400;500;600&display=swap"
+        rel="stylesheet">
 
     <style>
         :root {
@@ -16,14 +18,14 @@
             --gold-dark: #aa8a2e;
             --gold-light: #e5c158;
             --gold-bg: rgba(212, 175, 55, 0.05);
-            
+
             --bg-body: #f8fafc;
             --bg-card: #ffffff;
             --text-main: #1a202c;
             --text-muted: #64748b;
             --border-color: #e2e8f0;
             --input-focus: #d4af37;
-            
+
             --shadow-premium: 0 20px 40px -10px rgba(0, 0, 0, 0.05), 0 0 20px rgba(212, 175, 55, 0.03);
         }
 
@@ -56,8 +58,15 @@
         }
 
         @keyframes slideUp {
-            from { opacity: 0; transform: translateY(20px); }
-            to { opacity: 1; transform: translateY(0); }
+            from {
+                opacity: 0;
+                transform: translateY(20px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateY(0);
+            }
         }
 
         /* Header Sticky */
@@ -69,7 +78,7 @@
             position: sticky;
             top: 0;
             z-index: 100;
-            box-shadow: 0 5px 15px rgba(0,0,0,0.02);
+            box-shadow: 0 5px 15px rgba(0, 0, 0, 0.02);
         }
 
         .header::after {
@@ -193,7 +202,9 @@
         }
 
         /* Inputs */
-        .form-input, .form-select, .form-textarea {
+        .form-input,
+        .form-select,
+        .form-textarea {
             width: 100%;
             background: #fcfcfc;
             border: 1px solid var(--border-color);
@@ -205,7 +216,9 @@
             color: var(--text-main);
         }
 
-        .form-input:focus, .form-select:focus, .form-textarea:focus {
+        .form-input:focus,
+        .form-select:focus,
+        .form-textarea:focus {
             outline: none;
             border-color: var(--gold-primary);
             background: #fff;
@@ -298,7 +311,7 @@
             left: 0;
             width: 100%;
             height: 100%;
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
             backdrop-filter: blur(8px);
             display: none;
             justify-content: center;
@@ -313,7 +326,7 @@
             max-width: 550px;
             width: 90%;
             text-align: center;
-            box-shadow: 0 30px 60px rgba(0,0,0,0.1);
+            box-shadow: 0 30px 60px rgba(0, 0, 0, 0.1);
         }
 
         .success-icon {
@@ -361,8 +374,15 @@
         }
 
         @keyframes floatingModal {
-            from { opacity: 0; transform: scale(0.9) translateY(30px); }
-            to { opacity: 1; transform: scale(1) translateY(0); }
+            from {
+                opacity: 0;
+                transform: scale(0.9) translateY(30px);
+            }
+
+            to {
+                opacity: 1;
+                transform: scale(1) translateY(0);
+            }
         }
 
         .dark-glow .close-btn {
@@ -398,7 +418,7 @@
             align-items: center;
             justify-content: center;
             font-size: 2.5rem;
-            box-shadow: 0 0 20px rgba(255,255,255,0.2);
+            box-shadow: 0 0 20px rgba(255, 255, 255, 0.2);
         }
 
         .dark-glow h2 {
@@ -411,7 +431,7 @@
 
         .dark-glow .info-box {
             border: 1px solid rgba(212, 175, 55, 0.3);
-            background: rgba(0,0,0,0.4);
+            background: rgba(0, 0, 0, 0.4);
             border-radius: 20px;
             padding: 25px;
             text-align: left;
@@ -426,7 +446,9 @@
             font-size: 0.95rem;
         }
 
-        .info-list-item:last-child { margin-bottom: 0; }
+        .info-list-item:last-child {
+            margin-bottom: 0;
+        }
 
         .info-list-item i {
             font-size: 1.2rem;
@@ -443,7 +465,7 @@
             backdrop-filter: blur(15px);
             border: 1px solid rgba(212, 175, 55, 0.5);
             border-radius: 20px;
-            box-shadow: 0 15px 50px rgba(0,0,0,0.3), 0 0 20px rgba(212, 175, 55, 0.1);
+            box-shadow: 0 15px 50px rgba(0, 0, 0, 0.3), 0 0 20px rgba(212, 175, 55, 0.1);
             color: white;
             padding: 25px;
             z-index: 5000;
@@ -451,8 +473,15 @@
         }
 
         @keyframes slideInRight {
-            from { opacity: 0; transform: translateX(100px); }
-            to { opacity: 1; transform: translateX(0); }
+            from {
+                opacity: 0;
+                transform: translateX(100px);
+            }
+
+            to {
+                opacity: 1;
+                transform: translateX(0);
+            }
         }
 
         .floating-info-card h3 {
@@ -481,11 +510,18 @@
             transition: opacity 0.2s;
         }
 
-        .floating-info-card .close-card:hover { opacity: 1; }
+        .floating-info-card .close-card:hover {
+            opacity: 1;
+        }
 
         @media (max-width: 768px) {
-            .header h1 { font-size: 2rem; }
-            .form-content { padding: 20px; }
+            .header h1 {
+                font-size: 2rem;
+            }
+
+            .form-content {
+                padding: 20px;
+            }
         }
     </style>
 </head>
@@ -499,7 +535,7 @@
         </div>
 
         <form id="solicitudForm" class="form-content">
-            
+
             <!-- SECCIÓN 1: DEMANDANTE -->
             <div class="form-section">
                 <div class="form-header" onclick="toggleSection(this)">
@@ -509,11 +545,13 @@
                 <div class="form-body">
                     <div class="radio-container">
                         <label class="radio-option active">
-                            <input type="radio" name="tipo_persona_demandante" value="natural" checked onchange="updateRadioUI(this); toggleFields('demandante', 'natural')">
+                            <input type="radio" name="tipo_persona_demandante" value="natural" checked
+                                onchange="updateRadioUI(this); toggleFields('demandante', 'natural')">
                             Persona Natural
                         </label>
                         <label class="radio-option">
-                            <input type="radio" name="tipo_persona_demandante" value="juridica" onchange="updateRadioUI(this); toggleFields('demandante', 'juridica')">
+                            <input type="radio" name="tipo_persona_demandante" value="juridica"
+                                onchange="updateRadioUI(this); toggleFields('demandante', 'juridica')">
                             Persona Jurídica
                         </label>
                     </div>
@@ -522,7 +560,8 @@
                     <div id="fields_demandante_natural" class="form-grid">
                         <div class="form-item full-width">
                             <label>Nombre Completo</label>
-                            <input type="text" id="nombre_demandante" class="form-input" placeholder="Nombres y apellidos">
+                            <input type="text" id="nombre_demandante" class="form-input"
+                                placeholder="Nombres y apellidos">
                         </div>
                         <div class="form-item">
                             <label>Tipo Documento</label>
@@ -542,22 +581,26 @@
                     <div id="fields_demandante_juridica" class="form-grid" style="display:none;">
                         <div class="form-item full-width">
                             <label>Razón Social</label>
-                            <input type="text" id="razon_social_demandante" class="form-input" placeholder="Nombre legal de la empresa">
+                            <input type="text" id="razon_social_demandante" class="form-input"
+                                placeholder="Nombre legal de la empresa">
                         </div>
                         <div class="form-item">
                             <label>RUC</label>
-                            <input type="text" id="ruc_demandante" class="form-input" placeholder="Número de RUC (11 dígitos)">
+                            <input type="text" id="ruc_demandante" class="form-input"
+                                placeholder="Número de RUC (11 dígitos)">
                         </div>
                         <div class="form-item">
                             <label>Representante Legal</label>
-                            <input type="text" id="rep_legal_demandante" class="form-input" placeholder="Nombre completo del representante">
+                            <input type="text" id="rep_legal_demandante" class="form-input"
+                                placeholder="Nombre completo del representante">
                         </div>
                     </div>
 
                     <div class="form-grid" style="margin-top:20px;">
                         <div class="form-item">
                             <label>Correo Electrónico</label>
-                            <input type="email" id="email_demandante" class="form-input" placeholder="correo@ejemplo.com" required>
+                            <input type="email" id="email_demandante" class="form-input"
+                                placeholder="correo@ejemplo.com" required>
                         </div>
                         <div class="form-item">
                             <label>Celular / WhatsApp</label>
@@ -565,7 +608,8 @@
                         </div>
                         <div class="form-item full-width">
                             <label>Dirección de Domicilio</label>
-                            <input type="text" id="domicilio_demandante" class="form-input" placeholder="Calle, Número, Distrito, Provincia">
+                            <input type="text" id="domicilio_demandante" class="form-input"
+                                placeholder="Calle, Número, Distrito, Provincia">
                         </div>
                     </div>
                 </div>
@@ -580,11 +624,13 @@
                 <div class="form-body">
                     <div class="radio-container">
                         <label class="radio-option active">
-                            <input type="radio" name="tipo_persona_demandado" value="natural" checked onchange="updateRadioUI(this); toggleFields('demandado', 'natural')">
+                            <input type="radio" name="tipo_persona_demandado" value="natural" checked
+                                onchange="updateRadioUI(this); toggleFields('demandado', 'natural')">
                             Persona Natural
                         </label>
                         <label class="radio-option">
-                            <input type="radio" name="tipo_persona_demandado" value="juridica" onchange="updateRadioUI(this); toggleFields('demandado', 'juridica')">
+                            <input type="radio" name="tipo_persona_demandado" value="juridica"
+                                onchange="updateRadioUI(this); toggleFields('demandado', 'juridica')">
                             Persona Jurídica
                         </label>
                     </div>
@@ -593,7 +639,8 @@
                     <div id="fields_demandado_natural" class="form-grid">
                         <div class="form-item full-width">
                             <label>Nombre Completo de la Parte Demandada</label>
-                            <input type="text" id="nombre_demandado" class="form-input" placeholder="Nombres y apellidos del demandado">
+                            <input type="text" id="nombre_demandado" class="form-input"
+                                placeholder="Nombres y apellidos del demandado">
                         </div>
                         <div class="form-item">
                             <label>Tipo Documento</label>
@@ -605,7 +652,8 @@
                         </div>
                         <div class="form-item">
                             <label>Número Documento</label>
-                            <input type="text" id="doc_num_demandado" class="form-input" placeholder="Número de documento">
+                            <input type="text" id="doc_num_demandado" class="form-input"
+                                placeholder="Número de documento">
                         </div>
                     </div>
 
@@ -613,22 +661,26 @@
                     <div id="fields_demandado_juridica" class="form-grid" style="display:none;">
                         <div class="form-item full-width">
                             <label>Razón Social de la Parte Demandada</label>
-                            <input type="text" id="razon_social_demandado" class="form-input" placeholder="Nombre legal de la empresa demandada">
+                            <input type="text" id="razon_social_demandado" class="form-input"
+                                placeholder="Nombre legal de la empresa demandada">
                         </div>
                         <div class="form-item">
                             <label>RUC</label>
-                            <input type="text" id="ruc_demandado" class="form-input" placeholder="Número de RUC (11 dígitos)">
+                            <input type="text" id="ruc_demandado" class="form-input"
+                                placeholder="Número de RUC (11 dígitos)">
                         </div>
                         <div class="form-item">
                             <label>Representante Legal</label>
-                            <input type="text" id="rep_legal_demandado" class="form-input" placeholder="Nombre del representante (si se conoce)">
+                            <input type="text" id="rep_legal_demandado" class="form-input"
+                                placeholder="Nombre del representante (si se conoce)">
                         </div>
                     </div>
 
                     <div class="form-grid" style="margin-top:20px;">
                         <div class="form-item">
                             <label>Correo (Opcional)</label>
-                            <input type="email" id="email_demandado" class="form-input" placeholder="correo@ejemplo.com">
+                            <input type="email" id="email_demandado" class="form-input"
+                                placeholder="correo@ejemplo.com">
                         </div>
                         <div class="form-item">
                             <label>Celular (Opcional)</label>
@@ -636,7 +688,8 @@
                         </div>
                         <div class="form-item full-width">
                             <label>Dirección de Domicilio de la Parte Demandada</label>
-                            <input type="text" id="domicilio_demandado" class="form-input" placeholder="Dirección conocida">
+                            <input type="text" id="domicilio_demandado" class="form-input"
+                                placeholder="Dirección conocida">
                         </div>
                     </div>
                 </div>
@@ -652,7 +705,8 @@
                     <div class="form-grid">
                         <div class="form-item">
                             <label>Asunto</label>
-                            <input type="text" id="asunto" class="form-input" placeholder="Ej: Solicitud de Inicio de Arbitraje" required>
+                            <input type="text" id="asunto" class="form-input"
+                                placeholder="Ej: Solicitud de Inicio de Arbitraje" required>
                         </div>
                         <div class="form-item">
                             <label>Tipo de Solicitud</label>
@@ -664,7 +718,8 @@
                         </div>
                         <div class="form-item full-width">
                             <label>Descripción / Sumilla (Opcional)</label>
-                            <textarea id="descripcion" class="form-textarea" rows="4" placeholder="Breve descripción de la solicitud..."></textarea>
+                            <textarea id="descripcion" class="form-textarea" rows="4"
+                                placeholder="Breve descripción de la solicitud..."></textarea>
                         </div>
                     </div>
                 </div>
@@ -677,21 +732,27 @@
                     <span class="toggle-icon">▼</span>
                 </div>
                 <div class="form-body">
-                    <button type="button" class="btn-submit" style="margin: 0 0 25px 0; width: auto; padding: 10px 20px; background: #fff; color: var(--gold-dark); border: 1px solid var(--gold-primary); font-size: 0.85rem;">
+                    <button type="button" class="btn-submit"
+                        style="margin: 0 0 25px 0; width: auto; padding: 10px 20px; background: #fff; color: var(--gold-dark); border: 1px solid var(--gold-primary); font-size: 0.85rem;">
                         📄 Ver Lista de Requisitos
                     </button>
 
                     <div class="form-item full-width">
                         <label>Documento (El archivo no debe exceder los 500 MB, máximo 10 archivos)</label>
-                        <div style="border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; background: #fafafa;">
-                            <button type="button" onclick="document.getElementById('file-input').click()" style="background: #fff; border: 1px solid var(--gold-primary); color: var(--gold-dark); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
+                        <div
+                            style="border: 1px solid var(--border-color); padding: 15px; border-radius: 12px; display: flex; align-items: center; gap: 15px; background: #fafafa;">
+                            <button type="button" onclick="document.getElementById('file-input').click()"
+                                style="background: #fff; border: 1px solid var(--gold-primary); color: var(--gold-dark); padding: 8px 15px; border-radius: 8px; cursor: pointer; font-size: 0.9rem;">
                                 Seleccionar archivo
                             </button>
-                            <span id="file-name-display" style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">Ningún archivo seleccionado</span>
-                            <input type="file" id="file-input" multiple style="display:none" onchange="handleFiles(this.files)">
+                            <span id="file-name-display"
+                                style="color: var(--text-muted); font-size: 0.9rem; font-style: italic;">Ningún archivo
+                                seleccionado</span>
+                            <input type="file" id="file-input" multiple style="display:none"
+                                onchange="handleFiles(this.files)">
                         </div>
                         <p style="font-size: 0.75rem; color: #718096; margin-top: 8px; font-style: italic;">
-                            Caracteres no permitidos: ! * ' ( ) ; : @ & = + $ , / ? % # [ ] < > "
+                            Caracteres no permitidos: ! * ' ( ) ; : @ & = + $ , / ? % # [ ] <> "
                         </p>
                     </div>
 
@@ -710,11 +771,14 @@
                             </thead>
                             <tbody id="file-list">
                                 <tr>
-                                    <td colspan="7" style="text-align: center; padding: 30px; color: var(--text-muted); font-style: italic;">No se han agregado archivos</td>
+                                    <td colspan="7"
+                                        style="text-align: center; padding: 30px; color: var(--text-muted); font-style: italic;">
+                                        No se han agregado archivos</td>
                                 </tr>
                             </tbody>
                         </table>
-                        <div style="margin-top: 15px; text-align: right; font-weight: 600; padding: 15px; border: 1px solid var(--border-color); border-radius: 10px;">
+                        <div
+                            style="margin-top: 15px; text-align: right; font-weight: 600; padding: 15px; border: 1px solid var(--border-color); border-radius: 10px;">
                             Total: <span id="total-weight">0 MB</span>
                         </div>
                     </div>
@@ -731,8 +795,9 @@
     <div class="floating-info-card" id="floatingInfo">
         <div class="close-card" onclick="document.getElementById('floatingInfo').style.display='none'">×</div>
         <h3><i>📧</i> ¡Importante!</h3>
-        <p style="font-size: 0.85rem; margin-bottom: 15px; color: rgba(255,255,255,0.7);">Las credenciales se enviarán automáticamente a su correo.</p>
-        
+        <p style="font-size: 0.85rem; margin-bottom: 15px; color: rgba(255,255,255,0.7);">Las credenciales se enviarán
+            automáticamente a su correo.</p>
+
         <div class="info-list-item">
             <i>📩</i> <span>Revisa tu bandeja de entrada</span>
         </div>
@@ -747,11 +812,13 @@
     <!-- Modal Informativo Credenciales (Mantener para el flujo de envío si se desea) -->
     <div class="modal" id="infoCredencialesModal">
         <div class="modal-content dark-glow">
-            <div class="close-btn" onclick="document.getElementById('infoCredencialesModal').style.display='none'">×</div>
+            <div class="close-btn" onclick="document.getElementById('infoCredencialesModal').style.display='none'">×
+            </div>
             <div class="info-icon-box">📧</div>
             <h2>¡Importante!</h2>
-            <p style="font-size: 1.1rem; opacity: 0.9;">Tus <b>credenciales de acceso</b> serán enviadas automáticamente a tu correo electrónico</p>
-            
+            <p style="font-size: 1.1rem; opacity: 0.9;">Tus <b>credenciales de acceso</b> serán enviadas automáticamente
+                a tu correo electrónico</p>
+
             <div class="info-box">
                 <div class="info-list-item">
                     <i>📩</i>
@@ -766,8 +833,9 @@
                     <span>Guarda tus credenciales</span>
                 </div>
             </div>
-            
-            <button onclick="continuarALaAdvertencia()" class="btn-submit" style="margin-top: 30px; width: 100%; max-width: none;">Entendido, continuar</button>
+
+            <button onclick="continuarALaAdvertencia()" class="btn-submit"
+                style="margin-top: 30px; width: 100%; max-width: none;">Entendido, continuar</button>
         </div>
     </div>
 
@@ -776,14 +844,18 @@
         <div class="modal-content warning">
             <div class="warning-icon">⚠️</div>
             <h2 style="font-family: 'Outfit'; margin-bottom: 15px; color: #b45309;">DECLARACIÓN JURADA</h2>
-            <p style="color: var(--text-muted); margin-bottom: 25px; text-align: justify; line-height: 1.6; font-size: 0.95rem;">
-                Al enviar esta solicitud, usted declara bajo juramento que la información proporcionada es verídica y que los documentos adjuntos son copias fieles de sus originales. 
+            <p
+                style="color: var(--text-muted); margin-bottom: 25px; text-align: justify; line-height: 1.6; font-size: 0.95rem;">
+                Al enviar esta solicitud, usted declara bajo juramento que la información proporcionada es verídica y
+                que los documentos adjuntos son copias fieles de sus originales.
                 <br><br>
                 Cualquier falsedad detectada dará lugar a las acciones legales correspondientes conforme a ley.
             </p>
-            
+
             <div style="display: flex; justify-content: center;">
-                <button onclick="ejecutarEnvioFinal()" class="btn-submit" style="margin:0; width: 100%; padding: 15px 25px; font-size: 1rem; background: #b45309;">Acepto y deseo enviar</button>
+                <button onclick="ejecutarEnvioFinal()" class="btn-submit"
+                    style="margin:0; width: 100%; padding: 15px 25px; font-size: 1rem; background: #b45309;">Acepto y
+                    deseo enviar</button>
             </div>
         </div>
     </div>
@@ -793,16 +865,22 @@
         <div class="modal-content">
             <div class="success-icon">✓</div>
             <h2 style="font-family: 'Outfit'; margin-bottom: 15px;">¡Solicitud Ingresada!</h2>
-            <p style="color: var(--text-muted); margin-bottom: 30px;">Su expediente ha sido registrado exitosamente en el sistema.</p>
-            
-            <div style="background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 30px;">
-                <p style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;">Número de Registro</p>
-                <p id="res-numero" style="font-size: 2rem; font-weight: 700; color: var(--gold-dark); margin-top: 5px;">---</p>
+            <p style="color: var(--text-muted); margin-bottom: 30px;">Su expediente ha sido registrado exitosamente en
+                el sistema.</p>
+
+            <div
+                style="background: #f8fafc; padding: 25px; border-radius: 16px; border: 1px solid var(--border-color); margin-bottom: 30px;">
+                <p style="font-size: 0.8rem; text-transform: uppercase; color: var(--text-muted); letter-spacing: 1px;">
+                    Número de Registro</p>
+                <p id="res-numero" style="font-size: 2rem; font-weight: 700; color: var(--gold-dark); margin-top: 5px;">
+                    ---</p>
             </div>
 
             <div style="display: flex; gap: 15px; justify-content: center;">
-                <button onclick="descargarCargo()" class="btn-submit" style="margin:0; padding: 12px 25px; font-size: 0.9rem;">Descargar Cargo</button>
-                <button onclick="window.location.href='index.html'" class="btn-submit" style="margin:0; padding: 12px 25px; font-size: 0.9rem; background: #fff; color: var(--text-main); border: 1px solid var(--border-color);">Volver</button>
+                <button onclick="descargarCargo()" class="btn-submit"
+                    style="margin:0; padding: 12px 25px; font-size: 0.9rem;">Descargar Cargo</button>
+                <button onclick="window.location.href='index.html'" class="btn-submit"
+                    style="margin:0; padding: 12px 25px; font-size: 0.9rem; background: #fff; color: var(--text-main); border: 1px solid var(--border-color);">Volver</button>
             </div>
         </div>
     </div>
@@ -855,7 +933,7 @@
                 document.getElementById('total-weight').textContent = '0 MB';
                 return;
             }
-            
+
             let totalWeight = 0;
             list.innerHTML = uploadedFiles.map((f, i) => {
                 totalWeight += f.size;
@@ -866,13 +944,13 @@
                         <td><input type="number" class="form-input" style="padding: 5px; font-size: 0.8rem;" value="${f.paginaFin}" onchange="uploadedFiles[${i}].paginaFin = this.value"></td>
                         <td><input type="text" class="form-input" style="padding: 5px; font-size: 0.8rem;" placeholder="Descripción..." value="${f.descripcionPersonalizada}" onchange="uploadedFiles[${i}].descripcionPersonalizada = this.value"></td>
                         <td><input type="number" class="form-input" style="padding: 5px; font-size: 0.8rem;" value="${f.folios}" onchange="uploadedFiles[${i}].folios = this.value"></td>
-                        <td>${(f.size/1024/1024).toFixed(2)} MB</td>
+                        <td>${(f.size / 1024 / 1024).toFixed(2)} MB</td>
                         <td><button type="button" onclick="removeFile(${i})" style="color:red; border:none; background:none; cursor:pointer;">❌</button></td>
                     </tr>
                 `;
             }).join('');
-            
-            document.getElementById('total-weight').textContent = `${(totalWeight/1024/1024).toFixed(2)} MB`;
+
+            document.getElementById('total-weight').textContent = `${(totalWeight / 1024 / 1024).toFixed(2)} MB`;
         }
 
         function removeFile(i) {
@@ -885,13 +963,13 @@
         document.getElementById('solicitudForm').addEventListener('submit', async (e) => {
             e.preventDefault();
             console.log('🚀 Intento de envío detectado');
-            
-            if (uploadedFiles.length === 0) { 
+
+            if (uploadedFiles.length === 0) {
                 console.warn('⚠️ No hay archivos adjuntos');
-                alert('Por favor, adjunte al menos un documento (PDF o Imagen) antes de continuar.'); 
-                return; 
+                alert('Por favor, adjunte al menos un documento (PDF o Imagen) antes de continuar.');
+                return;
             }
-            
+
             // Mostramos el modal informativo de credenciales (Dark Glow)
             console.log('✨ Mostrando modal informativo de credenciales');
             document.getElementById('infoCredencialesModal').style.display = 'flex';
@@ -907,7 +985,7 @@
         async function ejecutarEnvioFinal() {
             // Ocultar modal advertencia
             document.getElementById('warningModal').style.display = 'none';
-            
+
             const btn = document.getElementById('submit-btn');
             const originalText = btn.textContent;
             btn.disabled = true;
@@ -924,7 +1002,7 @@
 
                 const usuarioId = reg.usuario?.id || reg.id || null;
                 console.log('👤 Usuario identificado:', { usuarioId, yaExistia: reg.yaExistia });
-                
+
                 if (!usuarioId) {
                     throw new Error('No se pudo identificar o registrar al usuario. Verifique su conexión.');
                 }
@@ -933,7 +1011,7 @@
                 const fd = new FormData();
                 fd.append('usuario_id', usuarioId);
                 fd.append('tipo_presentacion', V('tipo_solicitud'));
-                fd.append('materia', 'Arbitraje'); 
+                fd.append('materia', 'Arbitraje');
                 fd.append('asunto', V('asunto'));
                 fd.append('descripcion', V('descripcion'));
                 fd.append('sumilla', V('descripcion'));
@@ -969,14 +1047,14 @@
                 // 3. API - Guardar en Base de Datos
                 const res = await fetch('/api/mesa-partes', { method: 'POST', body: fd });
                 const result = await res.json();
-                
+
                 if (!res.ok) throw new Error(result.error);
 
                 // 4. ÉXITO INMEDIATO (No esperamos al email para mostrar el éxito)
                 document.getElementById('res-numero').textContent = result.numero_registro;
                 window.tokenSeguimientoActual = result.token_seguimiento;
                 document.getElementById('successModal').style.display = 'flex';
-                
+
                 // Resetear botón rápidamente
                 btn.disabled = false;
                 btn.textContent = originalText;
@@ -1014,4 +1092,5 @@
         }
     </script>
 </body>
+
 </html>

@@ -6,6 +6,12 @@ const fs = require('fs');
 const MesaPartesModel = require('../models/mesa-partes-model');
 const { query } = require('../database-config');
 
+// Middleware de depuración para este router
+router.use((req, res, next) => {
+    console.log(`[DEBUG-ROUTER] MesaPartes: ${req.method} ${req.path}`);
+    next();
+});
+
 // Configuración de multer para subida de archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
@@ -303,6 +309,9 @@ router.put('/:id/estado', async (req, res) => {
         });
     }
 });
+
+// Route moved to api.js to avoid conflicts
+
 
 /**
  * GET /api/mesa-partes/seguimiento/:codigo

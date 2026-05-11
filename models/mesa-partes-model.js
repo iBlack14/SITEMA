@@ -277,6 +277,48 @@ class MesaPartesModel {
     }
 
     /**
+     * Actualizar datos de presentación (Mesa de Partes)
+     */
+    static async actualizarDatos(id, datos) {
+        try {
+            const camposPermitidos = ['fecha_presentacion', 'tipo_presentacion', 'materia', 'cuantia', 'sumilla'];
+            const updates = [];
+            const params = [];
+
+            for (const campo of camposPermitidos) {
+                if (datos.hasOwnProperty(campo)) {
+                    updates.push(`${campo} = ?`);
+                    params.push(datos[campo]);
+                }
+            }
+
+            if (updates.length === 0) {
+                return { success: true, affectedRows: 0 };
+            }
+
+            let sql = `UPDATE mesa_partes SET ${updates.join(', ')} WHERE `;
+            if (String(id).startsWith('TMARC-')) {
+                sql += 'numero_registro = ?';
+            } else {
+                sql += 'id = ?';
+            }
+            params.push(id);
+
+            const resultado = await query(sql, params);
+            
+            console.log(`✅ Datos actualizados para ID/Numero: ${id}`);
+
+            return {
+                success: true,
+                affectedRows: resultado.affectedRows
+            };
+        } catch (error) {
+            console.error('❌ Error actualizando datos de mesa de partes:', error);
+            throw error;
+        }
+    }
+
+    /**
      * Obtener estadísticas
      */
     static async obtenerEstadisticas(usuario_id = null) {

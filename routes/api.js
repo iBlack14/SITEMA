@@ -133,8 +133,36 @@ router.use('/', actosRoutes);
 // GET /api/seguimiento-completo/:codigo
 router.use('/', timelineRoutes);
 
-// Mantener algunos endpoints legacy que podrían estar siendo usados
-// Estos serán migrados gradualmente a los módulos específicos
+// ========== MESA DE PARTES (ADMIN UPDATE) ==========
+// Se coloca aquí para asegurar visibilidad y evitar conflictos de ruteo
+router.post('/mesa-partes/admin/actualizar/:id', async (req, res) => {
+    try {
+        const { id } = req.params;
+        const datos = req.body;
+        const MesaPartesModel = require('../models/mesa-partes-model');
+
+        console.log(`🔄 [API-DIRECT] Solicitud de actualización para presentación: ${id}`);
+        console.log('📦 Datos recibidos:', JSON.stringify(datos));
+
+        if (!id || id === 'undefined' || id === 'null') {
+            return res.status(400).json({ success: false, error: 'ID de presentación no válido' });
+        }
+
+        const resultado = await MesaPartesModel.actualizarDatos(id, datos);
+
+        if (resultado.affectedRows === 0) {
+            console.warn(`⚠️ No se encontró la presentación con ID: ${id}`);
+            return res.status(404).json({ success: false, error: 'Presentación no encontrada' });
+        }
+
+        console.log(`✅ Presentación ${id} actualizada correctamente`);
+        res.json({ success: true, message: 'Datos actualizados correctamente' });
+
+    } catch (error) {
+        console.error('❌ Error en POST /api/mesa-partes/admin/actualizar/:id:', error);
+        res.status(500).json({ success: false, error: 'Error interno del servidor', details: error.message });
+    }
+});
 
 // ========== ENDPOINTS DE EXPEDIENTES ==========
 

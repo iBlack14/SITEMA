@@ -549,6 +549,14 @@ const CasillaUnificada = {
                                         <span style="font-size: 18px;">📋</span> SEGUIMINE
                                     </button>
 
+                                    <!-- Botón Editar -->
+                                    <button class="btn" 
+                                            style="background: #34495e; color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(52, 73, 94, 0.2);"
+                                            onmouseover="this.style.background='#2c3e50'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='#34495e'; this.style.transform='translateY(0)';"
+                                            onclick="CasillaUnificada.editarMesaPartes('${presentacion.id}')">
+                                        <span style="font-size: 16px;">✏️</span> EDITAR
+                                    </button>
+
                                     <!-- Botón Responder -->
                                     <button class="btn" 
                                             style="background: #27ae60; color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);"
@@ -1161,6 +1169,155 @@ const CasillaUnificada = {
         }
 
         this.mostrarExito('Casilla actualizada');
+    },
+
+    /**
+     * Abrir modal para editar datos de Mesa de Partes
+     */
+    async editarMesaPartes(id) {
+        console.log('🔍 [DEBUG] editarMesaPartes id:', id);
+        if (!id || id === 'undefined') {
+            alert('Error: ID de presentación no válido');
+            return;
+        }
+        try {
+            this.mostrarCargando('Obteniendo datos...');
+            const response = await fetch(`/api/mesa-partes/${id}`);
+            const data = await response.json();
+            this.cerrarCargando();
+
+            if (!data.success) throw new Error(data.error);
+
+            const presentacion = data.data;
+            // Usar el ID real de la base de datos si está disponible, sino el que llegó
+            const targetId = presentacion.id || id;
+            
+            // Formatear fecha para datetime-local (YYYY-MM-DDTHH:mm)
+            const fechaPresentacion = presentacion.fecha_presentacion || presentacion.fecha_registro;
+            const fechaActual = fechaPresentacion ? new Date(fechaPresentacion).toISOString().slice(0, 16) : '';
+
+            const modalId = 'modalEditarMesaPartes';
+            const modalHTML = `
+                <div id="${modalId}" style="display:flex; position:fixed; z-index:100001; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.85); backdrop-filter: blur(15px); align-items:center; justify-content:center; animation: fadeIn 0.3s ease-out;">
+                    <div style="background:#ffffff; width:95%; max-width:600px; border-radius:35px; overflow:hidden; box-shadow:0 40px 100px rgba(0,0,0,0.6); border: 1px solid rgba(212, 175, 55, 0.3); transform: translateY(20px); animation: modalSlideUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards;">
+                        <div style="background: linear-gradient(135deg, #000 0%, #222 100%); padding:30px 40px; border-bottom: 4px solid #d4af37; display:flex; justify-content:space-between; align-items:center;">
+                            <div style="display:flex; align-items:center; gap:15px;">
+                                <div style="font-size:24px;">✏️</div>
+                                <div>
+                                    <h2 style="color:white; margin:0; font-size:20px; font-weight:800; text-transform:uppercase; letter-spacing:1px;">Editar Presentación</h2>
+                                    <span style="color:#d4af37; font-size:11px; font-weight:700;">${presentacion.numero_registro}</span>
+                                </div>
+                            </div>
+                            <button onclick="document.getElementById('${modalId}').remove()" style="background:none; border:none; color:white; font-size:30px; cursor:pointer; opacity:0.7; transition:0.3s;" onmouseover="this.style.opacity='1'">&times;</button>
+                        </div>
+                        
+                        <div style="padding:40px;">
+                            <div style="display:grid; grid-template-columns:1fr; gap:25px;">
+                                <div>
+                                    <label style="color:#888; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; display:block;">📅 Fecha de Ingreso</label>
+                                    <input type="datetime-local" id="edit-fecha-presentacion" value="${fechaActual}" 
+                                           style="width:100%; padding:15px 20px; border:2px solid #eee; border-radius:15px; font-size:15px; background:#f9f9f9; font-weight:600; font-family:inherit; transition:0.3s;"
+                                           onfocus="this.style.borderColor='#d4af37'; this.style.background='white';">
+                                </div>
+                                
+                                <div>
+                                    <label style="color:#888; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; display:block;">📝 Materia / Asunto</label>
+                                    <input type="text" id="edit-materia" value="${presentacion.materia || ''}" 
+                                           style="width:100%; padding:15px 20px; border:2px solid #eee; border-radius:15px; font-size:15px; background:#f9f9f9; font-weight:600; font-family:inherit; transition:0.3s;"
+                                           onfocus="this.style.borderColor='#d4af37'; this.style.background='white';">
+                                </div>
+
+                                <div>
+                                    <label style="color:#888; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1px; margin-bottom:10px; display:block;">📂 Tipo de Presentación</label>
+                                    <select id="edit-tipo-presentacion" style="width:100%; padding:15px 20px; border:2px solid #eee; border-radius:15px; font-size:15px; background:#f9f9f9; font-weight:600; font-family:inherit; transition:0.3s;"
+                                            onfocus="this.style.borderColor='#d4af37'; this.style.background='white';">
+                                        <option value="Arbitraje" ${presentacion.tipo_presentacion === 'Arbitraje' ? 'selected' : ''}>Arbitraje</option>
+                                        <option value="Mesa de Partes" ${presentacion.tipo_presentacion === 'Mesa de Partes' ? 'selected' : ''}>Mesa de Partes</option>
+                                        <option value="OTRO" ${presentacion.tipo_presentacion === 'OTRO' ? 'selected' : ''}>OTRO</option>
+                                    </select>
+                                </div>
+                            </div>
+                            
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px; margin-top:40px;">
+                                <button onclick="document.getElementById('${modalId}').remove()" 
+                                        style="padding:18px; background:#f5f5f5; color:#666; border:none; border-radius:18px; cursor:pointer; font-weight:700; transition:all 0.3s;"
+                                        onmouseover="this.style.background='#eee'">CANCELAR</button>
+                                <button onclick="CasillaUnificada.guardarEdicionMesaPartes('${targetId}')" 
+                                        style="padding:18px; background:linear-gradient(135deg, #d4af37, #f1d582); color:#000; border:none; border-radius:18px; cursor:pointer; font-weight:800; box-shadow:0 10px 20px rgba(212,175,55,0.2); transition:all 0.3s;"
+                                        onmouseover="this.style.transform='translateY(-2px)'; this.style.boxShadow='0 15px 30px rgba(212,175,55,0.3)';"
+                                        onmouseout="this.style.transform='translateY(0)';">GUARDAR CAMBIOS</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            `;
+            document.body.insertAdjacentHTML('beforeend', modalHTML);
+        } catch (error) {
+            this.cerrarCargando();
+            console.error('Error:', error);
+            this.mostrarError('Error al cargar datos para edición');
+        }
+    },
+
+    /**
+     * Guardar cambios de edición de Mesa de Partes
+     */
+    async guardarEdicionMesaPartes(id) {
+        console.log('💾 [DEBUG] guardarEdicionMesaPartes id:', id);
+        try {
+            const fecha = document.getElementById('edit-fecha-presentacion').value;
+            const materia = document.getElementById('edit-materia').value;
+            const tipo = document.getElementById('edit-tipo-presentacion').value;
+
+            if (!fecha || !materia) {
+                this.mostrarError('La fecha y la materia son obligatorias');
+                return;
+            }
+
+            this.mostrarCargando('Guardando cambios...');
+
+            // Formatear fecha para MySQL (YYYY-MM-DD HH:mm:ss)
+            const fechaFormateada = fecha.replace('T', ' ') + ':00';
+
+            const url = `/api/mesa-partes/admin/actualizar/${id}`;
+            console.log('📡 [DEBUG] Llamando a PUT:', url);
+
+            const response = await fetch(url, {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({
+                    fecha_presentacion: fechaFormateada,
+                    materia: materia,
+                    tipo_presentacion: tipo
+                })
+            });
+
+            console.log('📥 [DEBUG] Response status:', response.status);
+            const data = await response.json();
+            console.log('📥 [DEBUG] Response data:', data);
+
+            this.cerrarCargando();
+
+            if (data.success) {
+                const modalEdit = document.getElementById('modalEditarMesaPartes');
+                if (modalEdit) modalEdit.remove();
+                
+                this.mostrarExito('Datos actualizados correctamente');
+                
+                // Cerrar el modal de detalle y refrescar
+                this.cerrarModal();
+                await this.cargar();
+                
+                // Volver a abrir el detalle para ver los cambios
+                setTimeout(() => this.verDetalle('mesa_partes', id), 500);
+            } else {
+                throw new Error(data.error || 'Error desconocido');
+            }
+        } catch (error) {
+            this.cerrarCargando();
+            console.error('❌ [DEBUG] Error en guardarEdicionMesaPartes:', error);
+            this.mostrarError('Error al guardar cambios: ' + error.message);
+        }
     }
 };
 
