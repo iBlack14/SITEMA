@@ -279,7 +279,7 @@
             const token = sessionStorage.getItem('token') || sessionStorage.getItem('authToken');
             const usuario = JSON.parse(sessionStorage.getItem('usuario') || sessionStorage.getItem('user') || '{}');
             if (token && (usuario.username || usuario.nombre)) {
-                window.location.href = (usuario.tipo === 'admin') ? '/public/admin/index.html' : '/dashboard-modular.html';
+                window.location.href = (usuario.tipo === 'admin') ? '/admin' : '/dashboard-modular.html';
             } else {
                 window.location.href = '/login.html';
             }
