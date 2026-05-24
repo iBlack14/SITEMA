@@ -85,15 +85,15 @@ const TimelineManager = {
         }
 
         const colores = { 
-            'Resolución':'#e74c3c', 'Decreto':'#3498db', 'Carta':'#2ecc71', 
-            'Escrito':'#9b59b6', 'Oficio':'#e67e22', 'Acta':'#1abc9c', 
-            'Auto':'#34495e', 'Cédula':'#f39c12', 'Respuesta':'#d4af37' 
+            'Resolución':'#e74c3c', 'Carta':'#2ecc71', 
+            'Oficio':'#e67e22', 'Acta':'#1abc9c', 
+            'Disposición':'#3498db', 'Razón Secretarial':'#9b59b6'
         };
 
         const iconos = {
-            'Resolución':'⚖️', 'Decreto':'📜', 'Carta':'✉️', 
-            'Escrito':'✍️', 'Oficio':'🏢', 'Acta':'📝', 
-            'Auto':'📂', 'Cédula':'📇', 'Respuesta':'✅'
+            'Resolución':'⚖️', 'Carta':'✉️', 
+            'Oficio':'🏢', 'Acta':'📝', 
+            'Disposición':'📜', 'Razón Secretarial':'🗂️'
         };
 
         return `
@@ -229,11 +229,11 @@ const TimelineManager = {
                             <label class="premium-label">Tipo de Documento *</label>
                             <select id="tl_tipo_documento" class="premium-input" onchange="const el = document.getElementById('tl_otro_tipo_container'); if(this.value==='Otro'){ el.style.display='block'; } else { el.style.display='none'; }">
                                 <option value="">Seleccionar tipo...</option>
-                                ${['Resolución','Decreto','Carta','Escrito','Oficio','Acta','Auto','Cédula'].map(t => `<option value="${t}" ${data.tipo_documento===t?'selected':''}>${t}</option>`).join('')}
-                                <option value="Otro" ${data.tipo_documento && !['Resolución','Decreto','Carta','Escrito','Oficio','Acta','Auto','Cédula'].includes(data.tipo_documento) ? 'selected' : ''}>Otro (Especificar...)</option>
+                                ${['Resolución','Carta','Oficio','Acta','Disposición','Razón Secretarial'].map(t => `<option value="${t}" ${data.tipo_documento===t?'selected':''}>${t}</option>`).join('')}
+                                <option value="Otro" ${data.tipo_documento && !['Resolución','Carta','Oficio','Acta','Disposición','Razón Secretarial'].includes(data.tipo_documento) ? 'selected' : ''}>Otro (Especificar...)</option>
                             </select>
-                            <div id="tl_otro_tipo_container" style="display: ${data.tipo_documento && !['Resolución','Decreto','Carta','Escrito','Oficio','Acta','Auto','Cédula'].includes(data.tipo_documento) ? 'block' : 'none'}; margin-top: 10px;">
-                                <input id="tl_tipo_documento_otro" class="premium-input" placeholder="¿Qué tipo de documento es?" value="${data.tipo_documento && !['Resolución','Decreto','Carta','Escrito','Oficio','Acta','Auto','Cédula'].includes(data.tipo_documento) ? data.tipo_documento : ''}">
+                            <div id="tl_otro_tipo_container" style="display: ${data.tipo_documento && !['Resolución','Carta','Oficio','Acta','Disposición','Razón Secretarial'].includes(data.tipo_documento) ? 'block' : 'none'}; margin-top: 10px;">
+                                <input id="tl_tipo_documento_otro" class="premium-input" placeholder="¿Qué tipo de documento es?" value="${data.tipo_documento && !['Resolución','Carta','Oficio','Acta','Disposición','Razón Secretarial'].includes(data.tipo_documento) ? data.tipo_documento : ''}">
                             </div>
                         </div>
                         <div class="form-group">
