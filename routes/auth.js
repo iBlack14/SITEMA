@@ -171,7 +171,7 @@ router.post('/change-password', verificarAuth, async (req, res) => {
         }
 
         // Hashear y guardar nueva contraseña
-        const bcrypt = require('bcryptjs');
+        const bcrypt = require('bcrypt');
         const saltRounds = 10;
         const hashedPassword = await bcrypt.hash(newPassword, saltRounds);
 
@@ -196,7 +196,7 @@ router.post('/change-password', verificarAuth, async (req, res) => {
 router.post('/init-test-users', async (req, res) => {
     try {
         const UsuarioModel = require('../models/usuario-model');
-        const bcrypt = require('bcryptjs');
+        const bcrypt = require('bcrypt');
 
         // Verificar si ya existe el usuario demo
         const existingUser = await UsuarioModel.obtenerPorUsernameOEmail('demo');

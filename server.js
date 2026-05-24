@@ -89,7 +89,7 @@ app.use(cors({
   methods: ['GET', 'POST', 'PUT', 'DELETE', 'OPTIONS'],
   allowedHeaders: ['Content-Type', 'Authorization', 'X-Requested-With']
 }));
-app.options(/.*/, cors());
+app.options('*', cors());
 
 app.use(express.json({ limit: '50mb' }));
 app.use(express.urlencoded({ extended: true, limit: '50mb' }));
@@ -177,7 +177,7 @@ app.get('/api/init-db', async (_req, res) => {
 app.post('/api/init-test-users', async (_req, res) => {
   try {
     const UsuarioModel = require('./models/usuario-model');
-    const bcrypt = require('bcryptjs');
+    const bcrypt = require('bcrypt');
 
     // Verificar si ya existe el usuario demo
     const existingUser = await UsuarioModel.obtenerPorUsernameOEmail('demo');
