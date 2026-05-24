@@ -426,7 +426,7 @@ const CasillaUnificada = {
 
                         <div style="display: flex; justify-content: center; gap: 20px;">
                             <button class="btn" style="background: #1a1a1a; color: white; padding: 18px 45px; border-radius: 18px; font-weight: 800; font-size: 13px; min-width: 200px; transition: all 0.3s;" onmouseover="this.style.background='#000'; this.style.transform='translateY(-3px)';" onmouseout="this.style.background='#1a1a1a'; this.style.transform='translateY(0)';" onclick="CasillaUnificada.cerrarModal()">CERRAR PERFIL</button>
-                            <button class="btn" style="background: #eee; color: #333; padding: 18px 45px; border-radius: 18px; font-weight: 800; font-size: 13px; min-width: 200px; transition: all 0.3s;" onmouseover="this.style.background='#ddd'; this.style.transform='translateY(-3px)';" onmouseout="this.style.background='#eee'; this.style.transform='translateY(0)';" onclick="window.location.href='/admin/usuarios?id=${usuario.id}'">EDITAR USUARIO</button>
+                            <button class="btn" style="background: #eee; color: #333; padding: 18px 45px; border-radius: 18px; font-weight: 800; font-size: 13px; min-width: 200px; transition: all 0.3s;" onmouseover="this.style.background='#ddd'; this.style.transform='translateY(-3px)';" onmouseout="this.style.background='#eee'; this.style.transform='translateY(0)';" onclick="CasillaUnificada.cerrarModal(); showSection('usuarios'); setTimeout(() => editarUsuario('${usuario.id}'), 300);">EDITAR USUARIO</button>
                         </div>
                     </div>
                 </div>
