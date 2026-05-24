@@ -159,7 +159,7 @@ app.get('/api/init-db', async (_req, res) => {
 app.post('/api/init-test-users', async (_req, res) => {
   try {
     const UsuarioModel = require('./models/usuario-model');
-    const bcrypt = require('bcrypt');
+    const bcrypt = require('bcryptjs');
 
     const existingUser = await UsuarioModel.obtenerPorUsernameOEmail('demo');
     if (existingUser) {

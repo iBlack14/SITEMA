@@ -1,5 +1,5 @@
 const { query } = require('../database-config');
-const bcrypt = require('bcrypt');
+const bcrypt = require('bcryptjs');
 
 class UsuarioModel {
 
