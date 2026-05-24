@@ -550,8 +550,8 @@ async function inicializarBaseDatos(reset = false) {
         const hashedAdminPass = await bcrypt.hash(adminPass, 10);
 
         try {
-            // Solo insertar el administrador si no existe ningún usuario admin
-            const adminExistente = await query("SELECT id FROM usuarios WHERE tipo = 'admin' LIMIT 1");
+            // Verificar si ya existe el usuario admin por username
+            const adminExistente = await query("SELECT id FROM usuarios WHERE username = ? LIMIT 1", [adminUser]);
 
             if (adminExistente.length === 0) {
                 console.log('👤 Creando administrador inicial...');
