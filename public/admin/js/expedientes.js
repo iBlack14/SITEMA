@@ -397,6 +397,7 @@ async function cargarExpedientesTabla() {
                             <td>${expediente.fecha_actualizacion ? new Date(expediente.fecha_actualizacion).toLocaleDateString('es-ES') : (expediente.fecha_creacion ? new Date(expediente.fecha_creacion).toLocaleDateString('es-ES') : 'N/A')}</td>
                             <td>
                                 <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; margin-right: 5px;" onclick="verDetalleExpediente('${expediente.id || expediente.numero}')" title="Ver detalles">👁️ Ver</button>
+                                <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; margin-right: 5px; background:linear-gradient(135deg,#2196F3,#64B5F6);color:#fff;" onclick="editarExpediente('${expediente.id}')" title="Editar">✏️ Editar</button>
                                 <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; margin-right: 5px; background:linear-gradient(135deg,#d4af37,#f1d582);color:#1a1a1a;" onclick="TimelineManager.abrir('expedientes','${expediente.id}','Expediente: ${expediente.numero || expediente.id}')" title="Ver Timeline">📋 Timeline</button>
                                 <button class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; background:#4CAF50;" onclick="responderExpediente('${expediente.id || expediente.numero}')" title="Responder">💬 Responder</button>
                             </td>
@@ -421,6 +422,171 @@ async function cargarExpedientesTabla() {
     }
 }
 
+// ─── EDITAR EXPEDIENTE ────────────────────────────────────────────────────────
+async function editarExpediente(expedienteId) {
+    try {
+        const res = await fetch(`/api/expedientes/${encodeURIComponent(expedienteId)}`);
+        const data = await res.json();
+        if (!data.success) throw new Error(data.error || 'Error cargando expediente');
+        const exp = data.data;
+
+        // Eliminar modal anterior si existe
+        const anterior = document.getElementById('modalEditarExpediente');
+        if (anterior) anterior.remove();
+
+        const modal = document.createElement('div');
+        modal.id = 'modalEditarExpediente';
+        modal.style.cssText = 'display:block;position:fixed;z-index:10000;inset:0;background:rgba(0,0,0,0.6);overflow-y:auto;';
+
+        modal.innerHTML = `
+            <div style="background:#fff;margin:40px auto;padding:0;width:90%;max-width:680px;border-radius:16px;box-shadow:0 20px 60px rgba(0,0,0,0.3);overflow:hidden;">
+                <!-- Header -->
+                <div style="background:linear-gradient(135deg,#1a1a1a,#2d2d2d);padding:20px 28px;display:flex;justify-content:space-between;align-items:center;">
+                    <div>
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#d4af37;margin-bottom:4px;">Panel Administrativo</div>
+                        <div style="font-size:17px;font-weight:800;color:#fff;">✏️ Editar Expediente ${exp.numero || exp.id}</div>
+                    </div>
+                    <button onclick="document.getElementById('modalEditarExpediente').remove()" 
+                        style="background:rgba(255,255,255,0.1);border:none;color:#fff;width:32px;height:32px;border-radius:8px;font-size:18px;cursor:pointer;display:flex;align-items:center;justify-content:center;">&times;</button>
+                </div>
+
+                <form id="formEditarExpediente" style="padding:24px;display:flex;flex-direction:column;gap:20px;">
+
+                    <!-- Sección: Proceso -->
+                    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:18px;">
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #e5e7eb;">📂 Datos del Proceso</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                            <div>
+                                <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;display:block;margin-bottom:6px;">Estado</label>
+                                <select id="edit-estado" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;background:#fff;">
+                                    <option value="Nuevo" ${exp.estado==='Nuevo'?'selected':''}>Nuevo</option>
+                                    <option value="En Trámite" ${exp.estado==='En Trámite'?'selected':''}>En Trámite</option>
+                                    <option value="En Procesamiento" ${exp.estado==='En Procesamiento'?'selected':''}>En Procesamiento</option>
+                                    <option value="Completado" ${exp.estado==='Completado'?'selected':''}>Completado</option>
+                                    <option value="Archivado" ${exp.estado==='Archivado'?'selected':''}>Archivado</option>
+                                </select>
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;display:block;margin-bottom:6px;">Sede</label>
+                                <input type="text" id="edit-sede" value="${exp.sede||''}" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;display:block;margin-bottom:6px;">Especialidad</label>
+                                <input type="text" id="edit-especialidad" value="${exp.especialidad||''}" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;display:block;margin-bottom:6px;">Materia</label>
+                                <input type="text" id="edit-materia" value="${exp.materia||''}" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;display:block;margin-bottom:6px;">Etapa Procesal</label>
+                                <input type="text" id="edit-etapa" value="${exp.etapa_procesal||''}" placeholder="Ej: Instalación del Tribunal" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;display:block;margin-bottom:6px;">Ubicación / Sala</label>
+                                <input type="text" id="edit-ubicacion" value="${exp.ubicacion||''}" placeholder="Ej: Sala 1 - Sede Central" style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Secretaría / Tribunal -->
+                    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:12px;padding:18px;">
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#92400e;margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #fde68a;">⚖️ Secretaría / Tribunal Arbitral</div>
+                        <div style="display:grid;grid-template-columns:1fr 1fr;gap:14px;">
+                            <div style="grid-column:1/-1;">
+                                <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#92400e;display:block;margin-bottom:6px;">Secretaría / Tribunal Arbitral</label>
+                                <input type="text" id="edit-juez" value="${exp.juez||exp.especialista_legal||''}" 
+                                    placeholder="Ej: Dr. Juan Pérez García — Árbitro Único" 
+                                    style="width:100%;padding:10px 12px;border:1px solid #fcd34d;border-radius:8px;font-size:14px;background:#fff;">
+                                <div style="font-size:11px;color:#92400e;margin-top:5px;">Este nombre aparece en el seguimiento público del expediente.</div>
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#92400e;display:block;margin-bottom:6px;">Órgano / Institución</label>
+                                <input type="text" id="edit-organo" value="${exp.organo_jurisdiccional||''}" placeholder="Ej: TMARC — Centro de Arbitraje" style="width:100%;padding:10px 12px;border:1px solid #fcd34d;border-radius:8px;font-size:14px;background:#fff;">
+                            </div>
+                            <div>
+                                <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#92400e;display:block;margin-bottom:6px;">Especialista Legal</label>
+                                <input type="text" id="edit-especialista" value="${exp.especialista_legal||''}" placeholder="Nombre del especialista" style="width:100%;padding:10px 12px;border:1px solid #fcd34d;border-radius:8px;font-size:14px;background:#fff;">
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Sección: Observaciones -->
+                    <div>
+                        <label style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;display:block;margin-bottom:6px;">Observaciones Internas</label>
+                        <textarea id="edit-observaciones" rows="3" placeholder="Notas internas del expediente..." 
+                            style="width:100%;padding:10px 12px;border:1px solid #d1d5db;border-radius:8px;font-size:14px;resize:vertical;">${exp.observaciones||''}</textarea>
+                    </div>
+
+                    <!-- Botones -->
+                    <div style="display:flex;justify-content:flex-end;gap:10px;padding-top:8px;border-top:1px solid #e5e7eb;">
+                        <button type="button" onclick="document.getElementById('modalEditarExpediente').remove()"
+                            style="padding:10px 24px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:8px;font-size:13px;font-weight:600;color:#374151;cursor:pointer;">
+                            Cancelar
+                        </button>
+                        <button type="submit" id="btnGuardarExpediente"
+                            style="padding:10px 28px;background:linear-gradient(135deg,#d4af37,#f1d582);border:none;border-radius:8px;font-size:13px;font-weight:700;color:#1a1a1a;cursor:pointer;">
+                            💾 Guardar Cambios
+                        </button>
+                    </div>
+                </form>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+
+        // Cerrar al click en overlay
+        modal.addEventListener('click', (e) => { if (e.target === modal) modal.remove(); });
+
+        // Submit
+        document.getElementById('formEditarExpediente').addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const btn = document.getElementById('btnGuardarExpediente');
+            btn.disabled = true;
+            btn.textContent = 'Guardando...';
+
+            try {
+                const payload = {
+                    estado:                  document.getElementById('edit-estado').value,
+                    sede:                    document.getElementById('edit-sede').value,
+                    especialidad:            document.getElementById('edit-especialidad').value,
+                    materia:                 document.getElementById('edit-materia').value,
+                    etapa_procesal:          document.getElementById('edit-etapa').value,
+                    ubicacion:               document.getElementById('edit-ubicacion').value,
+                    juez:                    document.getElementById('edit-juez').value,
+                    organo_jurisdiccional:   document.getElementById('edit-organo').value,
+                    especialista_legal:      document.getElementById('edit-especialista').value,
+                    observaciones:           document.getElementById('edit-observaciones').value,
+                };
+
+                const r = await fetch(`/api/expedientes/${encodeURIComponent(expedienteId)}`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(payload)
+                });
+                const result = await r.json();
+
+                if (result.success) {
+                    modal.remove();
+                    if (window.showSuccess) window.showSuccess('✅ Expediente actualizado correctamente');
+                    if (typeof cargarExpedientesTabla === 'function') await cargarExpedientesTabla();
+                } else {
+                    throw new Error(result.error || 'Error al guardar');
+                }
+            } catch (err) {
+                if (window.showError) window.showError('Error: ' + err.message);
+            } finally {
+                btn.disabled = false;
+                btn.textContent = '💾 Guardar Cambios';
+            }
+        });
+
+    } catch (error) {
+        console.error('Error abriendo editor:', error);
+        if (window.showError) window.showError('Error al abrir el editor: ' + error.message);
+    }
+}
+
 // Inicializar event listeners cuando el DOM esté listo
 document.addEventListener('DOMContentLoaded', () => {
     // Enlaza los clicks de las pestañas
@@ -431,6 +597,7 @@ document.addEventListener('DOMContentLoaded', () => {
 
 // Exportar funciones para uso global
 if (typeof window !== 'undefined') {
+    window.editarExpediente = editarExpediente;
     window.verDetalleExpediente = verDetalleExpediente;
     window.mostrarTab = mostrarTab;
     window.cerrarModalExpediente = cerrarModalExpediente;
