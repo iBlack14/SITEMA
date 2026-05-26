@@ -300,6 +300,10 @@ const TimelineManager = {
                             </select>
                         </div>
                     </div>
+                    <div style="margin-top: 15px;">
+                        <label class="premium-label">Destinatario de Notificación</label>
+                        <input id="tl_destinatario" class="premium-input" value="${data.destinatario_notificacion||''}" placeholder="Nombre del destinatario de la notificación">
+                    </div>
                 </div>
 
                 <!-- Sección 4: Detalles y Adjuntos -->
@@ -363,7 +367,7 @@ const TimelineManager = {
             formData.append('fecha_notificacion_virtual', document.getElementById('tl_notif_virtual').value);
             formData.append('fecha_notificacion_fisica', document.getElementById('tl_notif_fisica').value);
             formData.append('forma_entrega', document.getElementById('tl_forma_entrega').value);
-            formData.append('destinatario_notificacion', document.getElementById('tl_destinatario').value);
+            formData.append('destinatario_notificacion', document.getElementById('tl_destinatario')?.value || '');
             formData.append('observaciones', document.getElementById('tl_observaciones').value);
 
             const userData = await getSecureItem('userData');
