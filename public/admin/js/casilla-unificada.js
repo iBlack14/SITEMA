@@ -1260,6 +1260,143 @@ const CasillaUnificada = {
     },
 
     /**
+     * Responder a una Solicitud (UI Pro Max)
+     */
+    async responderSolicitud(solicitudId, usuarioId, asuntoOriginal) {
+        // Ocultar el modal de detalle mientras se responde
+        const casillaModal = document.getElementById('casillaModal');
+        if (casillaModal) casillaModal.style.display = 'none';
+
+        const modalHTML = `
+            <div id="modalResponderSolicitud" style="display:flex; position:fixed; z-index:30000; left:0; top:0; width:100%; height:100%; background:rgba(0,0,0,0.8); backdrop-filter:blur(8px); justify-content:center; align-items:center; animation: modalFadeIn 0.3s ease-out;">
+                <div style="background:#ffffff; width:95%; max-width:650px; border-radius:32px; box-shadow:0 30px 100px rgba(0,0,0,0.5); border:1px solid rgba(212, 175, 55, 0.3); overflow:hidden; animation: modalSlideUp 0.4s cubic-bezier(0.16, 1, 0.3, 1);">
+                    <!-- Header Premium -->
+                    <div style="background: linear-gradient(135deg, #0a0a0a 0%, #1a1a1a 100%); padding: 30px 40px; border-bottom: 3px solid #d4af37; display: flex; justify-content: space-between; align-items: center;">
+                        <div style="display: flex; align-items: center; gap: 15px;">
+                            <div style="width: 48px; height: 48px; background: rgba(212, 175, 55, 0.1); border: 1px solid rgba(212, 175, 55, 0.3); border-radius: 14px; display: flex; align-items: center; justify-content: center; color: #d4af37; font-size: 24px;">💬</div>
+                            <div>
+                                <h2 style="margin: 0; color: #fff; font-size: 20px; font-weight: 800; letter-spacing: -0.5px; text-transform: uppercase;">Responder Solicitud</h2>
+                                <span style="color: rgba(212, 175, 55, 0.8); font-size: 11px; font-weight: 700; letter-spacing: 1px;">GESTIÓN ADMINISTRATIVA TMARC</span>
+                            </div>
+                        </div>
+                        <button onclick="CasillaUnificada.cerrarModalRespuestaSolicitud()" style="width: 36px; height: 36px; border-radius: 50%; background: rgba(255,255,255,0.05); color: #fff; border: 1px solid rgba(255,255,255,0.1); font-size: 24px; cursor: pointer; transition: all 0.3s; display: flex; align-items: center; justify-content: center;">&times;</button>
+                    </div>
+
+                    <div style="padding: 40px;">
+                        <!-- Info Card -->
+                        <div style="background: #f8f9fa; border: 1px solid rgba(0,0,0,0.05); padding: 20px 25px; border-radius: 20px; margin-bottom: 30px; position: relative; overflow: hidden;">
+                            <div style="position: absolute; top: 0; left: 0; width: 4px; height: 100%; background: #9C27B0;"></div>
+                            <label style="display: block; font-size: 10px; font-weight: 800; color: #999; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Solicitud referenciada</label>
+                            <span style="font-weight: 700; color: #333; font-size: 14px;">${this.escaparHTML(asuntoOriginal)}</span>
+                        </div>
+
+                        <form id="formResponderSolicitud" onsubmit="CasillaUnificada.enviarRespuestaSolicitud(event, '${solicitudId}', '${usuarioId}')" style="display: flex; flex-direction: column; gap: 25px;">
+                            <div>
+                                <label style="display: block; font-size: 11px; font-weight: 800; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Asunto de la respuesta *</label>
+                                <input type="text" id="sol-resp-asunto" required placeholder="Ej: Respuesta a su solicitud"
+                                    style="width:100%; padding:14px 18px; border:2px solid #eee; border-radius:14px; font-size:14px; font-family:inherit; transition:0.3s;"
+                                    onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#eee'">
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 11px; font-weight: 800; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">Mensaje *</label>
+                                <textarea id="sol-resp-mensaje" required rows="5" placeholder="Escriba su respuesta aquí..."
+                                    style="width:100%; padding:14px 18px; border:2px solid #eee; border-radius:14px; font-size:14px; font-family:inherit; resize:vertical; transition:0.3s;"
+                                    onfocus="this.style.borderColor='#d4af37'" onblur="this.style.borderColor='#eee'"></textarea>
+                            </div>
+                            <div>
+                                <label style="display: block; font-size: 11px; font-weight: 800; color: #555; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 10px;">📎 Adjuntar archivo (opcional)</label>
+                                <input type="file" id="sol-resp-archivo" accept=".pdf,.doc,.docx,.jpg,.jpeg,.png"
+                                    style="width:100%; padding:12px 18px; border:2px solid #eee; border-radius:14px; font-size:13px; font-family:inherit;">
+                                <small style="color:#888; font-size:11px; margin-top:5px; display:block;">PDF, Word, imágenes — máx. 10 MB</small>
+                            </div>
+                            <div style="display:flex; gap:15px; justify-content:flex-end; padding-top:10px; border-top:1px solid #eee;">
+                                <button type="button" onclick="CasillaUnificada.cerrarModalRespuestaSolicitud()"
+                                    style="padding:14px 30px; background:#f5f5f5; color:#555; border:none; border-radius:14px; font-weight:700; cursor:pointer; font-family:inherit;">
+                                    Cancelar
+                                </button>
+                                <button type="submit"
+                                    style="padding:14px 35px; background:linear-gradient(135deg, #9C27B0, #CE93D8); color:#fff; border:none; border-radius:14px; font-weight:800; cursor:pointer; font-family:inherit; box-shadow:0 8px 20px rgba(156,39,176,0.25);">
+                                    📤 Enviar Respuesta
+                                </button>
+                            </div>
+                        </form>
+                    </div>
+                </div>
+            </div>
+        `;
+        document.body.insertAdjacentHTML('beforeend', modalHTML);
+    },
+
+    /**
+     * Cerrar modal de respuesta de solicitud
+     */
+    cerrarModalRespuestaSolicitud() {
+        const modal = document.getElementById('modalResponderSolicitud');
+        if (modal) modal.remove();
+        // Restaurar modal de detalle si estaba visible
+        const casillaModal = document.getElementById('casillaModal');
+        if (casillaModal) casillaModal.style.display = 'block';
+    },
+
+    /**
+     * Enviar respuesta de Solicitud
+     */
+    async enviarRespuestaSolicitud(event, solicitudId, usuarioId) {
+        event.preventDefault();
+
+        const asunto = document.getElementById('sol-resp-asunto').value;
+        const mensaje = document.getElementById('sol-resp-mensaje').value;
+        const archivoInput = document.getElementById('sol-resp-archivo');
+        const archivo = archivoInput?.files[0];
+
+        if (!asunto || !mensaje) {
+            this.mostrarError('Por favor, complete todos los campos obligatorios');
+            return;
+        }
+        if (archivo && archivo.size > 10 * 1024 * 1024) {
+            this.mostrarError('El archivo es demasiado grande. Máximo 10 MB.');
+            return;
+        }
+
+        try {
+            console.log('📤 Enviando respuesta a solicitud:', solicitudId);
+
+            const formData = new FormData();
+            formData.append('usuario_id', usuarioId);
+            formData.append('tipo', 'respuesta_admin');
+            formData.append('titulo', asunto);
+            formData.append('mensaje', mensaje);
+            formData.append('referencia_tipo', 'solicitud');
+            formData.append('referencia_id', solicitudId);
+            if (archivo) {
+                formData.append('archivo', archivo);
+                console.log('📎 Archivo adjunto:', archivo.name);
+            }
+
+            const response = await fetch('/api/notificaciones', {
+                method: 'POST',
+                body: formData
+            });
+            const data = await response.json();
+
+            if (data.success) {
+                const mensajeExito = archivo
+                    ? '✅ Respuesta enviada con archivo adjunto. El usuario la verá en su Casilla Electrónica.'
+                    : '✅ Respuesta enviada correctamente. El usuario la verá en su Casilla Electrónica.';
+                this.cerrarModalRespuestaSolicitud();
+                this.cerrarModal();
+                this.mostrarExito(mensajeExito);
+                await this.cargar();
+            } else {
+                throw new Error(data.error || 'Error enviando respuesta');
+            }
+        } catch (error) {
+            console.error('❌ Error enviando respuesta a solicitud:', error);
+            this.mostrarError('Error al enviar la respuesta: ' + error.message);
+        }
+    },
+
+    /**
      * Guardar cambios de edición de Mesa de Partes
      */
     async guardarEdicionMesaPartes(id) {

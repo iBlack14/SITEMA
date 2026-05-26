@@ -20,36 +20,40 @@ async function verDetalleExpediente(expedienteId) {
 
         const expediente = data.data || data; // por si tu API entrega {success, data:{...}}
 
+        // Helper para asignar textContent de forma segura (evita crash si el elemento no existe en el DOM)
+        const setText = (id, value) => {
+            const el = document.getElementById(id);
+            if (el) el.textContent = value;
+        };
+
         // Título
-        document.getElementById('expedienteModalTitle').textContent =
-            `Expediente: ${expediente.numero || expediente.id || ''}`;
+        setText('expedienteModalTitle', `Expediente: ${expediente.numero || expediente.id || ''}`);
 
         // Información general
-        document.getElementById('detalle-sede').textContent = expediente.sede || 'No especificado';
-        document.getElementById('detalle-especialidad').textContent = expediente.especialidad || 'No especificado';
-        document.getElementById('detalle-numero').textContent = expediente.numero || expediente.id || '—';
-        document.getElementById('detalle-proceso').textContent = expediente.proceso || 'No especificado';
-        document.getElementById('detalle-materia').textContent = expediente.materia || 'No especificado';
-        document.getElementById('detalle-motivo').textContent = expediente.motivo_ingreso || 'No especificado';
-        document.getElementById('detalle-cuantia').textContent =
-            expediente.cuantia ? `S/ ${expediente.cuantia}` : 'No especificado';
-        document.getElementById('detalle-estado').textContent = expediente.estado || 'Nuevo';
-        document.getElementById('detalle-sumilla').textContent = expediente.sumilla || 'Sin sumilla';
+        setText('detalle-sede', expediente.sede || 'No especificado');
+        setText('detalle-especialidad', expediente.especialidad || 'No especificado');
+        setText('detalle-numero', expediente.numero || expediente.id || '—');
+        setText('detalle-proceso', expediente.proceso || 'No especificado');
+        setText('detalle-materia', expediente.materia || 'No especificado');
+        setText('detalle-motivo', expediente.motivo_ingreso || 'No especificado');
+        setText('detalle-cuantia', expediente.cuantia ? `S/ ${expediente.cuantia}` : 'No especificado');
+        setText('detalle-estado', expediente.estado || 'Nuevo');
+        setText('detalle-sumilla', expediente.sumilla || 'Sin sumilla');
 
         // Presentante
-        document.getElementById('detalle-tipo-presentante').textContent = expediente.tipo_presentante || 'No especificado';
-        document.getElementById('detalle-presentante').textContent = expediente.presentante || 'No especificado';
-        document.getElementById('detalle-documento').textContent = expediente.documento || expediente.colegiatura || 'No especificado';
-        document.getElementById('detalle-correo').textContent = expediente.email || expediente.correo || 'No especificado';
-        document.getElementById('detalle-telefono').textContent = expediente.telefono || 'No especificado';
-        document.getElementById('detalle-domicilio').textContent = expediente.domicilio || 'No especificado';
-        document.getElementById('detalle-colegiatura').textContent = expediente.colegiatura || 'No especificado';
-        document.getElementById('detalle-colegio').textContent = expediente.colegio_abogados || expediente.colegioAbogados || 'No especificado';
-        document.getElementById('detalle-casilla').textContent = expediente.casilla_electronica || expediente.casillaElectronica || 'No especificado';
+        setText('detalle-tipo-presentante', expediente.tipo_presentante || 'No especificado');
+        setText('detalle-presentante', expediente.presentante || 'No especificado');
+        setText('detalle-documento', expediente.documento || expediente.colegiatura || 'No especificado');
+        setText('detalle-email', expediente.email || expediente.correo || 'No especificado'); // ID correcto en index.html
+        setText('detalle-telefono', expediente.telefono || 'No especificado');
+        setText('detalle-domicilio', expediente.domicilio || 'No especificado');
+        setText('detalle-colegiatura', expediente.colegiatura || 'No especificado');
+        setText('detalle-colegio', expediente.colegio_abogados || expediente.colegioAbogados || 'No especificado');
+        setText('detalle-casilla', expediente.casilla_electronica || expediente.casillaElectronica || 'No especificado');
 
         // Partes procesales
-        document.getElementById('detalle-demandante').textContent = expediente.demandante || 'No especificado';
-        document.getElementById('detalle-demandado').textContent = expediente.demandado || 'No especificado';
+        setText('detalle-demandante', expediente.demandante || 'No especificado');
+        setText('detalle-demandado', expediente.demandado || 'No especificado');
 
         // Documentos
         if (typeof cargarDocumentosExpediente === 'function') {
