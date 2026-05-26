@@ -65,37 +65,69 @@ class ExpedientesModule {
         const exp = this.expedientes.find(e => e.id == id);
         if (!exp) return;
 
+        const fmtFecha = (f) => f ? new Date(f).toLocaleDateString('es-PE', { day: '2-digit', month: 'long', year: 'numeric' }) : '—';
+        const campo = (label, value) => value ? `
+            <div style="display:flex; flex-direction:column; gap:4px;">
+                <span style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#999;">${label}</span>
+                <span style="font-size:14px; font-weight:600; color:#1a1a1a;">${value}</span>
+            </div>` : '';
+
         const content = `
-            <div class="expediente-detail fade-in">
-                <div class="stats-grid" style="grid-template-columns: 1fr 1fr; margin-bottom: 24px;">
-                    <div class="card">
-                        <span class="stat-label">Número de Expediente</span>
-                        <span class="stat-value text-gold" style="font-size: 20px;">${exp.numero || exp.id}</span>
-                    </div>
-                    <div class="card">
-                        <span class="stat-label">Estado Actual</span>
-                        <span class="badge ${this.getBadgeClass(exp.estado)}" style="width: fit-content;">${exp.estado}</span>
-                    </div>
-                </div>
-                
-                <div class="card" style="margin-bottom: 24px;">
-                    <h4 class="text-gold" style="margin-bottom: 12px;">Sumilla del Proceso</h4>
-                    <p class="text-muted">${exp.sumilla || 'No hay descripción disponible para este expediente.'}</p>
-                </div>
+            <div style="font-family:'Inter',sans-serif; padding: 4px 0;">
 
-                <div class="info-grid" style="display: grid; grid-template-columns: 1fr 1fr; gap: 16px;">
-                    <div>
-                        <strong class="text-muted">Sede:</strong>
-                        <p>${exp.sede || 'N/A'}</p>
+                <!-- Número + Estado -->
+                <div style="display:grid; grid-template-columns:1fr 1fr; gap:12px; margin-bottom:16px;">
+                    <div style="background:linear-gradient(135deg,#fffbeb,#fef3c7); border:1px solid #f59e0b30; border-radius:14px; padding:16px 20px;">
+                        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#92400e; margin-bottom:6px;">N° Expediente</div>
+                        <div style="font-size:18px; font-weight:800; color:#b45309; letter-spacing:-0.5px;">${exp.numero || exp.id}</div>
                     </div>
-                    <div>
-                        <strong class="text-muted">Materia:</strong>
-                        <p>${exp.materia || 'N/A'}</p>
+                    <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:16px 20px;">
+                        <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#64748b; margin-bottom:6px;">Estado</div>
+                        <span class="badge ${this.getBadgeClass(exp.estado)}" style="font-size:12px; padding:4px 12px;">${exp.estado || 'Nuevo'}</span>
                     </div>
                 </div>
 
-                <div class="modal-footer" style="margin-top: 32px; display: flex; justify-content: flex-end;">
-                    <button class="btn btn-secondary" onclick="closeAllModals()">Cerrar Ventana</button>
+                <!-- Datos del proceso -->
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:20px; margin-bottom:16px;">
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#64748b; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid #e2e8f0;">📂 Datos del Proceso</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                        ${campo('Sede', exp.sede)}
+                        ${campo('Especialidad', exp.especialidad)}
+                        ${campo('Materia', exp.materia)}
+                        ${campo('Proceso', exp.proceso)}
+                        ${campo('Motivo de Ingreso', exp.motivo_ingreso)}
+                        ${campo('Cuantía', exp.indeterminado ? 'INDETERMINADO' : (exp.cuantia ? `S/ ${parseFloat(exp.cuantia).toFixed(2)}` : null))}
+                        ${campo('Fecha de Registro', fmtFecha(exp.fecha_creacion))}
+                        ${campo('Última Actualización', fmtFecha(exp.fecha_actualizacion))}
+                    </div>
+                </div>
+
+                <!-- Sumilla -->
+                ${exp.sumilla ? `
+                <div style="background:#fffbeb; border:1px solid #fde68a; border-radius:14px; padding:16px 20px; margin-bottom:16px;">
+                    <div style="font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#92400e; margin-bottom:8px;">📝 Sumilla del Proceso</div>
+                    <p style="font-size:14px; color:#1a1a1a; line-height:1.6; margin:0;">${exp.sumilla}</p>
+                </div>` : ''}
+
+                <!-- Presentante -->
+                ${(exp.presentante || exp.tipo_presentante) ? `
+                <div style="background:#f8fafc; border:1px solid #e2e8f0; border-radius:14px; padding:20px; margin-bottom:16px;">
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#64748b; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid #e2e8f0;">👤 Datos del Presentante</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                        ${campo('Tipo', exp.tipo_presentante)}
+                        ${campo('Nombre', exp.presentante)}
+                        ${campo('Colegiatura', exp.colegiatura)}
+                        ${campo('Colegio de Abogados', exp.colegio_abogados)}
+                        ${campo('Casilla Física', exp.casilla_fisica)}
+                        ${campo('Casilla Electrónica', exp.casilla_electronica)}
+                    </div>
+                </div>` : ''}
+
+                <div style="display:flex; justify-content:flex-end; margin-top:8px;">
+                    <button class="btn btn-secondary" onclick="if(typeof closeAllModals==='function')closeAllModals();else window.dashboardApp.closeAllModals();"
+                        style="padding:10px 28px; font-size:13px; font-weight:600; border-radius:10px;">
+                        Cerrar
+                    </button>
                 </div>
             </div>
         `;
