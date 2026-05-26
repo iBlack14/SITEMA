@@ -152,84 +152,152 @@ class MesaPartesModule {
      * Mostrar modal con detalle de presentación
      */
     mostrarModalDetalle(presentacion) {
+        // Eliminar modal anterior si existe
+        const anterior = document.getElementById('modalDetalleMesaPartes');
+        if (anterior) anterior.remove();
+
         const modal = document.createElement('div');
         modal.className = 'modal-overlay active';
         modal.id = 'modalDetalleMesaPartes';
 
-        const demandante = presentacion.demandante || {};
-        const demandado = presentacion.demandado || {};
-        const documentos = presentacion.documentos || [];
+        const dem  = presentacion.demandante || {};
+        const ddo  = presentacion.demandado  || {};
+        const docs = presentacion.documentos || [];
+        const cerrar = `this.closest('.modal-overlay').remove(); document.body.style.overflow='';`;
+
+        const fmtFecha = (f) => f ? new Date(f).toLocaleDateString('es-PE', { day:'2-digit', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit' }) : '—';
+        const fmtSize  = (b) => b ? (b >= 1048576 ? (b/1048576).toFixed(1)+' MB' : (b/1024).toFixed(1)+' KB') : '';
+
+        // Badge de estado
+        const estadoColors = { pendiente:'#f59e0b', 'en revisión':'#3b82f6', aprobado:'#10b981', rechazado:'#ef4444' };
+        const estadoKey = (presentacion.estado||'').toLowerCase();
+        const estadoColor = estadoColors[estadoKey] || '#6b7280';
+
+        // Fila de campo (solo si tiene valor)
+        const campo = (label, val) => val && val !== 'N/A' ? `
+            <div style="display:flex;flex-direction:column;gap:3px;">
+                <span style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;">${label}</span>
+                <span style="font-size:14px;font-weight:600;color:#111827;">${val}</span>
+            </div>` : '';
+
+        // Sección con título
+        const seccion = (icono, titulo, contenido) => `
+            <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px;">
+                <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;
+                            margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #e5e7eb;display:flex;align-items:center;gap:8px;">
+                    <span>${icono}</span><span>${titulo}</span>
+                </div>
+                <div style="display:grid;grid-template-columns:1fr 1fr;gap:12px;">${contenido}</div>
+            </div>`;
 
         modal.innerHTML = `
-            <div class="modal-content" style="max-width: 800px;">
-                <div class="modal-header">
-                    <span>Detalle de Presentación - ${presentacion.numero_registro}</span>
-                    <button class="modal-close" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow = '';">&times;</button>
-                </div>
-                <div class="modal-body">
-                    <div style="display: grid; gap: 20px;">
-                        <div class="info-section">
-                            <h3 style="color: #C0C0C0; margin-bottom: 10px;">📋 Información General</h3>
-                            <div class="info-grid">
-                                <div><strong>Número:</strong> ${presentacion.numero_registro}</div>
-                                <div><strong>Tipo:</strong> ${presentacion.tipo_presentacion}</div>
-                                <div><strong>Materia:</strong> ${presentacion.materia || 'N/A'}</div>
-                                <div><strong>Estado:</strong> <span class="status-badge status-${(presentacion.estado || 'pendiente').toLowerCase()}">${presentacion.estado}</span></div>
-                                <div><strong>Fecha:</strong> ${new Date(presentacion.fecha_presentacion).toLocaleString('es-ES')}</div>
-                            </div>
-                        </div>
-
-                        <div class="info-section">
-                            <h3 style="color: #C0C0C0; margin-bottom: 10px;">👤 Demandante</h3>
-                            <div class="info-grid">
-                                <div><strong>Nombre:</strong> ${demandante.nombre || 'N/A'}</div>
-                                <div><strong>Documento:</strong> ${demandante.documento_tipo || ''} ${demandante.documento_numero || 'N/A'}</div>
-                                <div><strong>Correo:</strong> ${demandante.correo || 'N/A'}</div>
-                                <div><strong>Teléfono:</strong> ${demandante.telefono || 'N/A'}</div>
-                            </div>
-                        </div>
-
-                        <div class="info-section">
-                            <h3 style="color: #C0C0C0; margin-bottom: 10px;">⚖️ Demandado</h3>
-                            <div class="info-grid">
-                                <div><strong>Nombre:</strong> ${demandado.nombre || 'N/A'}</div>
-                                <div><strong>Documento:</strong> ${demandado.documento_tipo || ''} ${demandado.documento_numero || 'N/A'}</div>
-                            </div>
-                        </div>
-
-                        ${documentos.length > 0 ? `
-                        <div class="info-section">
-                            <h3 style="color: #C0C0C0; margin-bottom: 10px;">📎 Documentos Adjuntos (${documentos.length})</h3>
-                            <div class="documentos-list">
-                                ${documentos.map((doc, idx) => `
-                                    <div class="documento-item" style="padding: 10px; border: 1px solid #ddd; border-radius: 5px; margin-bottom: 10px;">
-                                        <div style="display: flex; justify-content: space-between; align-items: center;">
-                                            <div>
-                                                <strong>${idx + 1}. ${doc.nombre_original || 'Documento'}</strong>
-                                                <div style="font-size: 12px; color: #666;">
-                                                    ${(doc.tamano / 1024).toFixed(2)} KB
-                                                </div>
-                                            </div>
-                                            <a href="/uploads/mesa-partes/${doc.nombre_archivo}" target="_blank" class="btn btn-sm btn-primary">
-                                                📥 Descargar
-                                            </a>
-                                        </div>
-                                    </div>
-                                `).join('')}
-                            </div>
-                        </div>
-                        ` : ''}
-
-                        ${presentacion.observaciones ? `
-                        <div class="info-section">
-                            <h3 style="color: #C0C0C0; margin-bottom: 10px;">💬 Observaciones</h3>
-                            <p style="padding: 10px; background: #f5f5f5; border-radius: 5px;">${presentacion.observaciones}</p>
-                        </div>
-                        ` : ''}
+            <div class="modal-content" style="max-width:780px;border-radius:20px;overflow:hidden;">
+                <!-- Header -->
+                <div class="modal-header" style="padding:20px 24px;border-bottom:1px solid #e5e7eb;">
+                    <div style="display:flex;flex-direction:column;gap:2px;">
+                        <span style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#9ca3af;">Mesa de Partes Virtual</span>
+                        <span style="font-size:16px;font-weight:800;color:#d97706;">${presentacion.numero_registro}</span>
                     </div>
+                    <button class="modal-close" onclick="${cerrar}">&times;</button>
                 </div>
-                <div class="modal-footer" style="text-align: right; padding: 15px; border-top: 1px solid #ddd;">
-                    <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow = '';">
+
+                <div class="modal-body" style="padding:20px 24px;display:flex;flex-direction:column;gap:14px;max-height:70vh;overflow-y:auto;">
+
+                    <!-- Resumen rápido -->
+                    <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:12px;">
+                        <div style="background:linear-gradient(135deg,#fffbeb,#fef3c7);border:1px solid #fde68a;border-radius:14px;padding:14px 16px;">
+                            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#92400e;margin-bottom:5px;">Tipo</div>
+                            <div style="font-size:13px;font-weight:700;color:#b45309;">${presentacion.tipo_presentacion || '—'}</div>
+                        </div>
+                        <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px;">
+                            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:5px;">Materia</div>
+                            <div style="font-size:13px;font-weight:700;color:#111827;">${presentacion.materia || '—'}</div>
+                        </div>
+                        <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:14px 16px;">
+                            <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;margin-bottom:5px;">Estado</div>
+                            <span style="display:inline-flex;align-items:center;gap:5px;padding:4px 10px;border-radius:20px;font-size:11px;font-weight:700;text-transform:uppercase;
+                                         background:${estadoColor}18;color:${estadoColor};border:1px solid ${estadoColor}30;">
+                                <span style="width:6px;height:6px;border-radius:50%;background:${estadoColor};display:inline-block;"></span>
+                                ${presentacion.estado || 'Pendiente'}
+                            </span>
+                        </div>
+                    </div>
+
+                    <!-- Fecha -->
+                    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:12px;padding:12px 16px;
+                                font-size:13px;color:#6b7280;display:flex;align-items:center;gap:8px;">
+                        🕐 <strong style="color:#374151;">Fecha de presentación:</strong>&nbsp;${fmtFecha(presentacion.fecha_presentacion)}
+                    </div>
+
+                    <!-- Demandante -->
+                    ${seccion('👤', 'Demandante',
+                        campo('Nombre', dem.nombre || dem.razon_social) +
+                        campo('Documento', dem.documento_tipo && dem.documento_numero ? `${dem.documento_tipo} ${dem.documento_numero}` : (dem.documento_numero || null)) +
+                        campo('Correo', dem.correo) +
+                        campo('Teléfono', dem.telefono)
+                    )}
+
+                    <!-- Demandado (solo si tiene datos reales) -->
+                    ${(ddo.nombre || ddo.razon_social) ? seccion('⚖️', 'Demandado',
+                        campo('Nombre', ddo.nombre || ddo.razon_social) +
+                        campo('Documento', ddo.documento_tipo && ddo.documento_numero ? `${ddo.documento_tipo} ${ddo.documento_numero}` : (ddo.documento_numero || null)) +
+                        campo('Correo', ddo.correo) +
+                        campo('Teléfono', ddo.telefono)
+                    ) : ''}
+
+                    <!-- Sumilla -->
+                    ${presentacion.sumilla ? `
+                    <div style="background:#fffbeb;border:1px solid #fde68a;border-radius:14px;padding:16px 20px;">
+                        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#92400e;margin-bottom:8px;">📝 Sumilla</div>
+                        <p style="font-size:14px;color:#1a1a1a;line-height:1.6;margin:0;">${presentacion.sumilla}</p>
+                    </div>` : ''}
+
+                    <!-- Documentos -->
+                    ${docs.length > 0 ? `
+                    <div style="background:#f9fafb;border:1px solid #e5e7eb;border-radius:14px;padding:18px 20px;">
+                        <div style="font-size:11px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#6b7280;
+                                    margin-bottom:14px;padding-bottom:10px;border-bottom:1px solid #e5e7eb;">
+                            📎 Documentos Adjuntos <span style="background:#e5e7eb;color:#374151;padding:2px 8px;border-radius:20px;font-size:11px;">${docs.length}</span>
+                        </div>
+                        <div style="display:flex;flex-direction:column;gap:8px;">
+                            ${docs.map((doc, i) => `
+                            <div style="display:flex;justify-content:space-between;align-items:center;
+                                        background:#fff;border:1px solid #e5e7eb;border-radius:10px;padding:12px 16px;">
+                                <div style="display:flex;align-items:center;gap:12px;">
+                                    <div style="width:36px;height:36px;background:#fee2e2;border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:18px;">📄</div>
+                                    <div>
+                                        <div style="font-size:13px;font-weight:600;color:#111827;max-width:380px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;">
+                                            ${i+1}. ${doc.nombre_original || 'Documento'}
+                                        </div>
+                                        ${doc.tamano ? `<div style="font-size:11px;color:#9ca3af;margin-top:2px;">${fmtSize(doc.tamano)}</div>` : ''}
+                                    </div>
+                                </div>
+                                <a href="/uploads/mesa-partes/${doc.nombre_archivo}" target="_blank"
+                                   style="display:inline-flex;align-items:center;gap:6px;padding:8px 16px;
+                                          background:linear-gradient(135deg,#d97706,#f59e0b);color:#fff;
+                                          border-radius:8px;font-size:12px;font-weight:700;text-decoration:none;
+                                          text-transform:uppercase;letter-spacing:0.5px;white-space:nowrap;">
+                                    ⬇ Descargar
+                                </a>
+                            </div>`).join('')}
+                        </div>
+                    </div>` : ''}
+
+                    <!-- Observaciones -->
+                    ${presentacion.observaciones ? `
+                    <div style="background:#f0fdf4;border:1px solid #bbf7d0;border-radius:14px;padding:16px 20px;">
+                        <div style="font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:1px;color:#166534;margin-bottom:8px;">💬 Observaciones</div>
+                        <p style="font-size:14px;color:#1a1a1a;line-height:1.6;margin:0;">${presentacion.observaciones}</p>
+                    </div>` : ''}
+
+                </div>
+
+                <!-- Footer -->
+                <div style="padding:16px 24px;border-top:1px solid #e5e7eb;display:flex;justify-content:flex-end;">
+                    <button onclick="${cerrar}"
+                        style="padding:10px 28px;background:#f3f4f6;border:1px solid #e5e7eb;border-radius:10px;
+                               font-size:13px;font-weight:600;color:#374151;cursor:pointer;transition:all 0.2s;"
+                        onmouseover="this.style.background='#e5e7eb'" onmouseout="this.style.background='#f3f4f6'">
                         Cerrar
                     </button>
                 </div>
@@ -238,6 +306,11 @@ class MesaPartesModule {
 
         document.body.appendChild(modal);
         document.body.style.overflow = 'hidden';
+
+        // Cerrar al click en el overlay
+        modal.addEventListener('click', (e) => {
+            if (e.target === modal) { modal.remove(); document.body.style.overflow = ''; }
+        });
     }
 
     /**
