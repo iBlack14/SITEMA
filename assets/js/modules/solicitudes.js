@@ -72,7 +72,7 @@ class SolicitudesModule {
      */
     async loadSolicitudesUsuario() {
         try {
-            this.dashboard.showLoading('solicitudes-loading');
+            this.dashboard.showLoading();
             const usuarioId = this.dashboard.getCurrentUserId();
 
             const response = await fetch(`/api/solicitudes/usuario/${usuarioId}`);
@@ -88,8 +88,20 @@ class SolicitudesModule {
             console.error('Error loading solicitudes:', error);
             this.mostrarSolicitudes([]);
         } finally {
-            this.dashboard.hideLoading('solicitudes-loading');
+            this.dashboard.hideLoading();
         }
+    }
+
+    /**
+     * Obtener clase CSS según estado
+     */
+    getStatusClass(estado) {
+        const e = (estado || '').toLowerCase();
+        if (e.includes('pend')) return 'status-pending';
+        if (e.includes('aprob') || e.includes('activ') || e.includes('complet')) return 'status-active';
+        if (e.includes('rechaz') || e.includes('cancel')) return 'status-inactive';
+        if (e.includes('proceso') || e.includes('revision')) return 'status-process';
+        return 'status-pending';
     }
 
     /**
@@ -114,7 +126,7 @@ class SolicitudesModule {
                 const fecha = new Date(solicitud.fecha).toLocaleDateString('es-ES', {
                     year: 'numeric', month: '2-digit', day: '2-digit'
                 });
-                const estadoClass = this.dashboard.getStatusClass(solicitud.estado);
+                const estadoClass = this.getStatusClass(solicitud.estado);
 
                 return `
                     <tr class="solicitud-row">
@@ -156,16 +168,17 @@ class SolicitudesModule {
     async handleNuevaSolicitud(e) {
         e.preventDefault();
 
+        const tipoVal = document.getElementById('tipoSolicitud').value;
         const solicitudData = {
             nombre: document.getElementById('solicitanteNombre').value,
             email: document.getElementById('solicitanteEmail').value,
-            telefono: document.getElementById('solicitanteTelefono').value || null,
+            telefono: document.getElementById('solicitanteTelefono').value || '',
             dni: document.getElementById('solicitanteDni').value,
-            tipo: document.getElementById('tipoSolicitud').value === 'otros' ?
-                  document.getElementById('otrosTipo').value :
-                  document.getElementById('tipoSolicitud').value,
+            tipo: tipoVal === 'otro' ?
+                  (document.getElementById('otrosTipo').value || tipoVal) :
+                  tipoVal,
             asunto: document.getElementById('asuntoSolicitud').value,
-            descripcion: document.getElementById('descripcionSolicitud').value,
+            descripcion: document.getElementById('descripcionSolicitud').value || '',
             prioridad: document.getElementById('prioridadSolicitud').value || 'normal',
             casilla_electronica: document.getElementById('casillaElectronica').value || '53099',
             usuario_id: this.dashboard.getCurrentUserId()
@@ -218,13 +231,15 @@ class SolicitudesModule {
     }
 
     /**
-     * Validate solicitud data (SOLO NOMBRE Y DNI OBLIGATORIOS)
+     * Validate solicitud data
      */
     validateSolicitudData(data) {
         const errors = [];
         if (!data.nombre || data.nombre.trim().length < 3) errors.push('• Nombre Completo o Razón Social es obligatorio.');
         if (!data.dni || data.dni.trim().length < 8) errors.push('• DNI o RUC es obligatorio.');
-        if (data.email && !/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.push('• El correo electrónico no tiene un formato válido.');
+        if (!data.email || data.email.trim() === '') errors.push('• El correo electrónico es obligatorio.');
+        else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(data.email)) errors.push('• El correo electrónico no tiene un formato válido.');
+        if (!data.asunto || data.asunto.trim() === '') errors.push('• El asunto es obligatorio.');
         return { valid: errors.length === 0, errors };
     }
 
@@ -291,7 +306,7 @@ class SolicitudesModule {
 
     handleTipoSolicitudChange(e) {
         const otrosContainer = document.getElementById('otrosContainer');
-        if (otrosContainer) otrosContainer.style.display = e.target.value === 'otros' ? 'block' : 'none';
+        if (otrosContainer) otrosContainer.style.display = e.target.value === 'otro' ? 'block' : 'none';
     }
 
     updateCharacterCount(e) {
@@ -393,7 +408,7 @@ class SolicitudesModule {
                 <div class="modal-body">
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
                         <div><strong>Fecha:</strong><br>${new Date(solicitud.fecha).toLocaleString()}</div>
-                        <div><strong>Estado:</strong><br><span class="status-badge ${this.dashboard.getStatusClass(solicitud.estado)}">${solicitud.estado}</span></div>
+                        <div><strong>Estado:</strong><br><span class="status-badge ${this.getStatusClass(solicitud.estado)}">${solicitud.estado}</span></div>
                         <div><strong>Tipo:</strong><br>${solicitud.tipo}</div>
                         <div><strong>Prioridad:</strong><br>${solicitud.prioridad}</div>
                     </div>

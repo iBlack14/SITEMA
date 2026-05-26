@@ -188,9 +188,9 @@ router.post('/', upload.fields([
         } = req.body;
 
         // Validación básica
-        if (!nombre || !email || !dni || !tipo || !asunto || !descripcion) {
+        if (!nombre || !email || !dni || !tipo || !asunto) {
             return res.status(400).json({
-                error: 'Los campos nombre, email, dni, tipo, asunto y descripcion son requeridos'
+                error: 'Los campos nombre, email, dni, tipo y asunto son requeridos'
             });
         }
 
