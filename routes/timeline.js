@@ -8,9 +8,19 @@ const fs = require('fs');
 const { query } = require('../database-config');
 const { verificarAuth } = require('../middleware/auth');
 
+// Fix encoding de nombres de archivo (multer recibe Latin-1, necesitamos UTF-8)
+function fixNombre(originalname) {
+    try {
+        return Buffer.from(originalname, 'latin1').toString('utf8');
+    } catch (e) {
+        return originalname;
+    }
+}
+
 // ─── Multer para documentos del timeline ─────────────────────────────────────
 const storage = multer.diskStorage({
     destination: (req, file, cb) => {
+        file.originalname = fixNombre(file.originalname);
         const dir = path.join(__dirname, '../uploads/timeline');
         if (!fs.existsSync(dir)) fs.mkdirSync(dir, { recursive: true });
         cb(null, dir);

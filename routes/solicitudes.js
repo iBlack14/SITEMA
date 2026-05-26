@@ -5,18 +5,26 @@ const path = require('path');
 const fs = require('fs');
 const { query } = require('../database-config');
 
+// Fix encoding de nombres de archivo (multer recibe Latin-1, necesitamos UTF-8)
+function fixNombre(originalname) {
+    try {
+        return Buffer.from(originalname, 'latin1').toString('utf8');
+    } catch (e) {
+        return originalname;
+    }
+}
+
 // Configuración de multer para subida de archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        file.originalname = fixNombre(file.originalname);
         const uploadDir = path.join(__dirname, '../uploads');
-        // Crear directorio si no existe
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });
         }
         cb(null, uploadDir);
     },
     filename: function (req, file, cb) {
-        // Generar nombre único para el archivo
         const uniqueSuffix = Date.now() + '-' + Math.round(Math.random() * 1E9);
         cb(null, file.fieldname + '-' + uniqueSuffix + path.extname(file.originalname));
     }

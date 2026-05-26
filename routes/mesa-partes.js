@@ -12,9 +12,19 @@ router.use((req, res, next) => {
     next();
 });
 
+// Fix encoding de nombres de archivo (multer recibe Latin-1, necesitamos UTF-8)
+function fixNombre(originalname) {
+    try {
+        return Buffer.from(originalname, 'latin1').toString('utf8');
+    } catch (e) {
+        return originalname;
+    }
+}
+
 // Configuración de multer para subida de archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
+        file.originalname = fixNombre(file.originalname);
         const uploadDir = path.join(__dirname, '../uploads/mesa-partes');
         if (!fs.existsSync(uploadDir)) {
             fs.mkdirSync(uploadDir, { recursive: true });

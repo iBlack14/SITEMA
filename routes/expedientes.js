@@ -6,10 +6,19 @@ const fs = require('fs');
 const ExpedienteModel = require('../models/expediente-model');
 const { query } = require('../database-config');
 
+// Fix encoding de nombres de archivo (multer recibe Latin-1, necesitamos UTF-8)
+function fixNombre(originalname) {
+    try {
+        return Buffer.from(originalname, 'latin1').toString('utf8');
+    } catch (e) {
+        return originalname;
+    }
+}
+
 // Configuración de multer para subida de archivos
 const storage = multer.diskStorage({
     destination: function (req, file, cb) {
-        // Usar ruta absoluta en producción, relativa en desarrollo
+        file.originalname = fixNombre(file.originalname);
         const uploadDir = process.env.UPLOADS_PATH || path.join(__dirname, '../uploads');
         
         console.log('📂 Directorio de subida (expedientes):', uploadDir);
