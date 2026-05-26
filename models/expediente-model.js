@@ -15,6 +15,7 @@ class ExpedienteModel {
                 materia,
                 cuantia,
                 moneda,
+                indeterminado,
                 sumilla,
                 tipo_presentante,
                 presentante,
@@ -24,6 +25,8 @@ class ExpedienteModel {
                 domicilio,
                 colegiatura,
                 colegio_abogados,
+                casilla_fisica,
+                oficina_casilla,
                 casilla_electronica,
                 estado = 'Nuevo',
                 observaciones = ''
@@ -32,26 +35,48 @@ class ExpedienteModel {
             const sql = `
                 INSERT INTO expedientes (
                     id, numero, usuario_id, sede, especialidad, motivo_ingreso,
-                    proceso, materia, cuantia, moneda, sumilla, tipo_presentante,
-                    presentante, documento, correo, telefono, domicilio,
-                    colegiatura, colegio_abogados, casilla_electronica, estado, observaciones, documentos
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    proceso, materia, cuantia, moneda, indeterminado, sumilla,
+                    tipo_presentante, presentante, documento, correo, telefono, domicilio,
+                    colegiatura, colegio_abogados, casilla_fisica, oficina_casilla,
+                    casilla_electronica, estado, observaciones, documentos
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             // Generar ID único para el expediente
             const id = 'EXP-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
 
             const params = [
-                id, numero_expediente, usuario_id, sede, especialidad, motivo_ingreso,
-                proceso, materia, cuantia, moneda, sumilla, tipo_presentante,
-                presentante, documento_identidad, correo, telefono, domicilio,
-                colegiatura, colegio_abogados, casilla_electronica, estado, observaciones,
+                id,
+                numero_expediente,
+                usuario_id || null,
+                sede || null,
+                especialidad || null,
+                motivo_ingreso || null,
+                proceso || null,
+                materia || null,
+                cuantia || 0,
+                moneda || 'PEN',
+                indeterminado ? 1 : 0,
+                sumilla || null,
+                tipo_presentante || null,
+                presentante || null,
+                documento_identidad || null,   // columna "documento" en BD
+                correo || null,
+                telefono || null,
+                domicilio || null,
+                colegiatura || null,
+                colegio_abogados || null,
+                casilla_fisica || null,
+                oficina_casilla || null,
+                casilla_electronica || null,
+                estado,
+                observaciones,
                 datosExpediente.documentos || null
             ];
 
             const resultado = await query(sql, params);
 
-            // Registrar en auditoría
+            // Registrar en auditoría (no bloquea si falla)
             await this.registrarAuditoria('expedientes', id, 'INSERT', usuario_id, null, datosExpediente);
 
             return { insertId: id, ...resultado };

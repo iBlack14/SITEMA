@@ -268,6 +268,12 @@ class ExpedientesModule {
         const btn = document.getElementById('btnSubmitExp');
         const originalText = btn.textContent;
 
+        // Helper local por si closeAllModals no está en scope
+        const cerrarModal = () => {
+            if (typeof closeAllModals === 'function') closeAllModals();
+            else if (window.dashboardApp) window.dashboardApp.closeAllModals();
+        };
+
         try {
             btn.disabled = true;
             btn.textContent = 'Enviando...';
@@ -316,20 +322,21 @@ class ExpedientesModule {
             const result = await response.json();
 
             if (result.success) {
+                cerrarModal();
                 Swal.fire({
                     title: '¡Expediente Presentado!',
                     text: 'El registro se ha realizado con éxito en la Mesa de Partes Virtual.',
                     icon: 'success',
                     confirmButtonColor: '#D4AF37'
                 });
-                closeAllModals();
                 await this.loadExpedientesUsuario();
             } else {
                 throw new Error(result.error || 'Error en el registro');
             }
         } catch (error) {
             console.error('❌ Error:', error);
-            Swal.fire({ title: 'Error', text: error.message, icon: 'error' });
+            cerrarModal();
+            Swal.fire({ title: 'Error', text: error.message, icon: 'error', confirmButtonColor: '#D4AF37' });
         } finally {
             btn.disabled = false;
             btn.textContent = originalText;
