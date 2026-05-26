@@ -42,8 +42,14 @@ class ExpedienteModel {
                 ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
-            // Generar ID único para el expediente
-            const id = 'EXP-' + Date.now() + '-' + Math.random().toString(36).substr(2, 5).toUpperCase();
+            // Generar ID único para el expediente — máx 20 chars (VARCHAR(20) en BD)
+            // Formato: EXP-YYYYMMDD-XXXXX = 18 chars
+            const now = new Date();
+            const fecha = now.getFullYear().toString() +
+                String(now.getMonth() + 1).padStart(2, '0') +
+                String(now.getDate()).padStart(2, '0');
+            const rand = Math.random().toString(36).substr(2, 5).toUpperCase();
+            const id = `EXP-${fecha}-${rand}`; // ej: EXP-20260526-A3K9F = 18 chars
 
             const params = [
                 id,
@@ -81,7 +87,9 @@ class ExpedienteModel {
 
             return { insertId: id, ...resultado };
         } catch (error) {
-            console.error('Error creando expediente:', error);
+            console.error('Error creando expediente — mensaje:', error.message);
+            console.error('Error creando expediente — SQL:', error.sql || '(no sql)');
+            console.error('Error creando expediente — sqlMessage:', error.sqlMessage || '(no sqlMessage)');
             throw error;
         }
     }

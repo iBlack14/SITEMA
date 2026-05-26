@@ -457,7 +457,10 @@ router.post('/', upload.fields([
             });
         }
         
-        res.status(500).json({ error: 'Error interno del servidor', details: error.message });
+        res.status(500).json({ 
+            error: 'Error interno del servidor', 
+            details: error.sqlMessage || error.message 
+        });
     }
 });
 

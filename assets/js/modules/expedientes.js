@@ -320,6 +320,13 @@ class ExpedientesModule {
             });
 
             const result = await response.json();
+            console.log('📡 Respuesta servidor:', response.status, result);
+
+            if (!response.ok) {
+                const mensajeError = result.details || result.error || `Error ${response.status}`;
+                console.error('❌ Error del servidor:', mensajeError);
+                throw new Error(mensajeError);
+            }
 
             if (result.success) {
                 cerrarModal();
@@ -331,7 +338,10 @@ class ExpedientesModule {
                 });
                 await this.loadExpedientesUsuario();
             } else {
-                throw new Error(result.error || 'Error en el registro');
+                // Mostrar el detalle real del error del servidor
+                const mensajeError = result.details || result.error || 'Error en el registro';
+                console.error('❌ Detalle del servidor:', mensajeError);
+                throw new Error(mensajeError);
             }
         } catch (error) {
             console.error('❌ Error:', error);
