@@ -287,11 +287,14 @@ class MesaPartesModule {
                         <div class="form-group">
                             <label class="stat-label" style="display: block; margin-bottom: 8px;">Tipo de Documento</label>
                             <select id="tipoDocumentoMesa" class="form-select">
-                                <option value="SOLICITUD">SOLICITUD</option>
-                                <option value="DEMANDA">DEMANDA / ESCRITO</option>
-                                <option value="SUBSANACION">SUBSANACIÓN</option>
-                                <option value="RECURSO">RECURSO DE APELACIÓN</option>
-                                <option value="OTRO">OTRO DOCUMENTO</option>
+                                <option value="ARBITRAJE">ARBITRAJE</option>
+                                <option value="JUNTA DE PREVENCION">JUNTA DE PREVENCION Y RESOLUCION DE DISPUTAS</option>
+                                <option value="CONCILIACION">CONCILIACION EXTRAJUDICIAL</option>
+                                <option value="ARBITRAJE DE EMERGENCIA">ARBITRAJE DE EMERGENCIA</option>
+                                <option value="ARBITRAJE EXPRESS">ARBITRAJE EXPRESS</option>
+                                <option value="ARBITRAJE ENTRE PRIVADOS">ARBITRAJE ENTRE PRIVADOS</option>
+                                <option value="CENTRO DE FORMACION">CENTRO DE FORMACION Y CAPACITACION</option>
+                                <option value="OTRO">OTRO</option>
                             </select>
                         </div>
 

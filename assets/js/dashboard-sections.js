@@ -147,17 +147,21 @@ class DashboardSections {
 
         section.innerHTML = `
             <div class="header fade-in">
-                <h1 class="text-gold">Casilla Electrónica Judicial</h1>
+                <h1 class="text-gold">Casilla Electrónica</h1>
                 <p class="text-muted">Sistema de notificaciones procesales garantizado.</p>
             </div>
 
             <div class="stats-grid fade-in">
                 <div class="card stat-card">
-                    <span class="stat-label">No Leídos</span>
+                    <span class="stat-label">Mensajes Nuevos</span>
                     <span class="stat-value text-gold" id="casilla-no-leidos">0</span>
                 </div>
                 <div class="card stat-card">
-                    <span class="stat-label">Total Mensajes</span>
+                    <span class="stat-label">No Leídos</span>
+                    <span class="stat-value text-gold" id="casilla-no-leidos-2">0</span>
+                </div>
+                <div class="card stat-card">
+                    <span class="stat-label">Mensajes Leídos</span>
                     <span class="stat-value" id="casilla-total">0</span>
                 </div>
             </div>

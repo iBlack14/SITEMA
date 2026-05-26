@@ -1025,6 +1025,30 @@ router.post('/notificaciones', upload.single('archivo'), async (req, res) => {
     }
 });
 
+// Marcar todas las notificaciones como leídas
+router.put('/notificaciones/leida-todas', async (req, res) => {
+    try {
+        const { usuario_id } = req.body;
+        if (!usuario_id) {
+            return res.status(400).json({ error: 'Usuario ID requerido' });
+        }
+
+        // Marcar todas como leídas para este usuario
+        await query(
+            'UPDATE notificaciones SET leida = 1 WHERE usuario_id = ? AND leida = 0',
+            [usuario_id]
+        );
+
+        res.json({
+            success: true,
+            message: 'Todas las notificaciones marcadas como leídas'
+        });
+    } catch (error) {
+        console.error('Error marcando todas las notificaciones como leídas:', error);
+        res.status(500).json({ error: 'Error interno del servidor' });
+    }
+});
+
 // Marcar notificación como leída
 router.put('/notificaciones/:id/leida', async (req, res) => {
     try {

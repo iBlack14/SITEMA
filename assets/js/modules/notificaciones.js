@@ -119,11 +119,11 @@ class NotificacionesModule {
 
             return `
                 <tr class="${!notif.leida ? 'unread-notification' : ''}" style="cursor: pointer;">
-                    <td>${remitente}</td>
-                    <td>${notif.titulo || 'Sin asunto'}</td>
-                    <td>${fecha}</td>
-                    <td><span class="status-badge ${estadoClass}">${estadoText}</span></td>
-                    <td>
+                    <td data-label="Remitente">${remitente}</td>
+                    <td data-label="Asunto">${notif.titulo || 'Sin asunto'}</td>
+                    <td data-label="Fecha">${fecha}</td>
+                    <td data-label="Estado"><span class="status-badge ${estadoClass}">${estadoText}</span></td>
+                    <td data-label="Acciones">
                         <button onclick="event.stopPropagation(); notificacionesModule.verDetalleNotificacion('${notif.id}')" class="btn btn-secondary" style="padding: 4px 8px; font-size: 12px;">👁️ Ver</button>
                         ${!notif.leida ? `<button onclick="event.stopPropagation(); notificacionesModule.marcarComoLeida('${notif.id}')" class="btn btn-primary" style="padding: 4px 8px; font-size: 12px; margin-left: 5px;">✓ Marcar Leído</button>` : ''}
                     </td>
@@ -140,12 +140,21 @@ class NotificacionesModule {
 
         this.stats = estadisticas;
 
-        // Update stat cards
+        // Update stat cards by ID
+        const unreadEl = document.getElementById('casilla-no-leidos');
+        const unreadEl2 = document.getElementById('casilla-no-leidos-2');
+        const totalEl = document.getElementById('casilla-total');
+        
+        if (unreadEl) unreadEl.textContent = estadisticas.no_leidas;
+        if (unreadEl2) unreadEl2.textContent = estadisticas.no_leidas;
+        if (totalEl) totalEl.textContent = estadisticas.total - estadisticas.no_leidas;
+
+        // Fallback for query selectors
         const cards = document.querySelectorAll('#casilla .stat-card .stat-value');
         if (cards.length >= 3) {
-            cards[0].textContent = estadisticas.no_leidas; // Mensajes Nuevos
-            cards[1].textContent = estadisticas.no_leidas; // No Leídos
-            cards[2].textContent = estadisticas.total - estadisticas.no_leidas; // Archivados (simulado)
+            cards[0].textContent = estadisticas.no_leidas;
+            cards[1].textContent = estadisticas.no_leidas;
+            cards[2].textContent = estadisticas.total - estadisticas.no_leidas;
         }
     }
 

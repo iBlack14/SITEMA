@@ -74,13 +74,32 @@ class DashboardApp {
         // Browser Routing Support
         window.addEventListener('popstate', () => this.handleRouting());
 
-        // Global Modal Listeners
+        // Bell Notification Toggle
+        const bellBtn = document.getElementById('btn-notification-bell');
+        if (bellBtn) {
+            bellBtn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                this.toggleNotificationDropdown();
+            });
+        }
+
+        // Global click and key listeners
         document.addEventListener('click', (e) => {
             if (e.target.classList.contains('modal-overlay')) this.closeAllModals();
+            
+            // Close notification dropdown when clicking outside
+            const dropdown = document.getElementById('notification-dropdown');
+            const bell = document.getElementById('btn-notification-bell');
+            if (dropdown && dropdown.style.display !== 'none' && !dropdown.contains(e.target) && bell && !bell.contains(e.target)) {
+                this.closeNotificationDropdown();
+            }
         });
 
         document.addEventListener('keydown', (e) => {
-            if (e.key === 'Escape') this.closeAllModals();
+            if (e.key === 'Escape') {
+                this.closeAllModals();
+                this.closeNotificationDropdown();
+            }
         });
     }
 
@@ -99,7 +118,7 @@ class DashboardApp {
         const titles = {
             'inicio': 'Panel Principal',
             'solicitudes': 'Gestión de Solicitudes',
-            'casilla': 'Casilla Electrónica Judicial',
+            'casilla': 'Casilla Electrónica',
             'expedientes': 'Seguimiento de Expedientes',
             'mesa': 'Mesa de Partes Virtual',
             'configuracion': 'Configuración del Sistema'
@@ -376,6 +395,7 @@ class DashboardApp {
 
 
     startHeartbeat() {
+        this.checkRealTimeUpdates();
         // Latido ultra-ligero cada 45 segundos
         this.heartbeatTimer = setInterval(() => this.checkRealTimeUpdates(), 45000);
     }
@@ -386,8 +406,10 @@ class DashboardApp {
             const response = await fetch(`/api/notificaciones?usuario_id=${usuarioId}`);
             const data = await response.json();
 
-            if (data.success && data.estadisticas) {
-                const newUnread = data.estadisticas.no_leidas || 0;
+            if (data.success) {
+                this.recentNotifications = data.data || [];
+                const stats = data.estadisticas || { no_leidas: 0 };
+                const newUnread = stats.no_leidas || 0;
                 
                 // Si hay cambios reales, disparar actualización
                 if (this.lastUnreadCount !== undefined && newUnread > this.lastUnreadCount) {
@@ -407,6 +429,11 @@ class DashboardApp {
                 
                 this.lastUnreadCount = newUnread;
                 this.updateNotificationBadge(newUnread);
+
+                // Refrescar el dropdown de notificaciones si está visible
+                if (this.isNotificationDropdownOpen()) {
+                    this.populateNotificationDropdown();
+                }
             }
         } catch (error) {
             console.warn('⚠️ Fallo en el latido de tiempo real');
@@ -418,6 +445,185 @@ class DashboardApp {
         if (badge) {
             badge.textContent = count > 0 ? count : '';
             badge.style.display = count > 0 ? 'flex' : 'none';
+        }
+    }
+
+    isNotificationDropdownOpen() {
+        const dropdown = document.getElementById('notification-dropdown');
+        return dropdown && dropdown.style.display === 'flex';
+    }
+
+    toggleNotificationDropdown() {
+        const dropdown = document.getElementById('notification-dropdown');
+        if (!dropdown) return;
+
+        if (dropdown.style.display === 'none') {
+            this.populateNotificationDropdown();
+            dropdown.style.display = 'flex';
+        } else {
+            dropdown.style.display = 'none';
+        }
+    }
+
+    closeNotificationDropdown() {
+        const dropdown = document.getElementById('notification-dropdown');
+        if (dropdown) dropdown.style.display = 'none';
+    }
+
+    populateNotificationDropdown() {
+        const listContainer = document.getElementById('dropdown-list');
+        if (!listContainer) return;
+
+        const notifications = this.recentNotifications || [];
+        if (notifications.length === 0) {
+            listContainer.innerHTML = `
+                <div class="dropdown-empty">
+                    <div class="dropdown-empty-icon">✉️</div>
+                    <div>No tiene notificaciones</div>
+                </div>
+            `;
+            return;
+        }
+
+        // Mostrar las últimas 5 notificaciones
+        const lastFive = notifications.slice(0, 5);
+        listContainer.innerHTML = lastFive.map(notif => {
+            const fecha = new Date(notif.fecha).toLocaleDateString('es-PE', {
+                day: '2-digit',
+                month: '2-digit',
+                hour: '2-digit',
+                minute: '2-digit'
+            });
+            const unreadClass = !notif.leida ? 'unread' : '';
+            const isUrl = notif.archivo_adjunto ? '📎' : '✉️';
+            
+            return `
+                <div class="dropdown-item ${unreadClass}" onclick="window.dashboardApp.handleDropdownItemClick('${notif.id}', event)">
+                    <div class="dropdown-item-title" style="display: flex; justify-content: space-between; align-items: center;">
+                        <span>${isUrl} ${notif.titulo || 'Sin asunto'}</span>
+                        ${!notif.leida ? '<span style="width: 8px; height: 8px; background: var(--color-primary); border-radius: 50%; display: inline-block;"></span>' : ''}
+                    </div>
+                    <div class="dropdown-item-desc">${notif.mensaje || ''}</div>
+                    <div class="dropdown-item-meta">
+                        <span>De: TMARC</span>
+                        <span>${fecha}</span>
+                    </div>
+                </div>
+            `;
+        }).join('');
+    }
+
+    async handleDropdownItemClick(notifId, event) {
+        event.stopPropagation();
+        this.closeNotificationDropdown();
+        
+        if (window.notificacionesModule) {
+            if (window.notificacionesModule.notificaciones && window.notificacionesModule.notificaciones.length > 0) {
+                const exists = window.notificacionesModule.notificaciones.some(n => n.id === notifId);
+                if (exists) {
+                    window.notificacionesModule.verDetalleNotificacion(notifId);
+                    return;
+                }
+            }
+        }
+        
+        const notif = (this.recentNotifications || []).find(n => n.id === notifId);
+        if (!notif) return;
+
+        // Crear modal de detalle temporal
+        const modal = document.createElement('div');
+        modal.className = 'modal-overlay active';
+        modal.id = 'modalDetalleNotificacion';
+
+        const estadoClass = notif.leida ? 'status-approved' : 'status-pending';
+        const estadoText = notif.leida ? 'Leído' : 'No Leído';
+        const emailRemitente = window.notificacionesModule?.getRemitente(notif.tipo) || 'soporte@tmarc.pe';
+
+        modal.innerHTML = `
+            <div class="modal-content glass-panel" style="max-width: 700px; border: 1px solid var(--glass-border-gold);">
+                <div class="modal-header">
+                    <span style="color: var(--color-primary); font-family: var(--font-header); font-weight: 700;">📧 Detalle de Notificación</span>
+                    <button class="modal-close" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow = '';">&times;</button>
+                </div>
+                <div class="modal-body" style="color: var(--color-text);">
+                    <div style="display: grid; gap: 20px;">
+                        <div class="info-section">
+                            <h3 style="color: var(--color-primary); margin-bottom: 15px; font-family: var(--font-header);">${notif.titulo}</h3>
+                            <div class="info-grid" style="display: grid; gap: 10px; font-size: 14px;">
+                                <div><strong>De:</strong> ${emailRemitente}</div>
+                                <div><strong>Fecha:</strong> ${new Date(notif.fecha).toLocaleString('es-ES')}</div>
+                                <div><strong>Tipo:</strong> ${notif.tipo}</div>
+                                <div><strong>Estado:</strong> <span class="status-badge ${estadoClass}">${estadoText}</span></div>
+                            </div>
+                        </div>
+                        <div class="info-section">
+                            <h4 style="color: var(--color-silver-muted); margin-bottom: 10px; font-size: 13px; text-transform: uppercase;">Mensaje:</h4>
+                            <div style="padding: 15px; background: var(--color-surface-soft); border-radius: 8px; border-left: 4px solid var(--color-primary); color: var(--color-text);">
+                                ${notif.mensaje}
+                            </div>
+                        </div>
+                        ${window.notificacionesModule ? window.notificacionesModule.renderArchivoAdjunto(notif) : ''}
+                    </div>
+                </div>
+                <div class="modal-footer" style="text-align: right; padding: 15px; border-top: 1px solid var(--glass-border);">
+                    <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').remove(); document.body.style.overflow = '';">
+                        Cerrar
+                    </button>
+                </div>
+            </div>
+        `;
+
+        document.body.appendChild(modal);
+        document.body.style.overflow = 'hidden';
+
+        if (!notif.leida) {
+            try {
+                const usuarioId = this.getCurrentUserId();
+                const response = await fetch(`/api/notificaciones/${notifId}/leida`, {
+                    method: 'PUT',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify({ usuario_id: usuarioId })
+                });
+                const data = await response.json();
+                if (data.success) {
+                    notif.leida = true;
+                    this.checkRealTimeUpdates();
+                }
+            } catch (e) {
+                console.error('Error marcando leída desde dropdown:', e);
+            }
+        }
+    }
+
+    async markAllNotificationsRead(event) {
+        if (event) event.stopPropagation();
+        try {
+            const usuarioId = this.getCurrentUserId();
+            const response = await fetch('/api/notificaciones/leida-todas', {
+                method: 'PUT',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ usuario_id: usuarioId })
+            });
+            const data = await response.json();
+            if (data.success) {
+                this.showSuccess('Todas las notificaciones marcadas como leídas');
+                
+                if (this.recentNotifications) {
+                    this.recentNotifications.forEach(n => n.leida = true);
+                }
+                this.updateNotificationBadge(0);
+                this.populateNotificationDropdown();
+                
+                if (this.currentSection === 'casilla' && window.notificacionesModule) {
+                    window.notificacionesModule.loadNotificacionesUsuario();
+                }
+                if (this.currentSection === 'inicio') {
+                    this.loadDashboardStats();
+                }
+            }
+        } catch (e) {
+            console.error('Error al marcar todas como leídas:', e);
+            this.showError('Error al procesar la solicitud');
         }
     }
 

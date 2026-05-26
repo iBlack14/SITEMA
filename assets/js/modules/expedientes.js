@@ -112,14 +112,7 @@ class ExpedientesModule {
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
                         <div class="form-group">
                             <label class="stat-label">Sede</label>
-                            <select id="exp-sede" class="form-select" required>
-                                <option value="">(Seleccionar)</option>
-                                <option value="LIMA">LIMA</option>
-                                <option value="TRUJILLO">TRUJILLO</option>
-                                <option value="LORETO">LORETO</option>
-                                <option value="HUARAZ">HUARAZ</option>
-                                <option value="CAJAMARCA">CAJAMARCA</option>
-                            </select>
+                            <input type="text" id="exp-sede" class="form-input" placeholder="Escriba la sede..." required>
                         </div>
                         <div class="form-group">
                             <label class="stat-label">Especialidad</label>
@@ -147,12 +140,13 @@ class ExpedientesModule {
                         </div>
                         <div class="form-group">
                             <label class="stat-label">Proceso</label>
-                            <select id="exp-proceso" class="form-select" required onchange="document.getElementById('exp-proceso-otro-cont').style.display = this.value === 'OTRO' ? 'block' : 'none'">
+                            <select id="exp-proceso" class="form-select" required onchange="document.getElementById('exp-proceso-otro-cont').style.display = this.value === 'Otros' ? 'block' : 'none'">
                                 <option value="">(Seleccionar)</option>
-                                <option value="CONOCIMIENTO">CONOCIMIENTO</option>
-                                <option value="ABREVIADO">ABREVIADO</option>
-                                <option value="SUMARISIMO">SUMARÍSIMO</option>
-                                <option value="OTRO">OTRO (ESPECIFICAR)</option>
+                                <option value="Institucional">Institucional</option>
+                                <option value="Express">Express</option>
+                                <option value="Ad-hoc">Ad-hoc</option>
+                                <option value="Emergencia">Emergencia</option>
+                                <option value="Otros">Otros (Especificar)</option>
                             </select>
                             <div id="exp-proceso-otro-cont" style="display: none; margin-top: 8px;">
                                 <input type="text" id="exp-proceso-otro" class="form-input" placeholder="Escriba el proceso...">
@@ -164,9 +158,13 @@ class ExpedientesModule {
                             <label class="stat-label">Materia</label>
                             <select id="exp-materia" class="form-select" required onchange="document.getElementById('exp-materia-otro-cont').style.display = this.value === 'OTRO' ? 'block' : 'none'">
                                 <option value="">(Seleccionar)</option>
-                                <option value="OBLIGACION">OBLIGACIÓN DE DAR SUMA DE DINERO</option>
-                                <option value="DESALOJO">DESALOJO</option>
-                                <option value="INDEMNIZACION">INDEMNIZACIÓN</option>
+                                <option value="ARBITRAJE">ARBITRAJE</option>
+                                <option value="JUNTA DE PREVENCION">JUNTA DE PREVENCION Y RESOLUCION DE DISPUTAS</option>
+                                <option value="CONCILIACION">CONCILIACION EXTRAJUDICIAL</option>
+                                <option value="ARBITRAJE DE EMERGENCIA">ARBITRAJE DE EMERGENCIA</option>
+                                <option value="ARBITRAJE EXPRESS">ARBITRAJE EXPRESS</option>
+                                <option value="ARBITRAJE ENTRE PRIVADOS">ARBITRAJE ENTRE PRIVADOS</option>
+                                <option value="CENTRO DE FORMACION">CENTRO DE FORMACION Y CAPACITACION</option>
                                 <option value="OTRO">OTRO (ESPECIFICAR)</option>
                             </select>
                             <div id="exp-materia-otro-cont" style="display: none; margin-top: 8px;">
@@ -278,9 +276,13 @@ class ExpedientesModule {
             const materia = materiaSel === 'OTRO' ? document.getElementById('exp-materia-otro').value : materiaSel;
             
             const procesoSel = document.getElementById('exp-proceso').value;
-            const proceso = procesoSel === 'OTRO' ? document.getElementById('exp-proceso-otro').value : procesoSel;
+            const proceso = (procesoSel === 'Otros' || procesoSel === 'OTRO') ? document.getElementById('exp-proceso-otro').value : procesoSel;
+
+            // Generar número de expediente dinámico para validación del servidor
+            const numeroExpediente = 'EXP-' + new Date().getFullYear() + '-' + String(Date.now()).slice(-5);
 
             const formData = new FormData();
+            formData.append('numero_expediente', numeroExpediente);
             formData.append('sede', document.getElementById('exp-sede').value);
             formData.append('especialidad', document.getElementById('exp-especialidad').value);
             formData.append('motivo_ingreso', document.getElementById('exp-motivo').value);

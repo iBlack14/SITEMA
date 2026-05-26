@@ -72,12 +72,26 @@
                     <input type="text" placeholder="Buscar expedientes, notificaciones..." id="global-search">
                 </div>
                 <div class="top-actions">
-                    <button class="icon-btn" title="Notificaciones" style="position: relative;">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
-                            <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
-                        </svg>
-                        <span id="notif-badge" style="position: absolute; top: -5px; right: -5px; background: var(--color-error); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: none; align-items: center; justify-content: center; font-weight: 800; border: 2px solid var(--color-surface);"></span>
-                    </button>
+                    <div class="notification-container" style="position: relative; display: inline-block;">
+                        <button class="icon-btn" id="btn-notification-bell" title="Notificaciones" style="position: relative;">
+                            <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor">
+                                <path d="M12 22c1.1 0 2-.9 2-2h-4c0 1.1.89 2 2 2zm6-6v-5c0-3.07-1.64-5.64-4.5-6.32V4c0-.83-.67-1.5-1.5-1.5s-1.5.67-1.5 1.5v.68C7.63 5.36 6 7.92 6 11v5l-2 2v1h16v-1l-2-2z" />
+                            </svg>
+                            <span id="notif-badge" style="position: absolute; top: -5px; right: -5px; background: var(--color-error); color: white; border-radius: 50%; width: 18px; height: 18px; font-size: 10px; display: none; align-items: center; justify-content: center; font-weight: 800; border: 2px solid var(--color-surface);"></span>
+                        </button>
+                        <div id="notification-dropdown" class="glass-panel notification-dropdown" style="display: none;">
+                            <div class="dropdown-header">
+                                <h3>Notificaciones</h3>
+                                <span id="dropdown-mark-read" onclick="window.dashboardApp.markAllNotificationsRead(event)">Marcar todo como leído</span>
+                            </div>
+                            <div id="dropdown-list" class="dropdown-list">
+                                <!-- Se llena dinámicamente -->
+                            </div>
+                            <div class="dropdown-footer">
+                                <a href="#casilla" onclick="showSection('casilla', event); window.dashboardApp.closeNotificationDropdown();">Ver todas las notificaciones</a>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </header>
 

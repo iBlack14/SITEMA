@@ -120,6 +120,41 @@
 
 .sidebar.collapsed .user-profile {
     padding: 0;
+    background: none;
+    border-color: transparent;
+    box-shadow: none;
+    margin: 0 0 var(--space-5) 0;
+    justify-content: center;
+}
+
+.sidebar.collapsed .user-avatar {
+    width: 44px;
+    height: 44px;
+    border-radius: 12px;
+}
+
+.sidebar.collapsed .nav-item {
+    padding: 12px 0;
+    margin: 4px var(--space-3);
+    justify-content: center;
+}
+
+.sidebar.collapsed .sidebar-header {
+    justify-content: center;
+    padding: 0;
+    margin-bottom: var(--space-5);
+}
+
+.sidebar.collapsed .toggle-btn {
+    padding: 6px;
+}
+
+.toggle-btn svg {
+    transition: transform var(--transition-smooth);
+}
+
+.sidebar.collapsed .toggle-btn svg {
+    transform: rotate(180deg);
 }
 
 .sidebar .user-profile {
@@ -187,6 +222,7 @@
     width: 20px;
     height: 20px;
     opacity: 0.7;
+    fill: currentColor;
 }
 
 .nav-item.active svg {
@@ -371,3 +407,215 @@
 .gap-md { gap: 20px; }
 .align-center { align-items: center; }
 .justify-between { justify-content: space-between; }
+
+/* ==========================================================================
+   🔔 NOTIFICATION DROPDOWN (UI-UX-PRO-MAX)
+   ========================================================================== */
+.notification-dropdown {
+    position: absolute;
+    top: 50px;
+    right: 0;
+    width: 360px;
+    max-height: 480px;
+    display: none;
+    flex-direction: column;
+    z-index: 1000;
+    box-shadow: var(--shadow-premium);
+    border: 1px solid var(--glass-border-gold);
+    animation: slideDown 0.3s cubic-bezier(0.2, 0.8, 0.2, 1);
+    background: var(--glass-bg);
+    backdrop-filter: var(--glass-blur);
+    -webkit-backdrop-filter: var(--glass-blur);
+    border-radius: 20px;
+    overflow: hidden;
+}
+
+@keyframes slideDown {
+    from { opacity: 0; transform: translateY(-10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.dropdown-header {
+    padding: 16px 20px;
+    border-bottom: 1px solid var(--glass-border);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.dropdown-header h3 {
+    font-size: 16px;
+    margin: 0;
+    color: var(--color-primary);
+    font-family: var(--font-header);
+    font-weight: 700;
+}
+
+.dropdown-header span {
+    font-size: 12px;
+    color: var(--color-primary);
+    cursor: pointer;
+    font-weight: 600;
+    transition: var(--transition-fast);
+}
+
+.dropdown-header span:hover {
+    color: var(--color-primary-light);
+    text-decoration: underline;
+}
+
+.dropdown-list {
+    overflow-y: auto;
+    flex: 1;
+    max-height: 350px;
+    scrollbar-width: thin;
+}
+
+.dropdown-item {
+    padding: 14px 20px;
+    border-bottom: 1px solid var(--glass-border);
+    cursor: pointer;
+    transition: var(--transition-fast);
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+}
+
+.dropdown-item:hover {
+    background: rgba(212, 175, 55, 0.05);
+}
+
+.dropdown-item.unread {
+    background: rgba(212, 175, 55, 0.02);
+    border-left: 3px solid var(--color-primary);
+}
+
+.dropdown-item-title {
+    font-size: 13.5px;
+    font-weight: 600;
+    color: var(--color-text);
+}
+
+.dropdown-item-desc {
+    font-size: 12px;
+    color: var(--color-text-muted);
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+}
+
+.dropdown-item-meta {
+    display: flex;
+    justify-content: space-between;
+    font-size: 10.5px;
+    color: var(--color-silver-muted);
+    margin-top: 2px;
+}
+
+.dropdown-footer {
+    padding: 14px;
+    text-align: center;
+    border-top: 1px solid var(--glass-border);
+    background: var(--color-surface-soft);
+}
+
+.dropdown-footer a {
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--color-primary);
+    text-decoration: none;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
+}
+
+.dropdown-footer a:hover {
+    text-decoration: underline;
+}
+
+.dropdown-empty {
+    padding: 40px 20px;
+    text-align: center;
+    color: var(--color-text-muted);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+}
+
+.dropdown-empty-icon {
+    font-size: 32px;
+}
+
+/* ==========================================================================
+   📱 RESPONSIVE TABLES (UI-UX-PRO-MAX)
+   ========================================================================== */
+@media (max-width: 768px) {
+    #notificaciones-table, 
+    #notificaciones-table thead, 
+    #notificaciones-table tbody, 
+    #notificaciones-table th, 
+    #notificaciones-table td, 
+    #notificaciones-table tr {
+        display: block;
+    }
+    
+    #notificaciones-table thead {
+        display: none; /* Hide standard desktop headers */
+    }
+    
+    #notificaciones-table tr {
+        margin-bottom: 16px;
+        border: 1px solid var(--glass-border);
+        border-radius: 20px;
+        padding: 12px;
+        background: var(--glass-bg);
+        box-shadow: var(--shadow-premium);
+        transition: var(--transition-fast);
+    }
+    
+    #notificaciones-table tr:hover {
+        transform: translateY(-2px);
+        border-color: var(--glass-border-gold);
+    }
+    
+    #notificaciones-table td {
+        display: flex;
+        justify-content: space-between;
+        align-items: center;
+        padding: 8px 6px;
+        border-bottom: 1px dashed var(--glass-border);
+        font-size: 13.5px;
+        text-align: right;
+    }
+    
+    #notificaciones-table td:last-child {
+        border-bottom: none;
+        padding-top: 12px;
+        justify-content: flex-end;
+        gap: 8px;
+    }
+    
+    #notificaciones-table td::before {
+        content: attr(data-label);
+        font-weight: 700;
+        color: var(--color-primary);
+        text-transform: uppercase;
+        font-size: 10.5px;
+        letter-spacing: 0.5px;
+        text-align: left;
+    }
+    
+    /* Stats Grid adjustment on mobile */
+    .stats-grid {
+        grid-template-columns: 1fr !important;
+        gap: 12px;
+    }
+    
+    /* Top Bar drop-down adjustments */
+    .notification-dropdown {
+        width: calc(100vw - 32px);
+        right: -8px;
+        position: fixed;
+        top: 80px;
+    }
+}
