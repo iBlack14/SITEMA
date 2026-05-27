@@ -228,8 +228,14 @@ class ConfiguracionModule {
                 this.dashboard.showToast('✅ Perfil actualizado correctamente');
                 console.log('✅ Perfil actualizado');
                 
-                // Recargar datos
+                // Recargar datos del formulario
                 await this.loadUserProfile();
+
+                // Refrescar nombre y foto en la barra lateral
+                if (this.dashboard && typeof this.dashboard.updateUserProfile === 'function') {
+                    this.dashboard.user = { ...this.dashboard.user, ...updatedData };
+                    this.dashboard.updateUserProfile();
+                }
             } else {
                 throw new Error(data.error || 'Error updating profile');
             }
