@@ -200,6 +200,13 @@ async function inicializarBaseDatos(reset = false) {
             await query(`ALTER TABLE usuarios ADD COLUMN telefono VARCHAR(20) AFTER nombre`);
         }
 
+        const tieneFotoPerfil = await columnaExiste('usuarios', 'foto_perfil');
+        if (!tieneFotoPerfil) {
+            console.log('➕ Agregando columna foto_perfil a tabla usuarios...');
+            await query(`ALTER TABLE usuarios ADD COLUMN foto_perfil VARCHAR(500) NULL AFTER telefono`);
+            console.log('✅ Columna foto_perfil agregada');
+        }
+
         const tieneUpdatedAt = await columnaExiste('usuarios', 'updated_at');
         if (!tieneUpdatedAt) {
             console.log('➕ Agregando columna updated_at a tabla usuarios...');

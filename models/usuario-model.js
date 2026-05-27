@@ -45,9 +45,18 @@ class UsuarioModel {
                 console.warn('obtenerPorId: ID inválido recibido:', id);
                 return null;
             }
-            const sql = 'SELECT id, username, email, nombre, tipo, activo, fecha_registro, ultimo_acceso, foto_perfil, telefono FROM usuarios WHERE id = ?';
-            const usuarios = await query(sql, [parsedId]);
-            return usuarios[0] || null;
+            // Primero intentar con columnas extendidas, si falla usar columnas base
+            try {
+                const sql = 'SELECT id, username, email, nombre, tipo, activo, fecha_registro, ultimo_acceso, foto_perfil, telefono FROM usuarios WHERE id = ?';
+                const usuarios = await query(sql, [parsedId]);
+                return usuarios[0] || null;
+            } catch (extendedError) {
+                // Las columnas foto_perfil/telefono no existen aún, usar query base
+                console.warn('⚠️ Columnas extendidas no disponibles, usando query base');
+                const sql = 'SELECT id, username, email, nombre, tipo, activo, fecha_registro, ultimo_acceso FROM usuarios WHERE id = ?';
+                const usuarios = await query(sql, [parsedId]);
+                return usuarios[0] || null;
+            }
         } catch (error) {
             console.error('Error obteniendo usuario por ID:', error);
             throw error;
@@ -206,7 +215,7 @@ class UsuarioModel {
                 }
             }
 
-            const camposPermitidos = ['username', 'email', 'nombre', 'tipo', 'activo'];
+            const camposPermitidos = ['username', 'email', 'nombre', 'tipo', 'activo', 'foto_perfil', 'telefono'];
             let sql = 'UPDATE usuarios SET ';
             let params = [];
             let campos = [];
