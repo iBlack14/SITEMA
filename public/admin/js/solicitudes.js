@@ -49,34 +49,41 @@ async function verDetalleSolicitud(id) {
         if (data.success) {
             const solicitud = data.data;
 
+            // Helper para setear texto de forma segura
+            const setText = (elId, value) => {
+                const el = document.getElementById(elId);
+                if (el) el.textContent = value;
+            };
+
             // Llenar modal con datos de la solicitud
-            document.getElementById('solicitudModalTitle').textContent = `Solicitud: ${solicitud.id}`;
+            setText('solicitudModalTitle', `Solicitud: ${solicitud.id}`);
 
             // Llenar datos básicos
-            document.getElementById('solicitud-id').textContent = solicitud.id;
-            document.getElementById('solicitud-tipo').textContent = solicitud.tipo || 'No especificado';
-            document.getElementById('solicitud-asunto').textContent = solicitud.asunto || 'No especificado';
-            document.getElementById('solicitud-estado').textContent = solicitud.estado || 'Pendiente';
-            document.getElementById('solicitud-fecha').textContent = new Date(solicitud.fecha).toLocaleDateString('es-ES');
-            document.getElementById('solicitud-prioridad').textContent = solicitud.prioridad || 'Normal';
-            document.getElementById('solicitud-descripcion').textContent = solicitud.descripcion || 'Sin descripción';
+            setText('solicitud-id', solicitud.id);
+            setText('solicitud-tipo', solicitud.tipo || 'No especificado');
+            setText('solicitud-asunto', solicitud.asunto || 'No especificado');
+            setText('solicitud-estado', solicitud.estado || 'Pendiente');
+            setText('solicitud-fecha', new Date(solicitud.fecha).toLocaleDateString('es-ES'));
+            setText('solicitud-prioridad', solicitud.prioridad || 'Normal');
+            setText('solicitud-descripcion', solicitud.descripcion || 'Sin descripción');
 
             // Llenar datos del solicitante
-            document.getElementById('solicitud-nombre').textContent = solicitud.nombre || 'No especificado';
-            document.getElementById('solicitud-dni').textContent = solicitud.dni || 'No especificado';
-            document.getElementById('solicitud-email').textContent = solicitud.email || 'No especificado';
-            document.getElementById('solicitud-telefono').textContent = solicitud.telefono || 'No especificado';
+            setText('solicitud-nombre', solicitud.nombre || 'No especificado');
+            setText('solicitud-dni', solicitud.dni || 'No especificado');
+            setText('solicitud-email', solicitud.email || 'No especificado');
+            setText('solicitud-telefono', solicitud.telefono || 'No especificado');
 
             // Cargar archivos de la solicitud
             cargarArchivosSolicitud(solicitud);
 
             // Mostrar modal
             const modal = document.getElementById('solicitudModal');
+            if (!modal) {
+                console.error('No se encontró el modal solicitudModal en el DOM');
+                return;
+            }
             modal.style.display = 'block';
-            // Agregar clase para animación
-            setTimeout(() => {
-                modal.classList.add('show');
-            }, 10);
+            setTimeout(() => modal.classList.add('show'), 10);
             mostrarTabSolicitud('informacion');
         } else {
             if (window.showError) window.showError('Error obteniendo datos de la solicitud');
