@@ -131,6 +131,7 @@
     width: 44px;
     height: 44px;
     border-radius: 12px;
+    overflow: hidden;
 }
 
 .sidebar.collapsed .nav-item {
@@ -178,6 +179,14 @@
     justify-content: center;
     color: #000;
     box-shadow: var(--shadow-glow);
+    overflow: hidden;
+    position: relative;
+}
+
+/* Cuando hay foto, ocultar el fondo dorado */
+.user-avatar.has-photo {
+    background: transparent;
+    box-shadow: none;
 }
 
 .user-name {

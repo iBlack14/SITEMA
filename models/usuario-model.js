@@ -45,7 +45,7 @@ class UsuarioModel {
                 console.warn('obtenerPorId: ID inválido recibido:', id);
                 return null;
             }
-            const sql = 'SELECT id, username, email, nombre, tipo, activo, fecha_registro, ultimo_acceso FROM usuarios WHERE id = ?';
+            const sql = 'SELECT id, username, email, nombre, tipo, activo, fecha_registro, ultimo_acceso, foto_perfil, telefono FROM usuarios WHERE id = ?';
             const usuarios = await query(sql, [parsedId]);
             return usuarios[0] || null;
         } catch (error) {

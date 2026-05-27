@@ -187,20 +187,26 @@ class DashboardApp {
         // Update Photo
         const photoImg = document.getElementById('userPhoto');
         const defaultAvatar = document.getElementById('userDefaultAvatar');
+        const avatarContainer = document.getElementById('userAvatar');
         
         if (this.user.foto_perfil && photoImg && defaultAvatar) {
-            photoImg.src = this.user.foto_perfil;
-            photoImg.style.display = 'block';
+            // Agregar timestamp para evitar caché del navegador
+            const fotoUrl = this.user.foto_perfil + '?t=' + Date.now();
+            photoImg.src = fotoUrl;
+            photoImg.style.cssText = 'width:100%;height:100%;border-radius:16px;object-fit:cover;display:block;';
             defaultAvatar.style.display = 'none';
+            if (avatarContainer) avatarContainer.classList.add('has-photo');
             
-            // Handle broken image links
+            // Si la imagen falla, volver al avatar por defecto
             photoImg.onerror = () => {
                 photoImg.style.display = 'none';
                 defaultAvatar.style.display = 'block';
+                if (avatarContainer) avatarContainer.classList.remove('has-photo');
             };
         } else if (photoImg && defaultAvatar) {
             photoImg.style.display = 'none';
             defaultAvatar.style.display = 'block';
+            if (avatarContainer) avatarContainer.classList.remove('has-photo');
         }
     }
 
