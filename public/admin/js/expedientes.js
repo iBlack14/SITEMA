@@ -62,7 +62,7 @@ async function verDetalleExpediente(expedienteId) {
 
         // Mostrar modal y activar primera pestaña
         const modal = document.getElementById('expedienteModal');
-        modal.style.display = 'block';
+        modal.style.display = 'flex';
         setTimeout(() => modal.classList.add('show'), 10);
 
         mostrarTab('informacion');

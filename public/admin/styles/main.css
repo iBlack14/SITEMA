@@ -581,38 +581,46 @@ tr:hover {
     top: 0;
     width: 100%;
     height: 100%;
-    background: rgba(0, 0, 0, 0.85);
-    backdrop-filter: blur(20px);
-    -webkit-backdrop-filter: blur(20px);
-    display: flex;
+    background: rgba(0, 0, 0, 0.75);
+    backdrop-filter: blur(12px);
+    -webkit-backdrop-filter: blur(12px);
     align-items: center;
     justify-content: center;
     padding: 20px;
-    animation: modalBackdropFadeIn 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    animation: modalBackdropFadeIn 0.3s ease;
+}
+
+/* Cuando JS pone display:block o display:flex, siempre centrar */
+.expediente-modal[style*="display: block"],
+.expediente-modal[style*="display:block"],
+.expediente-modal[style*="display: flex"],
+.expediente-modal[style*="display:flex"] {
+    display: flex !important;
+    align-items: center;
+    justify-content: center;
 }
 
 @keyframes modalBackdropFadeIn {
-    from { opacity: 0; backdrop-filter: blur(0px); }
-    to { opacity: 1; backdrop-filter: blur(20px); }
+    from { opacity: 0; }
+    to   { opacity: 1; }
 }
 
 .expediente-modal-content {
     background: #ffffff;
     margin: 0;
     padding: 0;
-    border: 1px solid rgba(212, 175, 55, 0.2);
-    border-radius: 32px;
+    border: 1px solid rgba(212, 175, 55, 0.25);
+    border-radius: 24px;
     width: 100%;
-    max-width: 1400px;
-    max-height: 95vh;
+    max-width: 780px;
+    max-height: 90vh;
     overflow: hidden;
-    box-shadow: 
-        0 40px 120px rgba(0, 0, 0, 0.4),
-        0 20px 60px rgba(212, 175, 55, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    transform: scale(0.9) translateY(40px);
+    box-shadow:
+        0 32px 80px rgba(0, 0, 0, 0.35),
+        0 12px 32px rgba(212, 175, 55, 0.08);
+    transform: scale(0.95) translateY(20px);
     opacity: 0;
-    transition: all 0.5s cubic-bezier(0.19, 1, 0.22, 1);
+    transition: all 0.35s cubic-bezier(0.19, 1, 0.22, 1);
     position: relative;
 }
 
@@ -624,14 +632,14 @@ tr:hover {
 .expediente-modal-header {
     background: linear-gradient(135deg, #1a1a1a 0%, #2d2d2d 100%);
     color: #ffffff;
-    padding: 35px 45px;
-    border-radius: 32px 32px 0 0;
+    padding: 22px 28px;
+    border-radius: 24px 24px 0 0;
     display: flex;
     justify-content: space-between;
     align-items: center;
     position: relative;
     overflow: hidden;
-    border-bottom: 3px solid #d4af37;
+    border-bottom: 2px solid #d4af37;
 }
 
 .expediente-modal-header::before {
@@ -648,20 +656,20 @@ tr:hover {
 .header-brand {
     display: flex;
     align-items: center;
-    gap: 18px;
+    gap: 12px;
     z-index: 1;
 }
 
 .header-icon {
-    font-size: 32px;
-    filter: drop-shadow(0 4px 8px rgba(212, 175, 55, 0.3));
+    font-size: 22px;
+    filter: drop-shadow(0 2px 6px rgba(212, 175, 55, 0.3));
 }
 
 .expediente-modal-header h2 {
     margin: 0;
-    font-size: 28px;
-    font-weight: 800;
-    letter-spacing: -0.5px;
+    font-size: 18px;
+    font-weight: 700;
+    letter-spacing: -0.3px;
     background: linear-gradient(135deg, #ffffff 0%, #d4af37 100%);
     -webkit-background-clip: text;
     background-clip: text;
@@ -670,19 +678,20 @@ tr:hover {
 
 .expediente-close {
     color: rgba(255, 255, 255, 0.7);
-    font-size: 24px;
-    font-weight: 300;
+    font-size: 18px;
+    font-weight: 400;
     cursor: pointer;
     background: rgba(255, 255, 255, 0.1);
     border: 1px solid rgba(255, 255, 255, 0.2);
     border-radius: 50%;
-    width: 48px;
-    height: 48px;
+    width: 36px;
+    height: 36px;
     display: flex;
     align-items: center;
     justify-content: center;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    transition: all 0.25s ease;
     z-index: 1;
+    flex-shrink: 0;
 }
 
 .expediente-close:hover {
@@ -690,7 +699,6 @@ tr:hover {
     color: #1a1a1a;
     border-color: #d4af37;
     transform: rotate(90deg) scale(1.1);
-    box-shadow: 0 8px 25px rgba(212, 175, 55, 0.4);
 }
 
 .expediente-modal-body {
@@ -698,61 +706,55 @@ tr:hover {
     color: #333333;
     background: #ffffff;
     overflow-y: auto;
-    max-height: calc(95vh - 120px);
+    max-height: calc(90vh - 100px);
 }
 
 /* ========== EXPEDIENTE TABS PRO MAX ========== */
 .expediente-tabs {
     display: flex;
-    background: linear-gradient(135deg, #f8f9fa 0%, #e9ecef 100%);
-    border-radius: 20px;
-    padding: 8px;
-    margin: 30px 45px 0;
-    gap: 6px;
-    box-shadow: inset 0 2px 8px rgba(0, 0, 0, 0.05);
-    border: 1px solid rgba(0, 0, 0, 0.05);
+    background: #f1f3f5;
+    border-radius: 12px;
+    padding: 5px;
+    margin: 18px 24px 0;
+    gap: 4px;
+    border: 1px solid rgba(0, 0, 0, 0.06);
 }
 
 .expediente-tab {
     background: transparent;
     border: none;
     color: #6c757d;
-    padding: 16px 24px;
+    padding: 10px 16px;
     cursor: pointer;
-    font-size: 13px;
+    font-size: 12px;
     font-weight: 700;
     text-transform: uppercase;
-    letter-spacing: 1px;
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    letter-spacing: 0.8px;
+    transition: all 0.2s ease;
     white-space: nowrap;
-    border-radius: 14px;
+    border-radius: 9px;
     display: flex;
     align-items: center;
-    gap: 10px;
+    gap: 7px;
     flex: 1;
     justify-content: center;
     position: relative;
-    overflow: hidden;
 }
 
 .expediente-tab::before {
     content: '';
     position: absolute;
-    top: 0;
-    left: 0;
-    right: 0;
-    bottom: 0;
+    inset: 0;
     background: linear-gradient(135deg, #d4af37 0%, #f1d582 100%);
     opacity: 0;
-    transition: opacity 0.3s ease;
-    border-radius: 14px;
+    transition: opacity 0.2s ease;
+    border-radius: 9px;
 }
 
 .expediente-tab svg {
-    width: 18px;
-    height: 18px;
+    width: 14px;
+    height: 14px;
     fill: currentColor;
-    transition: all 0.3s ease;
     z-index: 1;
     position: relative;
 }
@@ -765,27 +767,20 @@ tr:hover {
 .expediente-tab.active {
     color: #1a1a1a;
     background: #ffffff;
-    box-shadow: 
-        0 8px 25px rgba(212, 175, 55, 0.2),
-        0 4px 12px rgba(0, 0, 0, 0.1),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    transform: translateY(-2px);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.1), 0 1px 3px rgba(212,175,55,0.15);
 }
 
-.expediente-tab.active::before {
-    opacity: 0.1;
-}
+.expediente-tab.active::before { opacity: 0.08; }
 
 .expediente-tab:hover:not(.active) {
     color: #495057;
-    background: rgba(255, 255, 255, 0.7);
-    transform: translateY(-1px);
+    background: rgba(255,255,255,0.6);
 }
 
 .expediente-tab-content {
     display: none;
-    padding: 45px;
-    animation: fadeInUp 0.4s cubic-bezier(0.2, 0.8, 0.2, 1);
+    padding: 24px;
+    animation: fadeInUp 0.25s ease;
 }
 
 .expediente-tab-content.active {
@@ -793,34 +788,25 @@ tr:hover {
 }
 
 @keyframes fadeInUp {
-    from {
-        opacity: 0;
-        transform: translateY(20px);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0);
-    }
+    from { opacity: 0; transform: translateY(10px); }
+    to   { opacity: 1; transform: translateY(0); }
 }
 
 /* ========== EXPEDIENTE INFO CARDS PRO MAX ========== */
 .expediente-info-grid {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(350px, 1fr));
-    gap: 30px;
-    margin-bottom: 35px;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 16px;
+    margin-bottom: 20px;
 }
 
 .expediente-info-card {
-    background: linear-gradient(135deg, #ffffff 0%, #f8f9fa 100%);
-    border-radius: 24px;
-    padding: 35px;
-    border: 1px solid rgba(0, 0, 0, 0.06);
-    box-shadow: 
-        0 20px 40px rgba(0, 0, 0, 0.04),
-        0 8px 16px rgba(0, 0, 0, 0.02),
-        inset 0 1px 0 rgba(255, 255, 255, 0.8);
-    transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+    background: #fafafa;
+    border-radius: 16px;
+    padding: 20px;
+    border: 1px solid rgba(0, 0, 0, 0.07);
+    box-shadow: 0 2px 8px rgba(0,0,0,0.04);
+    transition: box-shadow 0.2s ease;
     position: relative;
     overflow: hidden;
 }
@@ -831,17 +817,13 @@ tr:hover {
     top: 0;
     left: 0;
     right: 0;
-    height: 4px;
+    height: 3px;
     background: linear-gradient(90deg, #d4af37 0%, #f1d582 100%);
-    border-radius: 24px 24px 0 0;
+    border-radius: 16px 16px 0 0;
 }
 
 .expediente-info-card:hover {
-    transform: translateY(-8px);
-    box-shadow: 
-        0 30px 60px rgba(0, 0, 0, 0.08),
-        0 12px 24px rgba(212, 175, 55, 0.1);
-    border-color: rgba(212, 175, 55, 0.2);
+    box-shadow: 0 6px 20px rgba(0,0,0,0.08), 0 2px 8px rgba(212,175,55,0.08);
 }
 
 .expediente-info-card.full-width {
@@ -850,26 +832,25 @@ tr:hover {
 
 .expediente-info-card h3 {
     color: #1a1a1a;
-    margin: 0 0 25px 0;
-    font-size: 16px;
+    margin: 0 0 14px 0;
+    font-size: 11px;
     font-weight: 800;
     text-transform: uppercase;
     letter-spacing: 1px;
     display: flex;
     align-items: center;
-    gap: 12px;
-    padding-bottom: 15px;
-    border-bottom: 2px solid rgba(212, 175, 55, 0.1);
+    gap: 8px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgba(212, 175, 55, 0.15);
 }
 
 .expediente-info-item {
     display: flex;
     justify-content: space-between;
     align-items: flex-start;
-    margin-bottom: 18px;
-    padding-bottom: 18px;
-    border-bottom: 1px dashed rgba(0, 0, 0, 0.08);
-    transition: all 0.2s ease;
+    margin-bottom: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px dashed rgba(0, 0, 0, 0.07);
 }
 
 .expediente-info-item:last-child {
@@ -879,29 +860,31 @@ tr:hover {
 }
 
 .expediente-info-item:hover {
-    background: rgba(212, 175, 55, 0.02);
-    margin: -8px -15px 10px;
-    padding: 8px 15px 18px;
-    border-radius: 12px;
+    background: rgba(212, 175, 55, 0.03);
+    margin-left: -8px;
+    margin-right: -8px;
+    padding-left: 8px;
+    padding-right: 8px;
+    border-radius: 8px;
 }
 
 .expediente-info-label {
-    font-weight: 700;
-    color: #6c757d;
-    font-size: 13px;
+    font-weight: 600;
+    color: #888;
+    font-size: 11px;
     text-transform: uppercase;
     letter-spacing: 0.5px;
-    min-width: 120px;
+    min-width: 90px;
     flex-shrink: 0;
 }
 
 .expediente-info-value {
     font-weight: 600;
     color: #1a1a1a;
-    font-size: 14px;
+    font-size: 13px;
     text-align: right;
     flex: 1;
-    margin-left: 20px;
+    margin-left: 12px;
     word-break: break-word;
 }
 
@@ -1000,25 +983,24 @@ tr:hover {
 @media (max-width: 1024px) {
     .expediente-modal-content {
         max-width: 95%;
-        margin: 10px;
     }
     
     .expediente-modal-header {
-        padding: 25px 30px;
+        padding: 18px 22px;
     }
     
     .expediente-tabs {
-        margin: 20px 30px 0;
+        margin: 14px 18px 0;
         flex-wrap: wrap;
     }
     
     .expediente-tab-content {
-        padding: 30px;
+        padding: 20px;
     }
     
     .expediente-info-grid {
         grid-template-columns: 1fr;
-        gap: 20px;
+        gap: 14px;
     }
 }
 
@@ -1028,25 +1010,25 @@ tr:hover {
     }
     
     .expediente-modal-header {
-        padding: 20px;
+        padding: 16px 18px;
         flex-direction: column;
-        gap: 15px;
+        gap: 10px;
         text-align: center;
     }
     
     .expediente-modal-header h2 {
-        font-size: 22px;
+        font-size: 15px;
     }
     
     .expediente-tabs {
-        margin: 15px 20px 0;
+        margin: 12px 14px 0;
         flex-direction: column;
-        gap: 8px;
+        gap: 4px;
     }
     
     .expediente-tab {
-        padding: 14px 20px;
-        font-size: 12px;
+        padding: 10px 14px;
+        font-size: 11px;
     }
     
     .expediente-tab-content {

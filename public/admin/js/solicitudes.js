@@ -82,7 +82,7 @@ async function verDetalleSolicitud(id) {
                 console.error('No se encontró el modal solicitudModal en el DOM');
                 return;
             }
-            modal.style.display = 'block';
+            modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('show'), 10);
             mostrarTabSolicitud('informacion');
         } else {
