@@ -607,39 +607,36 @@ const CasillaUnificada = {
     modalExpediente(expediente) {
         const estadoClass = this.getEstadoClass(expediente.estado);
         return `
-            <div class="modal" id="casillaModal" style="display: block; background: rgba(0,0,0,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 99999; animation: fadeIn 0.3s ease-out;">
-                <div class="modal-content" style="max-width: 900px; border-radius: 35px; border: 1px solid rgba(212, 175, 55, 0.4); box-shadow: 0 50px 120px rgba(0,0,0,0.7); overflow: hidden; background: #ffffff; animation: modalSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 5vh;">
-                    <div class="modal-header" style="background: linear-gradient(135deg, #050505 0%, #151515 100%); padding: 35px 50px; border-bottom: 4px solid var(--color-gold); display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('https://www.transparenttextures.com/patterns/dark-matter.png'); opacity: 0.15; pointer-events: none;"></div>
-                        <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
-                            <div style="width: 65px; height: 65px; background: rgba(212, 175, 55, 0.15); border: 2px solid rgba(212, 175, 55, 0.4); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: var(--color-gold); font-size: 32px; box-shadow: 0 15px 30px rgba(0,0,0,0.3); transform: rotate(-5deg);">📁</div>
+            <div class="modal" id="casillaModal" style="display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.75); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:99999; animation:fadeIn 0.25s ease-out;">
+                <div class="modal-content" style="max-width:640px; width:95%; border-radius:20px; border:1px solid rgba(212,175,55,0.3); box-shadow:0 24px 60px rgba(0,0,0,0.4); overflow:hidden; background:#ffffff; animation:modalSlideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
+                    <div class="modal-header" style="background:linear-gradient(135deg,#111 0%,#1e1e1e 100%); padding:18px 24px; border-bottom:2px solid var(--color-gold); display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; align-items:center; gap:14px;">
+                            <div style="width:38px; height:38px; background:rgba(212,175,55,0.15); border:1.5px solid rgba(212,175,55,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px;">📁</div>
                             <div>
-                                <h2 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 800; letter-spacing: -0.8px; text-transform: uppercase; font-family: 'Outfit', sans-serif;">Expediente Judicial</h2>
-                                <span style="color: var(--color-gold); font-size: 16px; font-family: 'JetBrains Mono', monospace; font-weight: 600; opacity: 0.9; letter-spacing: 1px;">ID: ${expediente.numero_expediente}</span>
+                                <h2 style="margin:0; color:#fff; font-size:16px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px;">Expediente Judicial</h2>
+                                <span style="color:var(--color-gold); font-size:12px; font-weight:600; opacity:0.9;">ID: ${expediente.numero_expediente}</span>
                             </div>
                         </div>
-                        <button class="expediente-close" onclick="CasillaUnificada.cerrarModal()" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.08); color: #ffffff; border: 1px solid rgba(255,255,255,0.15); font-size: 32px; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center;">&times;</button>
+                        <button onclick="CasillaUnificada.cerrarModal()" style="width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.15); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.background='#d4af37';this.style.color='#000';" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff';">&times;</button>
                     </div>
-                    <div class="modal-body" style="padding: 50px; background: #ffffff;">
-                        <div class="expediente-info-card" style="background: #ffffff; border-radius: 30px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.08); position: relative; overflow: hidden; margin-bottom: 40px;">
-                            <div style="position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--color-gold);"></div>
-                            <h3 style="color: #000; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; margin-bottom: 35px; display: flex; align-items: center; gap: 15px;">
-                                <span style="font-size: 20px;">📋</span> RESUMEN DE EXPEDIENTE
-                            </h3>
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 35px;">
-                                ${this.renderizarCampoModerno('Número de Expediente', `<span style="color: #000; font-weight: 800; font-size: 18px;">${expediente.numero_expediente}</span>`)}
-                                ${this.renderizarCampoModerno('Estado Actual', `<span class="status-badge ${estadoClass}" style="padding: 8px 20px; font-size: 12px; font-weight: 800; border-radius: 50px; border: 2px solid currentColor;">${expediente.estado}</span>`)}
-                                ${this.renderizarCampoModerno('Sede Judicial', `<span style="font-weight: 700;">${expediente.sede}</span>`)}
-                                ${this.renderizarCampoModerno('Especialidad', `<span style="font-weight: 700;">${expediente.especialidad}</span>`)}
-                                ${this.renderizarCampoModerno('Tipo de Proceso', expediente.proceso)}
-                                ${this.renderizarCampoModerno('Materia Jurídica', expediente.materia)}
-                                ${this.renderizarCampoModerno('Usuario Propietario', `<span style="color: #3498db; font-weight: 800; display: flex; align-items: center; gap: 10px;">👤 ${expediente.usuario_nombre}</span>`)}
+                    <div class="modal-body" style="padding:20px; background:#fff; max-height:70vh; overflow-y:auto;">
+                        <div style="background:#fafafa; border-radius:14px; padding:18px; border:1px solid rgba(0,0,0,0.07); position:relative;">
+                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--color-gold); border-radius:14px 0 0 14px;"></div>
+                            <h3 style="color:#111; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 14px 8px; display:flex; align-items:center; gap:8px;">📋 Resumen del Expediente</h3>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-left:8px;">
+                                ${this.renderizarCampoModerno('Número', `<span style="font-weight:700; font-size:13px;">${expediente.numero_expediente}</span>`)}
+                                ${this.renderizarCampoModerno('Estado', `<span class="status-badge ${estadoClass}" style="padding:4px 12px; font-size:11px; font-weight:700; border-radius:50px;">${expediente.estado}</span>`)}
+                                ${this.renderizarCampoModerno('Sede', `<span style="font-weight:600; font-size:13px;">${expediente.sede}</span>`)}
+                                ${this.renderizarCampoModerno('Especialidad', `<span style="font-weight:600; font-size:13px;">${expediente.especialidad}</span>`)}
+                                ${this.renderizarCampoModerno('Proceso', `<span style="font-size:13px;">${expediente.proceso}</span>`)}
+                                ${this.renderizarCampoModerno('Materia', `<span style="font-size:13px;">${expediente.materia}</span>`)}
+                                ${this.renderizarCampoModerno('Usuario', `<span style="color:#3498db; font-weight:600; font-size:13px;">👤 ${expediente.usuario_nombre}</span>`)}
                             </div>
                         </div>
-                        <div style="display: flex; justify-content: center; gap: 25px;">
-                            <button class="btn" style="background: #1a1a1a; color: white; padding: 20px 50px; border-radius: 20px; font-weight: 700; font-size: 14px; min-width: 220px; transition: all 0.3s;" onmouseover="this.style.background='#000'; this.style.transform='translateY(-5px)';" onmouseout="this.style.background='#1a1a1a'; this.style.transform='translateY(0)';" onclick="CasillaUnificada.cerrarModal()">CERRAR VISTA</button>
-                            <button class="btn" style="background: var(--color-gold); color: #000; padding: 20px 50px; border-radius: 20px; font-weight: 900; font-size: 14px; min-width: 220px; box-shadow: 0 15px 35px rgba(212, 175, 55, 0.3); transition: all 0.3s;" onmouseover="this.style.background='#f1d582'; this.style.transform='translateY(-5px)';" onmouseout="this.style.background='var(--color-gold)'; this.style.transform='translateY(0)';" onclick="showSection('expedientes'); CasillaUnificada.cerrarModal()">GESTIONAR EXPEDIENTE</button>
-                        </div>
+                    </div>
+                    <div style="padding:14px 20px; display:flex; justify-content:flex-end; gap:10px; background:#f9f9f9; border-top:1px solid #eee;">
+                        <button class="btn" style="background:#eee; color:#333; padding:9px 20px; border-radius:10px; font-weight:600; font-size:13px; border:none; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#ddd';" onmouseout="this.style.background='#eee';" onclick="CasillaUnificada.cerrarModal()">Cerrar</button>
+                        <button class="btn" style="background:var(--color-gold); color:#000; padding:9px 20px; border-radius:10px; font-weight:700; font-size:13px; border:none; cursor:pointer; box-shadow:0 4px 12px rgba(212,175,55,0.25); transition:all 0.2s;" onmouseover="this.style.opacity='0.85';" onmouseout="this.style.opacity='1';" onclick="showSection('expedientes'); CasillaUnificada.cerrarModal()">Ver Expediente</button>
                     </div>
                 </div>
             </div>
@@ -652,46 +649,39 @@ const CasillaUnificada = {
     modalSolicitud(solicitud) {
         const estadoClass = this.getEstadoClass(solicitud.estado);
         return `
-            <div class="modal" id="casillaModal" style="display: block; background: rgba(0,0,0,0.92); backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px); z-index: 99999; animation: fadeIn 0.3s ease-out;">
-                <div class="modal-content" style="max-width: 900px; border-radius: 35px; border: 1px solid rgba(212, 175, 55, 0.4); box-shadow: 0 50px 120px rgba(0,0,0,0.7); overflow: hidden; background: #ffffff; animation: modalSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 5vh;">
-                    <div class="modal-header" style="background: linear-gradient(135deg, #050505 0%, #151515 100%); padding: 35px 50px; border-bottom: 4px solid var(--color-gold); display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('https://www.transparenttextures.com/patterns/dark-matter.png'); opacity: 0.15; pointer-events: none;"></div>
-                        <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
-                            <div style="width: 65px; height: 65px; background: rgba(212, 175, 55, 0.15); border: 2px solid rgba(212, 175, 55, 0.4); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: var(--color-gold); font-size: 32px; box-shadow: 0 15px 30px rgba(0,0,0,0.3); transform: rotate(-5deg);">📄</div>
+            <div class="modal" id="casillaModal" style="display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.75); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:99999; animation:fadeIn 0.25s ease-out;">
+                <div class="modal-content" style="max-width:640px; width:95%; border-radius:20px; border:1px solid rgba(212,175,55,0.3); box-shadow:0 24px 60px rgba(0,0,0,0.4); overflow:hidden; background:#ffffff; animation:modalSlideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
+                    <div class="modal-header" style="background:linear-gradient(135deg,#111 0%,#1e1e1e 100%); padding:18px 24px; border-bottom:2px solid var(--color-gold); display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; align-items:center; gap:14px;">
+                            <div style="width:38px; height:38px; background:rgba(212,175,55,0.15); border:1.5px solid rgba(212,175,55,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px;">📄</div>
                             <div>
-                                <h2 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 800; letter-spacing: -0.8px; text-transform: uppercase; font-family: 'Outfit', sans-serif;">Detalle de Solicitud</h2>
-                                <span style="color: var(--color-gold); font-size: 16px; font-family: 'JetBrains Mono', monospace; font-weight: 600; opacity: 0.9;">ID: ${solicitud.id}</span>
+                                <h2 style="margin:0; color:#fff; font-size:16px; font-weight:700; text-transform:uppercase; letter-spacing:0.3px;">Detalle de Solicitud</h2>
+                                <span style="color:var(--color-gold); font-size:12px; font-weight:600; opacity:0.9;">ID: ${solicitud.id}</span>
                             </div>
                         </div>
-                        <button class="expediente-close" onclick="CasillaUnificada.cerrarModal()" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.08); color: #ffffff; border: 1px solid rgba(255,255,255,0.15); font-size: 32px; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center;">&times;</button>
+                        <button onclick="CasillaUnificada.cerrarModal()" style="width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.15); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.background='#d4af37';this.style.color='#000';" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff';">&times;</button>
                     </div>
-                    <div class="modal-body" style="padding: 50px; background: #ffffff;">
-                        <div style="display: grid; grid-template-columns: 1fr; gap: 40px; margin-bottom: 45px;">
-                            <div class="expediente-info-card" style="background: #ffffff; border-radius: 30px; padding: 40px; box-shadow: 0 20px 60px rgba(0,0,0,0.06); border: 1px solid rgba(0,0,0,0.08); position: relative; overflow: hidden;">
-                                <div style="position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--color-gold);"></div>
-                                <h3 style="color: #000; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; margin-bottom: 35px; display: flex; align-items: center; gap: 15px;">
-                                    <span style="font-size: 22px;">🔍</span> DATOS DE LA SOLICITUD
-                                </h3>
-                                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 35px;">
-                                    ${this.renderizarCampoModerno('Asunto Principal', `<span style="color: #000; font-weight: 800; font-size: 18px;">${this.escaparHTML(solicitud.asunto)}</span>`)}
-                                    ${this.renderizarCampoModerno('Estado Administrativo', `<span class="status-badge ${estadoClass}" style="padding: 8px 20px; font-size: 12px; font-weight: 800; border-radius: 50px; border: 2px solid currentColor;">${solicitud.estado}</span>`)}
-                                    ${this.renderizarCampoModerno('Categoría / Tipo', `<span style="font-weight: 700;">${solicitud.tipo}</span>`)}
-                                    ${this.renderizarCampoModerno('Usuario Solicitante', `<span style="font-weight: 800;">👤 ${solicitud.nombre}</span>`)}
-                                    ${this.renderizarCampoModerno('Vínculo de Contacto', `<a href="mailto:${solicitud.email}" style="color: #3498db; font-weight: 600; text-decoration: none; border-bottom: 1px dashed #3498db;">${solicitud.email}</a>`)}
-                                    ${this.renderizarCampoModerno('Fecha de Emisión', `<span style="font-weight: 700;">${new Date(solicitud.fecha).toLocaleString('es-ES', { dateStyle: 'long', timeStyle: 'short' })}</span>`)}
-                                </div>
-                            </div>
-                            <div class="expediente-info-card" style="background: #fbfbfb; border-radius: 30px; padding: 40px; border: 1px solid rgba(0,0,0,0.05); position: relative;">
-                                <h3 style="color: #000; font-size: 16px; font-weight: 800; text-transform: uppercase; letter-spacing: 2.5px; margin-bottom: 25px; display: flex; align-items: center; gap: 15px;">
-                                    <span style="font-size: 22px;">📝</span> CONTENIDO DE LA SOLICITUD
-                                </h3>
-                                <p style="line-height: 2; color: #333; font-size: 15px; background: white; padding: 30px; border-radius: 24px; border: 1px solid rgba(0,0,0,0.05); box-shadow: inset 0 2px 10px rgba(0,0,0,0.02); white-space: pre-wrap; font-family: 'Outfit', sans-serif;">${this.escaparHTML(solicitud.descripcion || 'Sin descripción detallada')}</p>
+                    <div class="modal-body" style="padding:20px; background:#fff; max-height:70vh; overflow-y:auto;">
+                        <div style="background:#fafafa; border-radius:14px; padding:18px; border:1px solid rgba(0,0,0,0.07); position:relative; margin-bottom:14px;">
+                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--color-gold); border-radius:14px 0 0 14px;"></div>
+                            <h3 style="color:#111; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 14px 8px; display:flex; align-items:center; gap:8px;">🔍 Datos de la Solicitud</h3>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-left:8px;">
+                                ${this.renderizarCampoModerno('Asunto', `<span style="font-weight:700; font-size:13px;">${this.escaparHTML(solicitud.asunto)}</span>`)}
+                                ${this.renderizarCampoModerno('Estado', `<span class="status-badge ${estadoClass}" style="padding:4px 12px; font-size:11px; font-weight:700; border-radius:50px;">${solicitud.estado}</span>`)}
+                                ${this.renderizarCampoModerno('Tipo', `<span style="font-weight:600; font-size:13px;">${solicitud.tipo}</span>`)}
+                                ${this.renderizarCampoModerno('Solicitante', `<span style="font-weight:600; font-size:13px;">👤 ${solicitud.nombre}</span>`)}
+                                ${this.renderizarCampoModerno('Email', `<a href="mailto:${solicitud.email}" style="color:#3498db; font-size:13px; text-decoration:none;">${solicitud.email}</a>`)}
+                                ${this.renderizarCampoModerno('Fecha', `<span style="font-weight:600; font-size:13px;">${new Date(solicitud.fecha).toLocaleString('es-ES', {dateStyle:'medium', timeStyle:'short'})}</span>`)}
                             </div>
                         </div>
-                        <div style="display: flex; justify-content: center; gap: 25px;">
-                            <button class="btn" style="background: #1a1a1a; color: white; padding: 20px 50px; border-radius: 20px; font-weight: 700; font-size: 14px; min-width: 220px; transition: all 0.3s;" onmouseover="this.style.background='#000'; this.style.transform='translateY(-5px)';" onmouseout="this.style.background='#1a1a1a'; this.style.transform='translateY(0)';" onclick="CasillaUnificada.cerrarModal()">CERRAR</button>
-                            <button class="btn" style="background: #27ae60; color: white; padding: 20px 50px; border-radius: 20px; font-weight: 800; font-size: 14px; min-width: 220px; box-shadow: 0 15px 35px rgba(39, 174, 96, 0.3); transition: all 0.3s;" onmouseover="this.style.background='#2ecc71'; this.style.transform='translateY(-5px)';" onmouseout="this.style.background='#27ae60'; this.style.transform='translateY(0)';" onclick="CasillaUnificada.responderSolicitud('${solicitud.id}', '${solicitud.usuario_id}', '${solicitud.asunto}')">PROCEDER A RESPONDER</button>
+                        <div style="background:#fafafa; border-radius:14px; padding:18px; border:1px solid rgba(0,0,0,0.07);">
+                            <h3 style="color:#111; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 10px 0; display:flex; align-items:center; gap:8px;">📝 Descripción</h3>
+                            <p style="line-height:1.7; color:#444; font-size:13px; background:#fff; padding:14px; border-radius:10px; border:1px solid rgba(0,0,0,0.05); white-space:pre-wrap; margin:0;">${this.escaparHTML(solicitud.descripcion || 'Sin descripción detallada')}</p>
                         </div>
+                    </div>
+                    <div style="padding:14px 20px; display:flex; justify-content:flex-end; gap:10px; background:#f9f9f9; border-top:1px solid #eee;">
+                        <button class="btn" style="background:#eee; color:#333; padding:9px 20px; border-radius:10px; font-weight:600; font-size:13px; border:none; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#ddd';" onmouseout="this.style.background='#eee';" onclick="CasillaUnificada.cerrarModal()">Cerrar</button>
+                        <button class="btn" style="background:#27ae60; color:#fff; padding:9px 20px; border-radius:10px; font-weight:700; font-size:13px; border:none; cursor:pointer; box-shadow:0 4px 12px rgba(39,174,96,0.25); transition:all 0.2s;" onmouseover="this.style.background='#2ecc71';" onmouseout="this.style.background='#27ae60';" onclick="CasillaUnificada.responderSolicitud('${solicitud.id}','${solicitud.usuario_id}','${solicitud.asunto}')">Responder</button>
                     </div>
                 </div>
             </div>
