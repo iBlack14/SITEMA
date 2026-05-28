@@ -445,142 +445,79 @@ const CasillaUnificada = {
 
         return `
             <style>
-                @keyframes modalFadeIn { from { opacity: 0; } to { opacity: 1; } }
-                @keyframes modalSlideUp { from { transform: translateY(40px) scale(0.95); opacity: 0; } to { transform: translateY(0) scale(1); opacity: 1; } }
-                .expediente-info-card:hover { transform: translateY(-5px); box-shadow: 0 20px 60px rgba(0,0,0,0.08) !important; border-color: rgba(212, 175, 55, 0.2) !important; }
+                @keyframes modalFadeIn { from { opacity:0; } to { opacity:1; } }
+                @keyframes modalSlideUp { from { transform:translateY(20px) scale(0.97); opacity:0; } to { transform:translateY(0) scale(1); opacity:1; } }
             </style>
-            <div class="modal" id="casillaModal" style="display: block; background: rgba(0,0,0,0.9); backdrop-filter: blur(15px); -webkit-backdrop-filter: blur(15px); z-index: 99999; animation: modalFadeIn 0.4s ease-out;">
-                <div class="modal-content" style="max-width: 1050px; border-radius: 35px; border: 1px solid rgba(212, 175, 55, 0.4); box-shadow: 0 50px 120px rgba(0,0,0,0.7); overflow: hidden; background: #ffffff; animation: modalSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1); margin-top: 2vh;">
-                    <div class="modal-header" style="background: linear-gradient(135deg, #050505 0%, #151515 100%); padding: 35px 50px; border-bottom: 4px solid var(--color-gold); display: flex; justify-content: space-between; align-items: center; position: relative; overflow: hidden;">
-                        <div style="position: absolute; top: 0; left: 0; right: 0; bottom: 0; background: url('https://www.transparenttextures.com/patterns/dark-matter.png'); opacity: 0.15; pointer-events: none;"></div>
-                        
-                        <div style="display: flex; align-items: center; gap: 25px; position: relative; z-index: 1;">
-                            <div style="width: 65px; height: 65px; background: rgba(212, 175, 55, 0.15); border: 2px solid rgba(212, 175, 55, 0.4); border-radius: 20px; display: flex; align-items: center; justify-content: center; color: var(--color-gold); font-size: 32px; box-shadow: 0 15px 30px rgba(0,0,0,0.3);">📥</div>
+            <div class="modal" id="casillaModal" style="display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.75); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:99999; animation:modalFadeIn 0.25s ease-out;">
+                <div class="modal-content" style="max-width:720px; width:95%; border-radius:20px; border:1px solid rgba(212,175,55,0.3); box-shadow:0 24px 60px rgba(0,0,0,0.4); overflow:hidden; background:#fff; animation:modalSlideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
+                    <div style="background:linear-gradient(135deg,#111 0%,#1e1e1e 100%); padding:16px 22px; border-bottom:2px solid var(--color-gold); display:flex; justify-content:space-between; align-items:center;">
+                        <div style="display:flex; align-items:center; gap:12px;">
+                            <div style="width:36px; height:36px; background:rgba(212,175,55,0.15); border:1.5px solid rgba(212,175,55,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:17px;">📥</div>
                             <div>
-                                <h2 style="margin: 0; color: #ffffff; font-size: 28px; font-weight: 800; letter-spacing: -0.8px; text-transform: uppercase; font-family: 'Outfit', sans-serif;">Mesa de Partes</h2>
-                                <div style="display: flex; align-items: center; gap: 12px; margin-top: 6px;">
-                                    <span style="background: linear-gradient(90deg, #d4af37, #f1d582); -webkit-background-clip: text; -webkit-text-fill-color: transparent; font-size: 11px; font-weight: 900; letter-spacing: 2px; text-transform: uppercase;">REGISTRO OFICIAL</span>
-                                    <span style="color: rgba(255,255,255,0.8); font-size: 16px; font-family: 'JetBrains Mono', monospace; font-weight: 600;">${presentacion.numero_registro}</span>
-                                </div>
+                                <h2 style="margin:0; color:#fff; font-size:15px; font-weight:700; text-transform:uppercase;">Mesa de Partes</h2>
+                                <span style="color:var(--color-gold); font-size:11px; font-weight:600; opacity:0.9;">REGISTRO OFICIAL &nbsp;${presentacion.numero_registro}</span>
                             </div>
                         </div>
-                        <button class="expediente-close" onclick="CasillaUnificada.cerrarModal()" style="width: 50px; height: 50px; border-radius: 50%; background: rgba(255,255,255,0.08); color: #ffffff; border: 1px solid rgba(255,255,255,0.15); font-size: 32px; cursor: pointer; transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1); display: flex; align-items: center; justify-content: center; position: relative; z-index: 1;">&times;</button>
+                        <button onclick="CasillaUnificada.cerrarModal()" style="width:30px; height:30px; border-radius:50%; background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.15); font-size:17px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.background='#d4af37';this.style.color='#000';" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff';">&times;</button>
                     </div>
-                    
-                    <div class="modal-body" style="padding: 50px; background: #ffffff; max-height: 75vh; overflow-y: auto;">
-                        <div style="display: grid; grid-template-columns: 1.35fr 0.65fr; gap: 40px; margin-bottom: 45px;">
-                            <div style="display: flex; flex-direction: column; gap: 35px;">
-                                <div class="expediente-info-card" style="background: #ffffff; border-radius: 28px; padding: 35px; box-shadow: 0 15px 50px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.06); position: relative; overflow: hidden; transition: all 0.4s ease;">
-                                    <div style="position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: var(--color-gold);"></div>
-                                    <h3 style="color: #000; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px;">
-                                        <span style="font-size: 20px;">📜</span> Información Estratégica
-                                    </h3>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                                        ${this.renderizarCampoModerno('Tipo de Presentación', presentacion.tipo_presentacion)}
-                                        ${this.renderizarCampoModerno('Materia / Asunto', presentacion.materia)}
-                                        ${this.renderizarCampoModerno('Estado Actual', `<span class="status-badge ${estadoClass}" style="padding: 6px 16px; font-size: 11px; font-weight: 800; border-radius: 50px;">${presentacion.estado}</span>`)}
-                                        ${this.renderizarCampoModerno('Fecha de Ingreso', new Date(presentacion.fecha_presentacion).toLocaleString('es-ES'))}
+                    <div style="padding:16px; background:#fff; max-height:72vh; overflow-y:auto;">
+                        <div style="display:grid; grid-template-columns:1.4fr 0.6fr; gap:12px; margin-bottom:12px;">
+                            <div style="display:flex; flex-direction:column; gap:10px;">
+                                <div style="background:#fafafa; border-radius:12px; padding:14px; border:1px solid rgba(0,0,0,0.07); position:relative;">
+                                    <div style="position:absolute; top:0; left:0; width:3px; height:100%; background:var(--color-gold); border-radius:12px 0 0 12px;"></div>
+                                    <h3 style="color:#111; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 10px 8px;">📜 Información Estratégica</h3>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-left:8px;">
+                                        ${this.renderizarCampoModerno('Tipo', presentacion.tipo_presentacion)}
+                                        ${this.renderizarCampoModerno('Materia', presentacion.materia)}
+                                        ${this.renderizarCampoModerno('Estado', `<span class="status-badge ${estadoClass}" style="padding:3px 10px; font-size:10px; font-weight:700; border-radius:50px;">${presentacion.estado}</span>`)}
+                                        ${this.renderizarCampoModerno('Fecha', new Date(presentacion.fecha_presentacion).toLocaleString('es-ES', {dateStyle:'short', timeStyle:'short'}))}
                                     </div>
                                 </div>
-
-                                <div class="expediente-info-card" style="background: #ffffff; border-radius: 28px; padding: 35px; box-shadow: 0 15px 50px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.06); position: relative; overflow: hidden; transition: all 0.4s ease;">
-                                    <div style="position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: #3498db;"></div>
-                                    <h3 style="color: #000; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px;">
-                                        <span style="font-size: 20px;">👤</span> Datos del Demandante
-                                    </h3>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                                        ${this.renderizarCampoModerno('Nombre Completo', `<span style="font-weight: 800; font-size: 16px;">${demandante.nombre}</span>`)}
-                                        ${this.renderizarCampoModerno('Documento Identidad', `${demandante.documento_tipo || ''} ${demandante.documento_numero || ''}`)}
-                                        ${this.renderizarCampoModerno('Correo Electrónico', `<a href="mailto:${demandante.correo}" style="color: #3498db; text-decoration: none;">${demandante.correo}</a>`)}
-                                        ${this.renderizarCampoModerno('Teléfono / WhatsApp', demandante.telefono)}
+                                <div style="background:#fafafa; border-radius:12px; padding:14px; border:1px solid rgba(0,0,0,0.07); position:relative;">
+                                    <div style="position:absolute; top:0; left:0; width:3px; height:100%; background:#3498db; border-radius:12px 0 0 12px;"></div>
+                                    <h3 style="color:#111; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 10px 8px;">👤 Demandante</h3>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-left:8px;">
+                                        ${this.renderizarCampoModerno('Nombre', `<span style="font-weight:700; font-size:13px;">${demandante.nombre || 'N/A'}</span>`)}
+                                        ${this.renderizarCampoModerno('Documento', `${demandante.documento_tipo || ''} ${demandante.documento_numero || ''}`)}
+                                        ${this.renderizarCampoModerno('Correo', `<a href="mailto:${demandante.correo}" style="color:#3498db; font-size:12px; text-decoration:none;">${demandante.correo || 'N/A'}</a>`)}
+                                        ${this.renderizarCampoModerno('Teléfono', demandante.telefono || 'No disponible')}
                                     </div>
                                 </div>
-
-                                <div class="expediente-info-card" style="background: #ffffff; border-radius: 28px; padding: 35px; box-shadow: 0 15px 50px rgba(0,0,0,0.05); border: 1px solid rgba(0,0,0,0.06); position: relative; overflow: hidden; transition: all 0.4s ease;">
-                                    <div style="position: absolute; top: 0; left: 0; width: 6px; height: 100%; background: #e67e22;"></div>
-                                    <h3 style="color: #000; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px;">
-                                        <span style="font-size: 20px;">⚖️</span> Datos del Demandado
-                                    </h3>
-                                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 30px;">
-                                        ${this.renderizarCampoModerno('Nombre / Razón Social', `<span style="font-weight: 800; font-size: 16px;">${demandado.nombre}</span>`)}
+                                <div style="background:#fafafa; border-radius:12px; padding:14px; border:1px solid rgba(0,0,0,0.07); position:relative;">
+                                    <div style="position:absolute; top:0; left:0; width:3px; height:100%; background:#e67e22; border-radius:12px 0 0 12px;"></div>
+                                    <h3 style="color:#111; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 10px 8px;">⚖️ Demandado</h3>
+                                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:8px; padding-left:8px;">
+                                        ${this.renderizarCampoModerno('Nombre / Razón Social', `<span style="font-weight:700; font-size:13px;">${demandado.nombre || 'N/A'}</span>`)}
                                         ${this.renderizarCampoModerno('Documento / RUC', `${demandado.documento_tipo || ''} ${demandado.documento_numero || ''}`)}
                                     </div>
                                 </div>
                             </div>
-
-                            <div style="display: flex; flex-direction: column; gap: 35px;">
-                                <div class="expediente-info-card" style="background: #f8f9fa; border-radius: 28px; padding: 35px; border: 1px solid rgba(0,0,0,0.05); height: 100%;">
-                                    <h3 style="color: #000; font-size: 15px; font-weight: 800; text-transform: uppercase; letter-spacing: 2px; margin-bottom: 30px; display: flex; align-items: center; gap: 12px;">
-                                        <span style="font-size: 20px;">📎</span> Archivos <span style="background: #d4af37; color: #000; font-size: 12px; padding: 2px 10px; border-radius: 10px; margin-left: 5px;">${documentos.length}</span>
-                                    </h3>
-                                    <div style="display: flex; flex-direction: column; gap: 15px;">
-                                        ${documentos.length > 0 ? documentos.map(doc => `
-                                            <div style="padding: 18px; background: #ffffff; border: 1px solid rgba(0,0,0,0.08); border-radius: 20px; display: flex; justify-content: space-between; align-items: center; transition: all 0.3s; cursor: pointer; box-shadow: 0 4px 12px rgba(0,0,0,0.02);" onmouseover="this.style.borderColor='var(--color-gold)'; this.style.transform='translateX(5px)';" onmouseout="this.style.borderColor='rgba(0,0,0,0.08)'; this.style.transform='translateX(0)';" onclick="window.open('/uploads/mesa-partes/${doc.nombre_archivo}', '_blank')">
-                                                <div style="display: flex; align-items: center; gap: 15px;">
-                                                    <div style="width: 42px; height: 42px; background: #f0f0f0; border-radius: 12px; display: flex; align-items: center; justify-content: center; font-size: 20px; color: #d4af37;">📄</div>
-                                                    <div style="overflow: hidden; max-width: 130px;">
-                                                        <strong style="display: block; font-size: 13px; color: #1a1a1a; white-space: nowrap; overflow: hidden; text-overflow: ellipsis;">${this.escaparHTML(doc.nombre_original || 'Documento')}</strong>
-                                                        <small style="font-size: 10px; color: #999;">${(doc.tamano / 1024).toFixed(2)} KB</small>
-                                                    </div>
+                            <div style="background:#f8f9fa; border-radius:12px; padding:14px; border:1px solid rgba(0,0,0,0.06);">
+                                <h3 style="color:#111; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 10px 0; display:flex; align-items:center; gap:6px;">📎 Archivos <span style="background:#d4af37; color:#000; font-size:10px; padding:1px 7px; border-radius:8px; margin-left:4px;">${documentos.length}</span></h3>
+                                <div style="display:flex; flex-direction:column; gap:8px;">
+                                    ${documentos.length > 0 ? documentos.map(doc => `
+                                        <div style="padding:10px; background:#fff; border:1px solid rgba(0,0,0,0.07); border-radius:10px; display:flex; justify-content:space-between; align-items:center; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.borderColor='var(--color-gold)';" onmouseout="this.style.borderColor='rgba(0,0,0,0.07)';" onclick="window.open('/uploads/mesa-partes/${doc.nombre_archivo}','_blank')">
+                                            <div style="display:flex; align-items:center; gap:8px; overflow:hidden;">
+                                                <div style="width:28px; height:28px; background:#f0f0f0; border-radius:7px; display:flex; align-items:center; justify-content:center; font-size:13px; flex-shrink:0;">📄</div>
+                                                <div style="overflow:hidden;">
+                                                    <strong style="display:block; font-size:11px; color:#1a1a1a; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; max-width:110px;">${this.escaparHTML(doc.nombre_original || 'Documento')}</strong>
+                                                    <small style="font-size:10px; color:#999;">${(doc.tamano / 1024).toFixed(1)} KB</small>
                                                 </div>
-                                                <div style="width: 32px; height: 32px; background: var(--color-gold); color: #000; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 14px;">⬇️</div>
                                             </div>
-                                        `).join('') : '<p style="text-align: center; color: #999; font-style: italic; padding: 20px;">Sin adjuntos</p>'}
-                                    </div>
+                                            <span style="font-size:12px;">⬇️</span>
+                                        </div>
+                                    `).join('') : '<p style="text-align:center; color:#bbb; font-size:12px; padding:16px 0; margin:0;">Sin adjuntos</p>'}
                                 </div>
                             </div>
                         </div>
-
-                        <!-- Panel de Acción Compacto y Profesional -->
-                        <div style="background: #fdfdfd; border: 1px solid rgba(0,0,0,0.06); border-radius: 24px; padding: 25px 35px; box-shadow: 0 10px 30px rgba(0,0,0,0.03); margin-top: 20px;">
-                            <div style="display: flex; align-items: center; justify-content: space-between; gap: 20px;">
-                                <div style="flex: 1;">
-                                    <h3 style="color: #1a1a1a; font-size: 13px; font-weight: 800; text-transform: uppercase; letter-spacing: 1px; margin-bottom: 4px;">Acciones de Gestión</h3>
-                                    <p style="color: #888; font-size: 11px; margin: 0;">Administración directa del expediente</p>
-                                </div>
-                                
-                                <div style="display: flex; gap: 12px;">
-                                    <!-- Botón Timeline -->
-                                    <button class="btn" 
-                                            style="background: #1a1a1a; color: white; padding: 20px 45px; border-radius: 20px; font-weight: 800; font-size: 14px; min-width: 200px; display: flex; align-items: center; justify-content: center; gap: 12px; transition: all 0.3s; box-shadow: 0 10px 30px rgba(0,0,0,0.15);" 
-                                            onmouseover="this.style.background='#000'; this.style.transform='translateY(-3px)';" 
-                                            onmouseout="this.style.background='#1a1a1a'; this.style.transform='translateY(0)';" 
-                                            onclick="CasillaUnificada.cerrarModal(); TimelineManager.abrir('mesa-partes','${presentacion.id}','Mesa de Partes: ${presentacion.numero_registro}')">
-                                        <span style="font-size: 18px;">📋</span> SEGUIMINE
-                                    </button>
-
-                                    <!-- Botón Editar -->
-                                    <button class="btn" 
-                                            style="background: #34495e; color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(52, 73, 94, 0.2);"
-                                            onmouseover="this.style.background='#2c3e50'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='#34495e'; this.style.transform='translateY(0)';"
-                                            onclick="CasillaUnificada.editarMesaPartes('${presentacion.id}')">
-                                        <span style="font-size: 16px;">✏️</span> EDITAR
-                                    </button>
-
-                                    <!-- Botón Responder -->
-                                    <button class="btn" 
-                                            style="background: #27ae60; color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(39, 174, 96, 0.2);"
-                                            onmouseover="this.style.background='#219150'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='#27ae60'; this.style.transform='translateY(0)';"
-                                            onclick="CasillaUnificada.responderMesaPartes('${presentacion.id}', '${presentacion.usuario_id}', '${presentacion.numero_registro}')">
-                                        <span style="font-size: 16px;">💬</span> RESPONDER
-                                    </button>
-
-                                    <!-- Botón Aprobar -->
-                                    <button class="btn" 
-                                            style="background: var(--color-gold); color: #000; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 800; font-size: 12px; display: flex; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(212, 175, 55, 0.2);"
-                                            onmouseover="this.style.background='#f1d582'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='var(--color-gold)'; this.style.transform='translateY(0)';"
-                                            onclick="CasillaUnificada.confirmarCambioEstado('mesa_partes', '${presentacion.id}', 'Aprobado')">
-                                        <span style="font-size: 16px;">✅</span> APROBAR
-                                    </button>
-
-                                    <!-- Botón Rechazar -->
-                                    <button class="btn" 
-                                            style="background: #e74c3c; color: #fff; border: none; padding: 10px 18px; border-radius: 12px; font-weight: 700; font-size: 12px; display: flex; align-items: center; gap: 10px; transition: all 0.3s; box-shadow: 0 4px 12px rgba(231, 76, 60, 0.2);"
-                                            onmouseover="this.style.background='#c0392b'; this.style.transform='translateY(-2px)';" onmouseout="this.style.background='#e74c3c'; this.style.transform='translateY(0)';"
-                                            onclick="CasillaUnificada.confirmarCambioEstado('mesa_partes', '${presentacion.id}', 'Rechazado')">
-                                        <span style="font-size: 16px;">❌</span> RECHAZAR
-                                    </button>
-                                </div>
+                        <div style="background:#f9f9f9; border:1px solid rgba(0,0,0,0.06); border-radius:12px; padding:10px 14px; display:flex; align-items:center; justify-content:space-between; gap:8px;">
+                            <span style="color:#888; font-size:10px; font-weight:700; text-transform:uppercase; letter-spacing:0.5px; white-space:nowrap;">Acciones</span>
+                            <div style="display:flex; gap:6px; flex-wrap:wrap; justify-content:flex-end;">
+                                <button style="background:#1a1a1a; color:#fff; padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px; border:none; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#000';" onmouseout="this.style.background='#1a1a1a';" onclick="CasillaUnificada.cerrarModal(); TimelineManager.abrir('mesa-partes','${presentacion.id}','Mesa de Partes: ${presentacion.numero_registro}')">📋 Seguimiento</button>
+                                <button style="background:#34495e; color:#fff; padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px; border:none; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#2c3e50';" onmouseout="this.style.background='#34495e';" onclick="CasillaUnificada.editarMesaPartes('${presentacion.id}')">✏️ Editar</button>
+                                <button style="background:#27ae60; color:#fff; padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px; border:none; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#219150';" onmouseout="this.style.background='#27ae60';" onclick="CasillaUnificada.responderMesaPartes('${presentacion.id}','${presentacion.usuario_id}','${presentacion.numero_registro}')">💬 Responder</button>
+                                <button style="background:var(--color-gold); color:#000; padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px; border:none; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.opacity='0.85';" onmouseout="this.style.opacity='1';" onclick="CasillaUnificada.confirmarCambioEstado('mesa_partes','${presentacion.id}','Aprobado')">✅ Aprobar</button>
+                                <button style="background:#e74c3c; color:#fff; padding:6px 12px; border-radius:8px; font-weight:700; font-size:11px; border:none; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#c0392b';" onmouseout="this.style.background='#e74c3c';" onclick="CasillaUnificada.confirmarCambioEstado('mesa_partes','${presentacion.id}','Rechazado')">❌ Rechazar</button>
                             </div>
                         </div>
                     </div>
@@ -588,15 +525,14 @@ const CasillaUnificada = {
             </div>
         `;
     },
-
     /**
      * Helper para renderizar campos con estilo moderno
      */
     renderizarCampoModerno(label, value) {
         return `
-            <div style="display: flex; flex-direction: column; gap: 8px; padding: 12px; background: rgba(0,0,0,0.02); border-radius: 12px; border: 1px solid rgba(0,0,0,0.03); transition: all 0.3s;" onmouseover="this.style.background='rgba(212, 175, 55, 0.05)'; this.style.borderColor='rgba(212, 175, 55, 0.1)';" onmouseout="this.style.background='rgba(0,0,0,0.02)'; this.style.borderColor='rgba(0,0,0,0.03)';">
-                <label style="margin: 0; color: #888; font-size: 10px; font-weight: 800; text-transform: uppercase; letter-spacing: 1.5px; font-family: 'Outfit', sans-serif;">${label}</label>
-                <div style="color: #1a1a1a; font-size: 15px; font-weight: 600; line-height: 1.4;">${value || '<span style="color: #ccc; font-style: italic;">No disponible</span>'}</div>
+            <div style="display:flex; flex-direction:column; gap:5px; padding:10px; background:rgba(0,0,0,0.02); border-radius:10px; border:1px solid rgba(0,0,0,0.04); transition:all 0.2s;" onmouseover="this.style.background='rgba(212,175,55,0.05)'; this.style.borderColor='rgba(212,175,55,0.12)';" onmouseout="this.style.background='rgba(0,0,0,0.02)'; this.style.borderColor='rgba(0,0,0,0.04)';">
+                <label style="margin:0; color:#888; font-size:10px; font-weight:800; text-transform:uppercase; letter-spacing:1.2px;">${label}</label>
+                <div style="color:#1a1a1a; font-size:13px; font-weight:600; line-height:1.4;">${value || '<span style="color:#ccc; font-style:italic;">No disponible</span>'}</div>
             </div>
         `;
     },
