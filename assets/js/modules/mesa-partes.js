@@ -346,82 +346,132 @@ class MesaPartesModule {
         modal.id = 'modalPresentarDocumento';
 
         modal.innerHTML = `
-            <div class="modal-content" style="max-width: 600px;">
-                <div class="modal-header">
-                    <span class="text-gold">📤 Nueva Presentación Procesal</span>
-                    <button class="modal-close" onclick="closeAllModals()">
-                        <svg viewBox="0 0 24 24" width="20" height="20" fill="currentColor"><path d="M19 6.41L17.59 5 12 10.59 6.41 5 5 6.41 10.59 12 5 17.59 6.41 19 12 13.41 17.59 19 19 17.59 13.41 12z"/></svg>
-                    </button>
+            <div class="modal-content glass-panel" style="max-width: 850px; padding: 0; overflow: hidden;">
+                <div class="modal-header" style="padding: 24px 32px; background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, transparent 100%);">
+                    <div style="display: flex; align-items: center; gap: 15px;">
+                        <div style="width: 40px; height: 40px; background: var(--color-primary); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">📤</div>
+                        <div>
+                            <h2 style="margin: 0; font-family: var(--font-title); font-size: 20px; color: var(--color-primary);">Nueva Presentación Procesal</h2>
+                            <p style="margin: 0; font-size: 12px; color: var(--color-text-muted);">Mesa de Partes Virtual - TMARC</p>
+                        </div>
+                    </div>
+                    <button class="modal-close" onclick="closeAllModals()">×</button>
                 </div>
-                <div class="modal-body">
-                    <p class="text-muted" style="margin-bottom: 24px;">Complete los datos para el registro oficial de su documento en la Mesa de Partes Virtual.</p>
-                    
-                    <div style="display: grid; gap: 24px;">
-                        <div class="form-group">
-                            <label class="stat-label" style="display: block; margin-bottom: 8px;">Tipo de Documento</label>
-                            <select id="tipoDocumentoMesa" class="form-select">
-                                <option value="ARBITRAJE">ARBITRAJE</option>
-                                <option value="JUNTA DE PREVENCION">JUNTA DE PREVENCION Y RESOLUCION DE DISPUTAS</option>
-                                <option value="CONCILIACION">CONCILIACION EXTRAJUDICIAL</option>
-                                <option value="ARBITRAJE DE EMERGENCIA">ARBITRAJE DE EMERGENCIA</option>
-                                <option value="ARBITRAJE EXPRESS">ARBITRAJE EXPRESS</option>
-                                <option value="ARBITRAJE ENTRE PRIVADOS">ARBITRAJE ENTRE PRIVADOS</option>
-                                <option value="CENTRO DE FORMACION">CENTRO DE FORMACION Y CAPACITACION</option>
-                                <option value="OTRO">OTRO</option>
-                            </select>
-                        </div>
 
-                        <div class="form-group">
-                            <label class="stat-label" style="display: block; margin-bottom: 8px;">Descripción o Sumilla</label>
-                            <textarea id="descripcionMesa" class="form-textarea" rows="3" placeholder="Breve descripción del contenido del documento..."></textarea>
-                        </div>
+                <form id="formMesaPartes" style="padding: 32px;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
 
-                        <div class="form-group">
-                            <label class="stat-label" style="display: block; margin-bottom: 8px;">Documento PDF (Firma Digital)</label>
-                            <div class="file-upload-zone" style="border: 2px dashed var(--glass-border); border-radius: 16px; padding: 40px; text-align: center; cursor: pointer; transition: var(--transition-fast); background: rgba(212, 175, 55, 0.03);">
-                                <input type="file" id="fileMesa" accept=".pdf" style="display: none;">
-                                <div id="upload-ui">
-                                    <svg viewBox="0 0 24 24" width="48" height="48" fill="var(--color-primary)" style="margin-bottom: 12px; opacity: 0.8;">
-                                        <path d="M19.35 10.04C18.67 6.59 15.64 4 12 4 9.11 4 6.6 5.64 5.35 8.04 2.34 8.36 0 10.91 0 14c0 3.31 2.69 6 6 6h13c2.76 0 5-2.24 5-5 0-2.64-2.05-4.78-4.65-4.96zM14 13v4h-4v-4H7l5-5 5 5h-3z"/>
-                                    </svg>
-                                    <p style="font-weight: 600; color: var(--color-text);">Haga clic para seleccionar archivo</p>
-                                    <p style="font-size: 12px; color: var(--color-silver-muted);">Solo archivos PDF hasta 20MB</p>
+                        <!-- Columna 1: Datos del Presentante -->
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <h4 style="margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">👤 Datos del Presentante</h4>
+
+                            <div class="form-group">
+                                <label class="stat-label">Nombre Completo / Razón Social</label>
+                                <input type="text" id="mesaNombre" class="form-input" placeholder="Ej. Juan Pérez o Empresa S.A.C" required>
+                            </div>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div class="form-group">
+                                    <label class="stat-label">DNI / RUC</label>
+                                    <input type="text" id="mesaDni" class="form-input" placeholder="00000000" required>
                                 </div>
-                                <div id="file-selected-ui" style="display: none;">
-                                    <div style="display: flex; align-items: center; justify-content: center; gap: 10px; color: var(--color-success);">
-                                        <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor"><path d="M9 16.17L4.83 12l-1.42 1.41L9 19 21 7l-1.41-1.41z"/></svg>
-                                        <span id="fileNameMesa" style="font-weight: 700;"></span>
-                                    </div>
-                                    <button type="button" class="btn btn-secondary btn-sm" style="margin-top: 10px;" onclick="document.getElementById('fileMesa').value=''; document.getElementById('upload-ui').style.display='block'; document.getElementById('file-selected-ui').style.display='none'; event.stopPropagation();">Cambiar archivo</button>
+                                <div class="form-group">
+                                    <label class="stat-label">Teléfono / WhatsApp</label>
+                                    <input type="tel" id="mesaTelefono" class="form-input" placeholder="+51 900...">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="stat-label">Correo Electrónico</label>
+                                <input type="email" id="mesaEmail" class="form-input" placeholder="usuario@ejemplo.com">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="stat-label">Nombre del Demandado / Contraparte</label>
+                                <input type="text" id="mesaDemandadoNombre" class="form-input" placeholder="Nombre o razón social de la contraparte">
+                            </div>
+
+                            <div class="form-group">
+                                <label class="stat-label">DNI / RUC del Demandado</label>
+                                <input type="text" id="mesaDemandadoDni" class="form-input" placeholder="00000000">
+                            </div>
+                        </div>
+
+                        <!-- Columna 2: Detalle del Documento -->
+                        <div style="display: flex; flex-direction: column; gap: 16px;">
+                            <h4 style="margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">⚖️ Detalle del Documento</h4>
+
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div class="form-group">
+                                    <label class="stat-label">Tipo de Presentación</label>
+                                    <select id="tipoDocumentoMesa" class="form-select">
+                                        <option value="ARBITRAJE">Arbitraje</option>
+                                        <option value="JUNTA DE PREVENCION">Junta de Prevención y Resolución de Disputas</option>
+                                        <option value="CONCILIACION">Conciliación Extrajudicial</option>
+                                        <option value="ARBITRAJE DE EMERGENCIA">Arbitraje de Emergencia</option>
+                                        <option value="ARBITRAJE EXPRESS">Arbitraje Express</option>
+                                        <option value="ARBITRAJE ENTRE PRIVADOS">Arbitraje entre Privados</option>
+                                        <option value="CENTRO DE FORMACION">Centro de Formación y Capacitación</option>
+                                        <option value="OTRO">Otro</option>
+                                    </select>
+                                </div>
+                                <div class="form-group">
+                                    <label class="stat-label">Cuantía (S/.) <span style="opacity:0.5; font-size:10px;">Opcional</span></label>
+                                    <input type="number" id="mesaCuantia" class="form-input" placeholder="0.00" min="0" step="0.01">
+                                </div>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="stat-label">Asunto / Sumilla</label>
+                                <input type="text" id="mesaAsunto" class="form-input" placeholder="Ej. Presentación de Escrito Nº 01" maxlength="150" required>
+                            </div>
+
+                            <div class="form-group">
+                                <label class="stat-label">Descripción Detallada</label>
+                                <textarea id="descripcionMesa" class="form-input" style="min-height: 90px; resize: none;" placeholder="Describa el contenido del documento..."></textarea>
+                            </div>
+
+                            <!-- Zona de archivo -->
+                            <div class="form-group">
+                                <label class="stat-label">📄 Documento Principal (PDF)</label>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
+                                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('fileMesa').click()" style="padding: 8px 16px; font-size: 12px;">Seleccionar Archivo</button>
+                                    <span id="fileNameMesa" class="text-muted" style="font-size: 11px;">Ningún archivo seleccionado</span>
+                                    <input type="file" id="fileMesa" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
                                 </div>
                             </div>
                         </div>
                     </div>
-                </div>
-                <div class="modal-footer" style="display: flex; justify-content: flex-end; gap: 16px; padding: 24px 30px; margin-top: 10px;">
-                    <button type="button" class="btn btn-secondary" onclick="closeAllModals()" style="padding: 12px 30px; font-weight: 600; font-size: 13px;">CANCELAR</button>
-                    <button type="button" class="btn btn-primary" onclick="window.mesaPartesModule.submitDocumento()" id="btnSubmitMesa" style="padding: 12px 40px; font-weight: 700; font-size: 13px; text-transform: uppercase;">
-                        Presentar Documento
-                    </button>
-                </div>
+
+                    <div style="margin-top: 32px; display: flex; justify-content: flex-end; gap: 12px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAllModals()" style="padding: 12px 24px;">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" style="padding: 12px 40px; font-weight: 600;">🚀 Presentar Documento</button>
+                    </div>
+                </form>
             </div>
         `;
 
-        // Logic for file selection UI
-        const zone = modal.querySelector('.file-upload-zone');
+        // File input display
         const input = modal.querySelector('#fileMesa');
-        const uiNormal = modal.querySelector('#upload-ui');
-        const uiSelected = modal.querySelector('#file-selected-ui');
         const nameSpan = modal.querySelector('#fileNameMesa');
-
-        zone.onclick = () => input.click();
         input.onchange = (e) => {
-            if (e.target.files.length > 0) {
-                nameSpan.textContent = e.target.files[0].name;
-                uiNormal.style.display = 'none';
-                uiSelected.style.display = 'block';
-            }
+            nameSpan.textContent = e.target.files.length > 0 ? e.target.files[0].name : 'Ningún archivo seleccionado';
         };
+
+        // Form submit
+        const form = modal.querySelector('#formMesaPartes');
+        form.addEventListener('submit', (e) => {
+            e.preventDefault();
+            window.mesaPartesModule.submitDocumento();
+        });
+
+        // Auto-fill con datos del usuario
+        setTimeout(() => {
+            const emailInput = modal.querySelector('#mesaEmail');
+            const nombreInput = modal.querySelector('#mesaNombre');
+            if (emailInput && !emailInput.value) emailInput.value = sessionStorage.getItem('userEmail') || '';
+            if (nombreInput && !nombreInput.value) nombreInput.value = sessionStorage.getItem('userName') || '';
+        }, 100);
 
         return modal;
     }
