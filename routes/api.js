@@ -417,7 +417,8 @@ router.post('/solicitudes', upload.fields([
             nombre, email, telefono, dni, tipo, asunto, descripcion, prioridad,
             casilla_electronica, numero_expediente, sede, especialidad, motivo_ingreso,
             proceso, materia, sumilla, tipo_presentante, colegio_abogados,
-            casilla_fisica, oficina_casilla, usuario_id
+            casilla_fisica, oficina_casilla, usuario_id,
+            demandado_nombre, demandado_dni, demandado_email
         } = req.body;
 
         // Validación básica
@@ -476,6 +477,9 @@ router.post('/solicitudes', upload.fields([
             prioridad: prioridad || 'normal',
             casilla_electronica: casilla_electronica || null,
             documentos: documentos,
+            demandado_nombre: demandado_nombre || null,
+            demandado_dni:    demandado_dni    || null,
+            demandado_email:  demandado_email  || null,
             // Datos adicionales del expediente
             numero_expediente: numero_expediente || null,
             sede: sede || null,
@@ -493,15 +497,16 @@ router.post('/solicitudes', upload.fields([
         };
 
         const sql = `
-            INSERT INTO solicitudes (id, usuario_id, nombre, email, telefono, dni, tipo, asunto, descripcion, prioridad, documentos, casilla_electronica)
-            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+            INSERT INTO solicitudes (id, usuario_id, nombre, email, telefono, dni, tipo, asunto, descripcion, prioridad, documentos, casilla_electronica, demandado_nombre, demandado_dni, demandado_email)
+            VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
         `;
 
         const documentosJson = JSON.stringify(documentos);
 
         const resultado = await query(sql, [
             id, usuario_id || null, nombre, email, telefono || null, dni, tipo, asunto, descripcion,
-            prioridad || 'normal', documentosJson, casilla_electronica || null
+            prioridad || 'normal', documentosJson, casilla_electronica || null,
+            demandado_nombre || null, demandado_dni || null, demandado_email || null
         ]);
 
         console.log('✅ Solicitud creada con archivos:', {

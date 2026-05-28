@@ -70,6 +70,11 @@ async function verDetalleSolicitud(id) {
             setText('solicitud-email', solicitud.email || 'No especificado');
             setText('solicitud-telefono', solicitud.telefono || 'No especificado');
 
+            // Llenar datos del demandado
+            setText('solicitud-demandado-nombre', solicitud.demandado_nombre || 'No especificado');
+            setText('solicitud-demandado-dni',    solicitud.demandado_dni    || 'No especificado');
+            setText('solicitud-demandado-email',  solicitud.demandado_email  || 'No especificado');
+
             // Cargar archivos de la solicitud
             cargarArchivosSolicitud(solicitud);
 

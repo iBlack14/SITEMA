@@ -181,6 +181,9 @@ class SolicitudesModule {
             descripcion: document.getElementById('descripcionSolicitud').value || '',
             prioridad: document.getElementById('prioridadSolicitud').value || 'normal',
             casilla_electronica: document.getElementById('casillaElectronica').value || '53099',
+            demandado_nombre: document.getElementById('demandadoNombre')?.value || '',
+            demandado_dni:    document.getElementById('demandadoDni')?.value || '',
+            demandado_email:  document.getElementById('demandadoEmail')?.value || '',
             usuario_id: this.dashboard.getCurrentUserId()
         };
 

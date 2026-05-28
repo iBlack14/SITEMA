@@ -643,6 +643,18 @@ async function inicializarBaseDatos(reset = false) {
                 await query('ALTER TABLE solicitudes ADD COLUMN sede VARCHAR(100)');
                 console.log('✅ Columna sede agregada a solicitudes');
             }
+            if (!(await columnaExiste('solicitudes', 'demandado_nombre'))) {
+                await query('ALTER TABLE solicitudes ADD COLUMN demandado_nombre VARCHAR(200) NULL');
+                console.log('✅ Columna demandado_nombre agregada a solicitudes');
+            }
+            if (!(await columnaExiste('solicitudes', 'demandado_dni'))) {
+                await query('ALTER TABLE solicitudes ADD COLUMN demandado_dni VARCHAR(20) NULL');
+                console.log('✅ Columna demandado_dni agregada a solicitudes');
+            }
+            if (!(await columnaExiste('solicitudes', 'demandado_email'))) {
+                await query('ALTER TABLE solicitudes ADD COLUMN demandado_email VARCHAR(100) NULL');
+                console.log('✅ Columna demandado_email agregada a solicitudes');
+            }
 
             // ── Columna documentos para expedientes ──
             if (!(await columnaExiste('expedientes', 'documentos'))) {
