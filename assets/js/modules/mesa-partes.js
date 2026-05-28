@@ -346,37 +346,37 @@ class MesaPartesModule {
         modal.id = 'modalPresentarDocumento';
 
         modal.innerHTML = `
-            <div class="modal-content glass-panel" style="max-width: 850px; padding: 0; overflow: hidden;">
-                <div class="modal-header" style="padding: 24px 32px; background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, transparent 100%);">
+            <div class="modal-content glass-panel" style="max-width: 850px; padding: 0; overflow: hidden; max-height: 92vh; display: flex; flex-direction: column;">
+                <div class="modal-header" style="padding: 20px 28px; background: linear-gradient(135deg, rgba(212,175,55,0.1) 0%, transparent 100%); flex-shrink: 0;">
                     <div style="display: flex; align-items: center; gap: 15px;">
                         <div style="width: 40px; height: 40px; background: var(--color-primary); color: white; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 20px;">📤</div>
                         <div>
-                            <h2 style="margin: 0; font-family: var(--font-title); font-size: 20px; color: var(--color-primary);">Nueva Presentación Procesal</h2>
+                            <h2 style="margin: 0; font-family: var(--font-title); font-size: 18px; color: var(--color-primary);">Nueva Presentación Procesal</h2>
                             <p style="margin: 0; font-size: 12px; color: var(--color-text-muted);">Mesa de Partes Virtual - TMARC</p>
                         </div>
                     </div>
                     <button class="modal-close" onclick="closeAllModals()">×</button>
                 </div>
 
-                <form id="formMesaPartes" style="padding: 32px;">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 24px;">
+                <form id="formMesaPartes" style="padding: 24px 28px; overflow-y: auto; flex: 1;">
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
 
                         <!-- Columna 1: Datos del Presentante -->
-                        <div style="display: flex; flex-direction: column; gap: 16px;">
-                            <h4 style="margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">👤 Datos del Presentante</h4>
+                        <div style="display: flex; flex-direction: column; gap: 14px;">
+                            <h4 style="margin: 0 0 4px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">👤 Datos del Presentante</h4>
 
                             <div class="form-group">
                                 <label class="stat-label">Nombre Completo / Razón Social</label>
                                 <input type="text" id="mesaNombre" class="form-input" placeholder="Ej. Juan Pérez o Empresa S.A.C" required>
                             </div>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                                 <div class="form-group">
                                     <label class="stat-label">DNI / RUC</label>
                                     <input type="text" id="mesaDni" class="form-input" placeholder="00000000" required>
                                 </div>
                                 <div class="form-group">
-                                    <label class="stat-label">Teléfono / WhatsApp</label>
+                                    <label class="stat-label">Teléfono</label>
                                     <input type="tel" id="mesaTelefono" class="form-input" placeholder="+51 900...">
                                 </div>
                             </div>
@@ -388,7 +388,7 @@ class MesaPartesModule {
 
                             <div class="form-group">
                                 <label class="stat-label">Nombre del Demandado / Contraparte</label>
-                                <input type="text" id="mesaDemandadoNombre" class="form-input" placeholder="Nombre o razón social de la contraparte">
+                                <input type="text" id="mesaDemandadoNombre" class="form-input" placeholder="Nombre o razón social">
                             </div>
 
                             <div class="form-group">
@@ -398,10 +398,10 @@ class MesaPartesModule {
                         </div>
 
                         <!-- Columna 2: Detalle del Documento -->
-                        <div style="display: flex; flex-direction: column; gap: 16px;">
-                            <h4 style="margin: 0 0 8px 0; font-size: 14px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">⚖️ Detalle del Documento</h4>
+                        <div style="display: flex; flex-direction: column; gap: 14px;">
+                            <h4 style="margin: 0 0 4px 0; font-size: 12px; text-transform: uppercase; letter-spacing: 1px; color: var(--color-primary);">⚖️ Detalle del Documento</h4>
 
-                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 10px;">
                                 <div class="form-group">
                                     <label class="stat-label">Tipo de Presentación</label>
                                     <select id="tipoDocumentoMesa" class="form-select">
@@ -422,30 +422,30 @@ class MesaPartesModule {
                             </div>
 
                             <div class="form-group">
-                                <label class="stat-label">Asunto / Sumilla</label>
+                                <label class="stat-label">Asunto / Sumilla *</label>
                                 <input type="text" id="mesaAsunto" class="form-input" placeholder="Ej. Presentación de Escrito Nº 01" maxlength="150" required>
                             </div>
 
                             <div class="form-group">
                                 <label class="stat-label">Descripción Detallada</label>
-                                <textarea id="descripcionMesa" class="form-input" style="min-height: 90px; resize: none;" placeholder="Describa el contenido del documento..."></textarea>
+                                <textarea id="descripcionMesa" class="form-input" style="min-height: 80px; resize: none;" placeholder="Describa el contenido del documento..."></textarea>
                             </div>
 
-                            <!-- Zona de archivo -->
                             <div class="form-group">
-                                <label class="stat-label">📄 Documento Principal (PDF)</label>
-                                <div style="display: flex; align-items: center; gap: 10px; margin-top: 8px;">
-                                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('fileMesa').click()" style="padding: 8px 16px; font-size: 12px;">Seleccionar Archivo</button>
-                                    <span id="fileNameMesa" class="text-muted" style="font-size: 11px;">Ningún archivo seleccionado</span>
+                                <label class="stat-label">📄 Documento Principal (PDF, Word, etc.)</label>
+                                <div style="display: flex; align-items: center; gap: 10px; margin-top: 6px;">
+                                    <button type="button" class="btn btn-secondary" onclick="document.getElementById('fileMesa').click()" style="padding: 8px 16px; font-size: 12px; flex-shrink: 0;">Seleccionar Archivo</button>
+                                    <span id="fileNameMesa" class="text-muted" style="font-size: 11px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;">Ningún archivo seleccionado</span>
                                     <input type="file" id="fileMesa" style="display: none;" accept=".pdf,.doc,.docx,.xls,.xlsx,.jpg,.jpeg,.png">
                                 </div>
                             </div>
                         </div>
                     </div>
 
-                    <div style="margin-top: 32px; display: flex; justify-content: flex-end; gap: 12px;">
-                        <button type="button" class="btn btn-secondary" onclick="closeAllModals()" style="padding: 12px 24px;">Cancelar</button>
-                        <button type="submit" class="btn btn-primary" style="padding: 12px 40px; font-weight: 600;">🚀 Presentar Documento</button>
+                    <!-- Botones siempre visibles al final del form -->
+                    <div style="margin-top: 24px; padding-top: 20px; border-top: 1px solid var(--glass-border); display: flex; justify-content: flex-end; gap: 12px;">
+                        <button type="button" class="btn btn-secondary" onclick="closeAllModals()" style="padding: 11px 24px;">Cancelar</button>
+                        <button type="submit" class="btn btn-primary" style="padding: 11px 36px; font-weight: 600;">🚀 Presentar Documento</button>
                     </div>
                 </form>
             </div>
