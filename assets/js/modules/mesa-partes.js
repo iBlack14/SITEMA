@@ -480,61 +480,63 @@ class MesaPartesModule {
      * Submit documento
      */
     async submitDocumento() {
-        const tipo = document.getElementById('tipoDocumentoMesa')?.value;
-        const fileInput = document.getElementById('fileMesa');
-        const descripcion = document.getElementById('descripcionMesa')?.value;
+        const tipo        = document.getElementById('tipoDocumentoMesa')?.value;
+        const nombre      = document.getElementById('mesaNombre')?.value?.trim();
+        const dni         = document.getElementById('mesaDni')?.value?.trim();
+        const telefono    = document.getElementById('mesaTelefono')?.value?.trim() || '';
+        const email       = document.getElementById('mesaEmail')?.value?.trim() || '';
+        const asunto      = document.getElementById('mesaAsunto')?.value?.trim();
+        const descripcion = document.getElementById('descripcionMesa')?.value?.trim() || '';
+        const cuantia     = document.getElementById('mesaCuantia')?.value || null;
+        const demNombre   = document.getElementById('mesaDemandadoNombre')?.value?.trim() || 'N/A';
+        const demDni      = document.getElementById('mesaDemandadoDni')?.value?.trim() || '';
+        const fileInput   = document.getElementById('fileMesa');
 
-        if (!tipo || !fileInput?.files[0]) {
-            alert('Por favor, complete todos los campos.');
+        if (!tipo || !nombre || !dni || !asunto) {
+            this.dashboard.showError('Por favor, complete los campos obligatorios: Nombre, DNI, Tipo y Asunto.');
             return;
         }
 
+        if (!fileInput?.files[0]) {
+            this.dashboard.showError('Por favor, seleccione el documento a presentar.');
+            return;
+        }
+
+        const btn = document.querySelector('#formMesaPartes button[type="submit"]');
+        if (btn) { btn.disabled = true; btn.textContent = 'Enviando...'; }
+
         try {
             const usuarioId = sessionStorage.getItem('userId');
-            
-            if (!usuarioId) {
-                alert('Error: No se encontró el ID de usuario');
-                return;
-            }
+            if (!usuarioId) { this.dashboard.showError('Error: No se encontró el ID de usuario'); return; }
 
             const formData = new FormData();
-            
-            // Datos básicos para documento adicional
             formData.append('usuario_id', usuarioId);
             formData.append('tipo_presentacion', tipo);
-            formData.append('materia', tipo); // Usar el tipo como materia
-            formData.append('sumilla', descripcion || 'Documento adicional');
-            
-            // Datos mínimos del demandante (se pueden obtener del usuario actual)
+            formData.append('materia', asunto);
+            formData.append('sumilla', descripcion || asunto);
+            if (cuantia) formData.append('cuantia', cuantia);
+
             formData.append('demandante', JSON.stringify({
-                nombre: sessionStorage.getItem('userName') || 'Usuario',
-                correo: sessionStorage.getItem('userEmail') || '',
-                telefono: '',
-                documento_tipo: 'DNI',
-                documento_numero: ''
+                nombre:           nombre,
+                correo:           email,
+                telefono:         telefono,
+                documento_tipo:   'DNI',
+                documento_numero: dni
             }));
-            
-            // Datos mínimos del demandado (vacío para documentos adicionales)
+
             formData.append('demandado', JSON.stringify({
-                nombre: 'N/A',
-                documento_tipo: 'DNI',
-                documento_numero: ''
+                nombre:           demNombre,
+                documento_tipo:   'DNI',
+                documento_numero: demDni
             }));
-            
-            // Documento adjunto
+
             formData.append('documentos', fileInput.files[0]);
 
-            console.log('📤 Enviando documento adicional a Mesa de Partes...');
-
-            const response = await fetch('/api/mesa-partes', {
-                method: 'POST',
-                body: formData
-            });
-
-            const result = await response.json();
+            const response = await fetch('/api/mesa-partes', { method: 'POST', body: formData });
+            const result   = await response.json();
 
             if (result.success) {
-                this.dashboard.showSuccess('✅ Documento presentado correctamente. Llegará a la Casilla del Admin.');
+                this.dashboard.showSuccess('✅ Documento presentado correctamente.');
                 this.closeDocumentoModal();
                 await this.loadDocumentosPresentados();
             } else {
@@ -543,6 +545,8 @@ class MesaPartesModule {
         } catch (error) {
             console.error('❌ Error presentando documento:', error);
             this.dashboard.showError('Error presentando documento: ' + error.message);
+        } finally {
+            if (btn) { btn.disabled = false; btn.textContent = '🚀 Presentar Documento'; }
         }
     }
 
