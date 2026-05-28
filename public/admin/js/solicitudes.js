@@ -5,30 +5,27 @@
 
 // Función para mostrar pestañas de la solicitud
 function mostrarTabSolicitud(tabName, event) {
+    // Si se llama desde un click, extraer el tabName del data-tab
+    if (event && event.currentTarget) {
+        tabName = event.currentTarget.dataset.tab;
+    }
+    if (!tabName) return;
+
     // Ocultar todos los contenidos de pestañas del modal de solicitud
-    const contents = document.querySelectorAll('#solicitudModal .expediente-tab-content');
-    contents.forEach(content => content.classList.remove('active'));
+    document.querySelectorAll('#solicitudModal .expediente-tab-content')
+        .forEach(c => c.classList.remove('active'));
 
-    // Desactivar todas las pestañas del modal de solicitud
-    const tabs = document.querySelectorAll('#solicitudModal .expediente-tab');
-    tabs.forEach(tab => tab.classList.remove('active'));
+    // Desactivar todas las pestañas
+    document.querySelectorAll('#solicitudModal .expediente-tab')
+        .forEach(t => t.classList.remove('active'));
 
-    // Mostrar contenido seleccionado
-    const targetContent = document.getElementById('solicitud-' + tabName);
-    if (targetContent) {
-        targetContent.classList.add('active');
-    }
+    // Mostrar contenido seleccionado (el id del panel es el valor de data-tab)
+    const targetContent = document.getElementById(tabName);
+    if (targetContent) targetContent.classList.add('active');
 
-    // Activar pestaña seleccionada
-    if (event && event.target) {
-        event.target.classList.add('active');
-    } else {
-        // Si se llama programáticamente, activar el botón correspondiente
-        const targetTab = document.querySelector(`#solicitudModal .expediente-tab[onclick*="'${tabName}'"]`);
-        if (targetTab) {
-            targetTab.classList.add('active');
-        }
-    }
+    // Activar el botón correspondiente
+    const targetTab = document.querySelector(`#solicitudModal .expediente-tab[data-tab="${tabName}"]`);
+    if (targetTab) targetTab.classList.add('active');
 }
 
 // Función para cerrar modal de solicitud
@@ -84,7 +81,7 @@ async function verDetalleSolicitud(id) {
             }
             modal.style.display = 'flex';
             setTimeout(() => modal.classList.add('show'), 10);
-            mostrarTabSolicitud('informacion');
+            mostrarTabSolicitud('solicitud-informacion');
         } else {
             if (window.showError) window.showError('Error obteniendo datos de la solicitud');
         }
@@ -595,5 +592,12 @@ if (typeof window !== 'undefined') {
     window.cargarTablaSolicitudes = cargarTablaSolicitudes;
     window.refreshSolicitudesTable = cargarTablaSolicitudes; // Alias para compatibilidad
 }
+
+// Enlazar clicks de pestañas del modal de solicitud
+document.addEventListener('DOMContentLoaded', () => {
+    document.querySelectorAll('#solicitudModal .expediente-tab').forEach(btn => {
+        btn.addEventListener('click', (e) => mostrarTabSolicitud(null, e));
+    });
+});
 
 console.log('✅ Módulo de solicitudes cargado');

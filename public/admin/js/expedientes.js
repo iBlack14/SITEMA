@@ -89,20 +89,18 @@ function mostrarTab(arg) {
     // Llamada programática: mostrarTab('informacion')
     if (typeof arg === 'string') {
         tabName = arg;
-        clickedBtn = document.querySelector(`.expediente-tab[data-tab="${tabName}"]`);
+        clickedBtn = document.querySelector(`#expedienteModal .expediente-tab[data-tab="${tabName}"]`);
     }
 
-    if (!tabName) return; // nada que mostrar
+    if (!tabName) return;
 
-    // Oculta todos los contenidos y desactiva todas las pestañas
-    document.querySelectorAll('.expediente-tab-content').forEach(el => el.classList.remove('active'));
-    document.querySelectorAll('.expediente-tab').forEach(el => el.classList.remove('active'));
+    // Scoped al expedienteModal para no interferir con otros modales
+    document.querySelectorAll('#expedienteModal .expediente-tab-content').forEach(el => el.classList.remove('active'));
+    document.querySelectorAll('#expedienteModal .expediente-tab').forEach(el => el.classList.remove('active'));
 
-    // Activa contenido
     const panel = document.getElementById(tabName);
     if (panel) panel.classList.add('active');
 
-    // Activa botón
     if (clickedBtn) clickedBtn.classList.add('active');
 }
 
