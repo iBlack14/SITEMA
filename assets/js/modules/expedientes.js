@@ -194,7 +194,7 @@ class ExpedientesModule {
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
                         <div class="form-group">
                             <label class="stat-label">Motivo de Ingreso</label>
-                            <input type="text" id="exp-motivo" class="form-input" value="DEMANDA" readonly>
+                            <input type="text" id="exp-motivo" class="form-input" value="DEMANDA">
                         </div>
                         <div class="form-group">
                             <label class="stat-label">Proceso</label>
@@ -307,49 +307,8 @@ class ExpedientesModule {
                     </div>
                 </div>
 
-                <!-- Sección 5: Datos de Presentante -->
-                <div class="form-section" style="margin-bottom: 24px;">
-                    <h4 style="color: var(--color-primary); border-bottom: 2px solid rgba(212, 175, 55, 0.2); padding-bottom: 8px; margin-bottom: 16px;">👤 Datos de Presentante</h4>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
-                        <div class="form-group">
-                            <label class="stat-label">Tipo de Presentante</label>
-                            <select id="exp-tipo-pres" class="form-select">
-                                <option value="ABOGADO">ABOGADO</option>
-                                <option value="PARTICULAR">PARTICULAR</option>
-                            </select>
-                        </div>
-                        <div class="form-group">
-                            <label class="stat-label">Nombre del Presentante</label>
-                            <input type="text" id="exp-presentante" class="form-input" placeholder="Nombre completo">
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
-                        <div class="form-group">
-                            <label class="stat-label">Nº Colegiatura</label>
-                            <input type="text" id="exp-colegiatura" class="form-input" placeholder="C.A.L. 00000">
-                        </div>
-                        <div class="form-group">
-                            <label class="stat-label">Colegio de Abogados</label>
-                            <select id="exp-colegio" class="form-select">
-                                <option value="LA LIBERTAD">LA LIBERTAD</option>
-                                <option value="LIMA">LIMA</option>
-                                <option value="AREQUIPA">AREQUIPA</option>
-                            </select>
-                        </div>
-                    </div>
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
-                        <div class="form-group">
-                            <label class="stat-label">Casilla Física / Oficina</label>
-                            <input type="text" id="exp-casilla-f" class="form-input" placeholder="Oficina - Casilla">
-                        </div>
-                        <div class="form-group">
-                            <label class="stat-label">Casilla Electrónica</label>
-                            <input type="text" id="exp-casilla-e" class="form-input" placeholder="00000">
-                        </div>
-                    </div>
-                </div>
 
-                <!-- Sección 6: Documentos -->
+                <!-- Sección 5: Documentos -->
                 <div class="form-section" style="margin-bottom: 24px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 12px; border: 1px dashed var(--color-primary);">
                     <h4 style="color: var(--color-primary); margin-bottom: 12px; font-size: 14px;">📄 Documentos Adjuntos (Máx 5MB - PDF Firmado)</h4>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -413,12 +372,6 @@ class ExpedientesModule {
             formData.append('cuantia', document.getElementById('exp-indeterminado').checked ? 0 : document.getElementById('exp-cuantia').value);
             formData.append('indeterminado', document.getElementById('exp-indeterminado').checked ? 1 : 0);
             formData.append('sumilla', document.getElementById('exp-sumilla').value);
-            formData.append('tipo_presentante', document.getElementById('exp-tipo-pres').value);
-            formData.append('presentante', document.getElementById('exp-presentante').value);
-            formData.append('colegiatura', document.getElementById('exp-colegiatura').value);
-            formData.append('colegio_abogados', document.getElementById('exp-colegio').value);
-            formData.append('casilla_fisica', document.getElementById('exp-casilla-f').value);
-            formData.append('casilla_electronica', document.getElementById('exp-casilla-e').value);
             formData.append('usuario_id', sessionStorage.getItem('userId') || '2');
 
             // Demandante
