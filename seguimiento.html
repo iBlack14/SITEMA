@@ -771,8 +771,8 @@
                                 ${partes.map(p => `
                                 <tr style="border-bottom:1px solid rgba(255,255,255,0.03)">
                                     <td style="padding:12px; font-weight:600; text-transform:uppercase; font-size:11px; color:var(--primary)">${p.tipo_parte || 'PARTE'}</td>
-                                    <td style="padding:12px; font-weight:500">${p.razon_social || p.nombre || p.nombre_completo || '—'}</td>
-                                    <td style="padding:12px; font-family:monospace; color:var(--text-muted)">${p.dni || p.ruc || p.documento_identidad || '—'}</td>
+                                    <td style="padding:12px; font-weight:500">${p.nombre_completo || p.nombres || p.razon_social || p.nombre || '—'}</td>
+                                    <td style="padding:12px; font-family:monospace; color:var(--text-muted)">${p.documento_identidad || p.dni || p.ruc || '—'}</td>
                                 </tr>`).join('')}
                             </tbody>
                         </table>
