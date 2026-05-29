@@ -452,10 +452,28 @@ router.get('/seguimiento-completo/:codigo', verificarAuth, async (req, res) => {
                 }
             });
 
-            // Partes desde JSON
+            // Partes desde JSON (mapear campos para que coincidan con el frontend)
             const partes = [];
-            if (mp.demandante) partes.push({ tipo_parte: 'demandante', ...mp.demandante });
-            if (mp.demandado) partes.push({ tipo_parte: 'demandado', ...mp.demandado });
+            if (mp.demandante) {
+                partes.push({
+                    tipo_parte: 'demandante',
+                    nombre_completo: mp.demandante.nombre || mp.demandante.razon_social,
+                    documento_identidad: mp.demandante.dni || mp.demandante.ruc || mp.demandante.documento,
+                    telefono: mp.demandante.telefono,
+                    correo: mp.demandante.correo,
+                    domicilio: mp.demandante.domicilio
+                });
+            }
+            if (mp.demandado) {
+                partes.push({
+                    tipo_parte: 'demandado',
+                    nombre_completo: mp.demandado.nombre || mp.demandado.razon_social,
+                    documento_identidad: mp.demandado.dni || mp.demandado.ruc || mp.demandado.documento,
+                    telefono: mp.demandado.telefono,
+                    correo: mp.demandado.correo,
+                    domicilio: mp.demandado.domicilio
+                });
+            }
 
             // Timeline
             const timeline = await query(`
@@ -546,7 +564,8 @@ router.get('/seguimiento-completo/:codigo', verificarAuth, async (req, res) => {
                     observaciones: sol.observaciones
                 },
                 partes_procesales: [
-                    { tipo_parte: 'solicitante', nombre_completo: sol.nombre, correo: sol.email, documento_identidad: sol.dni, telefono: sol.telefono }
+                    { tipo_parte: 'solicitante', nombre_completo: sol.nombre, correo: sol.email, documento_identidad: sol.dni, telefono: sol.telefono },
+                    ...(sol.demandado_nombre ? [{ tipo_parte: 'demandado', nombre_completo: sol.demandado_nombre, correo: sol.demandado_email, documento_identidad: sol.demandado_dni }] : [])
                 ],
                 timeline: timeline,
                 documentos: docsArr,
