@@ -584,9 +584,23 @@ const CasillaUnificada = {
      */
     modalSolicitud(solicitud) {
         const estadoClass = this.getEstadoClass(solicitud.estado);
+        
+        // Parsear documentos si existen
+        let documentos = [];
+        if (solicitud.documentos) {
+            try {
+                documentos = typeof solicitud.documentos === 'string' 
+                    ? JSON.parse(solicitud.documentos) 
+                    : solicitud.documentos;
+                if (!Array.isArray(documentos)) documentos = [];
+            } catch (e) {
+                documentos = [];
+            }
+        }
+
         return `
             <div class="modal" id="casillaModal" style="display:flex; align-items:center; justify-content:center; background:rgba(0,0,0,0.75); backdrop-filter:blur(10px); -webkit-backdrop-filter:blur(10px); z-index:99999; animation:fadeIn 0.25s ease-out;">
-                <div class="modal-content" style="max-width:640px; width:95%; border-radius:20px; border:1px solid rgba(212,175,55,0.3); box-shadow:0 24px 60px rgba(0,0,0,0.4); overflow:hidden; background:#ffffff; animation:modalSlideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
+                <div class="modal-content" style="max-width:800px; width:95%; border-radius:20px; border:1px solid rgba(212,175,55,0.3); box-shadow:0 24px 60px rgba(0,0,0,0.4); overflow:hidden; background:#ffffff; animation:modalSlideUp 0.3s cubic-bezier(0.16,1,0.3,1);">
                     <div class="modal-header" style="background:linear-gradient(135deg,#111 0%,#1e1e1e 100%); padding:18px 24px; border-bottom:2px solid var(--color-gold); display:flex; justify-content:space-between; align-items:center;">
                         <div style="display:flex; align-items:center; gap:14px;">
                             <div style="width:38px; height:38px; background:rgba(212,175,55,0.15); border:1.5px solid rgba(212,175,55,0.4); border-radius:10px; display:flex; align-items:center; justify-content:center; font-size:18px;">📄</div>
@@ -598,22 +612,84 @@ const CasillaUnificada = {
                         <button onclick="CasillaUnificada.cerrarModal()" style="width:32px; height:32px; border-radius:50%; background:rgba(255,255,255,0.08); color:#fff; border:1px solid rgba(255,255,255,0.15); font-size:18px; cursor:pointer; display:flex; align-items:center; justify-content:center; transition:all 0.2s;" onmouseover="this.style.background='#d4af37';this.style.color='#000';" onmouseout="this.style.background='rgba(255,255,255,0.08)';this.style.color='#fff';">&times;</button>
                     </div>
                     <div class="modal-body" style="padding:20px; background:#fff; max-height:70vh; overflow-y:auto;">
+                        <!-- Información General -->
                         <div style="background:#fafafa; border-radius:14px; padding:18px; border:1px solid rgba(0,0,0,0.07); position:relative; margin-bottom:14px;">
                             <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:var(--color-gold); border-radius:14px 0 0 14px;"></div>
-                            <h3 style="color:#111; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 14px 8px; display:flex; align-items:center; gap:8px;">🔍 Datos de la Solicitud</h3>
+                            <h3 style="color:#111; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 14px 8px; display:flex; align-items:center; gap:8px;">� Información General</h3>
                             <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-left:8px;">
                                 ${this.renderizarCampoModerno('Asunto', `<span style="font-weight:700; font-size:13px;">${this.escaparHTML(solicitud.asunto)}</span>`)}
                                 ${this.renderizarCampoModerno('Estado', `<span class="status-badge ${estadoClass}" style="padding:4px 12px; font-size:11px; font-weight:700; border-radius:50px;">${solicitud.estado}</span>`)}
                                 ${this.renderizarCampoModerno('Tipo', `<span style="font-weight:600; font-size:13px;">${solicitud.tipo}</span>`)}
-                                ${this.renderizarCampoModerno('Solicitante', `<span style="font-weight:600; font-size:13px;">👤 ${solicitud.nombre}</span>`)}
-                                ${this.renderizarCampoModerno('Email', `<a href="mailto:${solicitud.email}" style="color:#3498db; font-size:13px; text-decoration:none;">${solicitud.email}</a>`)}
-                                ${this.renderizarCampoModerno('Fecha', `<span style="font-weight:600; font-size:13px;">${new Date(solicitud.fecha).toLocaleString('es-ES', {dateStyle:'medium', timeStyle:'short'})}</span>`)}
+                                ${this.renderizarCampoModerno('Prioridad', `<span style="font-weight:600; font-size:13px;">${solicitud.prioridad || 'Normal'}</span>`)}
+                                ${this.renderizarCampoModerno('Fecha', `<span style="font-weight:600; font-size:13px;">${new Date(solicitud.fecha || solicitud.fecha_creacion).toLocaleString('es-ES', {dateStyle:'medium', timeStyle:'short'})}</span>`)}
+                                ${this.renderizarCampoModerno('Casilla', `<span style="font-weight:600; font-size:13px;">${solicitud.casilla_electronica || 'N/A'}</span>`)}
                             </div>
                         </div>
-                        <div style="background:#fafafa; border-radius:14px; padding:18px; border:1px solid rgba(0,0,0,0.07);">
+
+                        <!-- Solicitante -->
+                        <div style="background:#fafafa; border-radius:14px; padding:18px; border:1px solid rgba(0,0,0,0.07); position:relative; margin-bottom:14px;">
+                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:#3498db; border-radius:14px 0 0 14px;"></div>
+                            <h3 style="color:#111; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 14px 8px; display:flex; align-items:center; gap:8px;">👤 Solicitante</h3>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-left:8px;">
+                                ${this.renderizarCampoModerno('Nombre', `<span style="font-weight:600; font-size:13px;">${solicitud.nombre || 'N/A'}</span>`)}
+                                ${this.renderizarCampoModerno('DNI/RUC', `<span style="font-weight:600; font-size:13px;">${solicitud.dni || 'N/A'}</span>`)}
+                                ${this.renderizarCampoModerno('Email', `<a href="mailto:${solicitud.email}" style="color:#3498db; font-size:13px; text-decoration:none;">${solicitud.email || 'N/A'}</a>`)}
+                                ${this.renderizarCampoModerno('Teléfono', `<span style="font-weight:600; font-size:13px;">${solicitud.telefono || 'N/A'}</span>`)}
+                            </div>
+                        </div>
+
+                        <!-- Demandado -->
+                        ${solicitud.demandado_nombre ? `
+                        <div style="background:#fafafa; border-radius:14px; padding:18px; border:1px solid rgba(0,0,0,0.07); position:relative; margin-bottom:14px;">
+                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:#e74c3c; border-radius:14px 0 0 14px;"></div>
+                            <h3 style="color:#111; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 14px 8px; display:flex; align-items:center; gap:8px;">⚖️ Demandado / Contraparte</h3>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-left:8px;">
+                                ${this.renderizarCampoModerno('Nombre', `<span style="font-weight:600; font-size:13px;">${solicitud.demandado_nombre || 'N/A'}</span>`)}
+                                ${this.renderizarCampoModerno('DNI/RUC', `<span style="font-weight:600; font-size:13px;">${solicitud.demandado_dni || 'N/A'}</span>`)}
+                                ${this.renderizarCampoModerno('Email', `<a href="mailto:${solicitud.demandado_email}" style="color:#3498db; font-size:13px; text-decoration:none;">${solicitud.demandado_email || 'N/A'}</a>`)}
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Descripción -->
+                        <div style="background:#fafafa; border-radius:14px; padding:18px; border:1px solid rgba(0,0,0,0.07); margin-bottom:14px;">
                             <h3 style="color:#111; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 10px 0; display:flex; align-items:center; gap:8px;">📝 Descripción</h3>
                             <p style="line-height:1.7; color:#444; font-size:13px; background:#fff; padding:14px; border-radius:10px; border:1px solid rgba(0,0,0,0.05); white-space:pre-wrap; margin:0;">${this.escaparHTML(solicitud.descripcion || 'Sin descripción detallada')}</p>
                         </div>
+
+                        <!-- Documentos -->
+                        ${documentos.length > 0 ? `
+                        <div style="background:#fafafa; border-radius:14px; padding:18px; border:1px solid rgba(0,0,0,0.07); position:relative; margin-bottom:14px;">
+                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:#27ae60; border-radius:14px 0 0 14px;"></div>
+                            <h3 style="color:#111; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 14px 8px; display:flex; align-items:center; gap:8px;">📎 Documentos Adjuntos (${documentos.length})</h3>
+                            <div style="padding-left:8px;">
+                                ${documentos.map(doc => `
+                                    <div style="display:flex; align-items:center; gap:10px; padding:10px; background:#fff; border-radius:8px; margin-bottom:8px; border:1px solid rgba(0,0,0,0.05);">
+                                        <span style="font-size:16px;">${doc.tipo === 'principal' ? '📄' : '📎'}</span>
+                                        <div style="flex:1;">
+                                            <div style="font-weight:600; font-size:12px;">${doc.nombre_original || doc.nombre}</div>
+                                            <div style="font-size:10px; color:#666;">${doc.tipo ? doc.tipo.toUpperCase() : 'ANEXO'} • ${(doc.tamano / 1024 / 1024).toFixed(2)} MB</div>
+                                        </div>
+                                        <a href="/uploads/${doc.nombre_archivo}" target="_blank" style="padding:6px 12px; background:#27ae60; color:white; border-radius:6px; text-decoration:none; font-size:11px; font-weight:600;">Descargar</a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Expediente Vinculado -->
+                        ${solicitud.numero_expediente ? `
+                        <div style="background:#fafafa; border-radius:14px; padding:18px; border:1px solid rgba(0,0,0,0.07); position:relative; margin-bottom:14px;">
+                            <div style="position:absolute; top:0; left:0; width:4px; height:100%; background:#9b59b6; border-radius:14px 0 0 14px;"></div>
+                            <h3 style="color:#111; font-size:11px; font-weight:800; text-transform:uppercase; letter-spacing:1.5px; margin:0 0 14px 8px; display:flex; align-items:center; gap:8px;">🏛️ Expediente Vinculado</h3>
+                            <div style="display:grid; grid-template-columns:1fr 1fr; gap:10px; padding-left:8px;">
+                                ${this.renderizarCampoModerno('Número', `<span style="font-weight:600; font-size:13px;">${solicitud.numero_expediente}</span>`)}
+                                ${this.renderizarCampoModerno('Sede', `<span style="font-weight:600; font-size:13px;">${solicitud.sede || 'N/A'}</span>`)}
+                                ${this.renderizarCampoModerno('Especialidad', `<span style="font-weight:600; font-size:13px;">${solicitud.especialidad || 'N/A'}</span>`)}
+                                ${this.renderizarCampoModerno('Materia', `<span style="font-weight:600; font-size:13px;">${solicitud.materia || 'N/A'}</span>`)}
+                            </div>
+                        </div>
+                        ` : ''}
                     </div>
                     <div style="padding:14px 20px; display:flex; justify-content:flex-end; gap:10px; background:#f9f9f9; border-top:1px solid #eee;">
                         <button class="btn" style="background:#eee; color:#333; padding:9px 20px; border-radius:10px; font-weight:600; font-size:13px; border:none; cursor:pointer; transition:all 0.2s;" onmouseover="this.style.background='#ddd';" onmouseout="this.style.background='#eee';" onclick="CasillaUnificada.cerrarModal()">Cerrar</button>
