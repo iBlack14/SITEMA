@@ -30,12 +30,27 @@ const storage = multer.diskStorage({
     }
 });
 
-// Filtro para archivos (solo PDFs)
+// Filtro para archivos (PDF, Word, Excel, Imágenes)
 const fileFilter = (req, file, cb) => {
-    if (file.mimetype === 'application/pdf') {
+    const allowedTypes = [
+        'application/pdf',
+        'application/msword',
+        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+        'application/vnd.ms-excel',
+        'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+        'image/jpeg',
+        'image/png',
+        'image/jpg'
+    ];
+    
+    // También permitir por extensión en caso de que el mimetype no sea correcto
+    const allowedExtensions = ['.pdf', '.doc', '.docx', '.xls', '.xlsx', '.jpg', '.jpeg', '.png'];
+    const fileExtension = path.extname(file.originalname).toLowerCase();
+    
+    if (allowedTypes.includes(file.mimetype) || allowedExtensions.includes(fileExtension)) {
         cb(null, true);
     } else {
-        cb(new Error('Solo se permiten archivos PDF'), false);
+        cb(new Error('Solo se permiten archivos PDF, Word, Excel o Imágenes'), false);
     }
 };
 
