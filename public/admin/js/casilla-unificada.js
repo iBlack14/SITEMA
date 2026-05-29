@@ -344,7 +344,7 @@ const CasillaUnificada = {
     /**
      * Mostrar modal según tipo
      */
-    mostrarModal(tipo, datos) {
+    async mostrarModal(tipo, datos) {
         let contenido;
 
         switch (tipo) {
@@ -358,7 +358,7 @@ const CasillaUnificada = {
                 contenido = this.modalExpediente(datos);
                 break;
             case 'solicitud':
-                contenido = this.modalSolicitud(datos);
+                contenido = await this.modalSolicitud(datos);
                 break;
             default:
                 contenido = this.modalGenerico(datos);
@@ -582,12 +582,23 @@ const CasillaUnificada = {
     /**
      * Modal para Solicitud
      */
-    modalSolicitud(solicitud) {
+    async modalSolicitud(solicitud) {
         const estadoClass = this.getEstadoClass(solicitud.estado);
         
-        // Parsear documentos si existen
+        // Obtener documentos desde la API
         let documentos = [];
-        if (solicitud.documentos) {
+        try {
+            const response = await fetch(`/api/solicitudes/${solicitud.id}/archivos`);
+            const data = await response.json();
+            if (data.success && data.data && data.data.length > 0) {
+                documentos = data.data;
+            }
+        } catch (e) {
+            console.error('Error obteniendo documentos:', e);
+        }
+
+        // Si no hay documentos desde la API, intentar parsear del campo documentos
+        if (documentos.length === 0 && solicitud.documentos) {
             try {
                 documentos = typeof solicitud.documentos === 'string' 
                     ? JSON.parse(solicitud.documentos) 
