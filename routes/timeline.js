@@ -409,11 +409,23 @@ router.get('/seguimiento-completo/:codigo', verificarAuth, async (req, res) => {
                 ORDER BY st.fecha_documento ASC, st.id ASC
             `, [exp.id]);
 
-            // Documentos adjuntos
-            const documentos = await query(
+            // Documentos adjuntos (desde tabla documentos + campo JSON del expediente)
+            let documentos = await query(
                 'SELECT * FROM documentos WHERE expediente_id = ? ORDER BY fecha_subida DESC',
                 [exp.id]
             );
+
+            // También incluir documentos del campo JSON del expediente
+            if (exp.documentos) {
+                try {
+                    const docsFromJson = typeof exp.documentos === 'string' ? JSON.parse(exp.documentos) : exp.documentos;
+                    if (Array.isArray(docsFromJson) && docsFromJson.length > 0) {
+                        documentos = [...documentos, ...docsFromJson];
+                    }
+                } catch (e) {
+                    console.error('Error parseando documentos JSON del expediente:', e);
+                }
+            }
 
             return res.json({
                 success: true,
