@@ -390,40 +390,120 @@ class SolicitudesModule {
     }
 
     async verDetalleSolicitud(solicitudId) {
-        const solicitud = this.solicitudes.find(s => s.id == solicitudId);
-        if (!solicitud) return;
-        
-        // Modal de detalle simplificado
-        let detailModal = document.getElementById('modalDetalleSolicitud');
-        if (!detailModal) {
-            detailModal = document.createElement('div');
-            detailModal.id = 'modalDetalleSolicitud';
-            detailModal.className = 'modal-overlay';
-            document.body.appendChild(detailModal);
-        }
+        try {
+            const response = await fetch(`/api/solicitudes/${solicitudId}`);
+            const data = await response.json();
+            
+            if (!data.success) {
+                this.dashboard.showError('Error cargando detalles de la solicitud');
+                return;
+            }
+            
+            const solicitud = data.data;
+            
+            // Modal de detalle completo
+            let detailModal = document.getElementById('modalDetalleSolicitud');
+            if (!detailModal) {
+                detailModal = document.createElement('div');
+                detailModal.id = 'modalDetalleSolicitud';
+                detailModal.className = 'modal-overlay';
+                document.body.appendChild(detailModal);
+            }
 
-        detailModal.innerHTML = `
-            <div class="modal-content glass-panel" style="max-width: 600px;">
-                <div class="modal-header">
-                    <span class="text-gold">Detalle de Solicitud #${solicitud.id}</span>
-                    <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('active')">×</button>
-                </div>
-                <div class="modal-body">
-                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 15px; margin-bottom: 20px;">
-                        <div><strong>Fecha:</strong><br>${new Date(solicitud.fecha).toLocaleString()}</div>
-                        <div><strong>Estado:</strong><br><span class="status-badge ${this.getStatusClass(solicitud.estado)}">${solicitud.estado}</span></div>
-                        <div><strong>Tipo:</strong><br>${solicitud.tipo}</div>
-                        <div><strong>Prioridad:</strong><br>${solicitud.prioridad}</div>
+            const documentos = solicitud.documentos ? (Array.isArray(solicitud.documentos) ? solicitud.documentos : JSON.parse(solicitud.documentos)) : [];
+
+            detailModal.innerHTML = `
+                <div class="modal-content glass-panel" style="max-width: 800px;">
+                    <div class="modal-header">
+                        <span class="text-gold">Detalle de Solicitud #${solicitud.id}</span>
+                        <button class="modal-close" onclick="this.closest('.modal-overlay').classList.remove('active')">×</button>
                     </div>
-                    <div style="margin-bottom: 15px;"><strong>Asunto:</strong><br>${solicitud.asunto || 'N/A'}</div>
-                    <div style="margin-bottom: 15px;"><strong>Descripción:</strong><br>${solicitud.descripcion || 'N/A'}</div>
-                    <div style="text-align: center; margin-top: 20px;">
-                        <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').classList.remove('active')">Cerrar</button>
+                    <div class="modal-body">
+                        <!-- Información General -->
+                        <div style="background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 15px 0; color: var(--color-primary);">📋 Información General</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div><strong>Fecha:</strong><br>${new Date(solicitud.fecha || solicitud.fecha_creacion).toLocaleString('es-ES')}</div>
+                                <div><strong>Estado:</strong><br><span class="status-badge ${this.getStatusClass(solicitud.estado)}">${solicitud.estado}</span></div>
+                                <div><strong>Tipo:</strong><br>${solicitud.tipo}</div>
+                                <div><strong>Prioridad:</strong><br>${solicitud.prioridad || 'Normal'}</div>
+                            </div>
+                        </div>
+
+                        <!-- Solicitante -->
+                        <div style="background: rgba(0, 0, 0, 0.03); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 15px 0; color: var(--color-primary);">👤 Solicitante</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div><strong>Nombre:</strong><br>${solicitud.nombre || 'N/A'}</div>
+                                <div><strong>DNI/RUC:</strong><br>${solicitud.dni || 'N/A'}</div>
+                                <div><strong>Email:</strong><br>${solicitud.email || 'N/A'}</div>
+                                <div><strong>Teléfono:</strong><br>${solicitud.telefono || 'N/A'}</div>
+                                <div><strong>Casilla Electrónica:</strong><br>${solicitud.casilla_electronica || 'N/A'}</div>
+                            </div>
+                        </div>
+
+                        <!-- Demandado -->
+                        ${solicitud.demandado_nombre ? `
+                        <div style="background: rgba(0, 0, 0, 0.03); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 15px 0; color: var(--color-primary);">⚖️ Demandado / Contraparte</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div><strong>Nombre:</strong><br>${solicitud.demandado_nombre || 'N/A'}</div>
+                                <div><strong>DNI/RUC:</strong><br>${solicitud.demandado_dni || 'N/A'}</div>
+                                <div><strong>Email:</strong><br>${solicitud.demandado_email || 'N/A'}</div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Asunto y Descripción -->
+                        <div style="margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 10px 0; color: var(--color-primary);">📝 Detalles de la Solicitud</h4>
+                            <div style="margin-bottom: 10px;"><strong>Asunto:</strong><br>${solicitud.asunto || 'N/A'}</div>
+                            <div><strong>Descripción:</strong><br>${solicitud.descripcion || 'Sin descripción'}</div>
+                        </div>
+
+                        <!-- Documentos -->
+                        ${documentos.length > 0 ? `
+                        <div style="background: rgba(212, 175, 55, 0.05); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 15px 0; color: var(--color-primary);">📎 Documentos Adjuntos (${documentos.length})</h4>
+                            <div style="display: grid; grid-template-columns: 1fr; gap: 8px;">
+                                ${documentos.map(doc => `
+                                    <div style="display: flex; align-items: center; gap: 10px; padding: 8px; background: white; border-radius: 8px;">
+                                        <span style="font-size: 18px;">${doc.tipo === 'principal' ? '📄' : '📎'}</span>
+                                        <div style="flex: 1;">
+                                            <div style="font-weight: 600; font-size: 12px;">${doc.nombre_original || doc.nombre}</div>
+                                            <div style="font-size: 10px; color: #666;">${doc.tipo ? doc.tipo.toUpperCase() : 'ANEXO'} • ${(doc.tamano / 1024 / 1024).toFixed(2)} MB</div>
+                                        </div>
+                                        <a href="/uploads/${doc.nombre_archivo}" target="_blank" style="padding: 6px 12px; background: var(--color-primary); color: white; border-radius: 6px; text-decoration: none; font-size: 11px;">Descargar</a>
+                                    </div>
+                                `).join('')}
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <!-- Información del Expediente (si está vinculado) -->
+                        ${solicitud.numero_expediente ? `
+                        <div style="background: rgba(0, 0, 0, 0.03); padding: 15px; border-radius: 12px; margin-bottom: 20px;">
+                            <h4 style="margin: 0 0 15px 0; color: var(--color-primary);">🏛️ Expediente Vinculado</h4>
+                            <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                                <div><strong>Número:</strong><br>${solicitud.numero_expediente}</div>
+                                <div><strong>Sede:</strong><br>${solicitud.sede || 'N/A'}</div>
+                                <div><strong>Especialidad:</strong><br>${solicitud.especialidad || 'N/A'}</div>
+                                <div><strong>Materia:</strong><br>${solicitud.materia || 'N/A'}</div>
+                            </div>
+                        </div>
+                        ` : ''}
+
+                        <div style="text-align: center; margin-top: 20px;">
+                            <button class="btn btn-secondary" onclick="this.closest('.modal-overlay').classList.remove('active')">Cerrar</button>
+                        </div>
                     </div>
                 </div>
-            </div>
-        `;
-        detailModal.classList.add('active');
+            `;
+            detailModal.classList.add('active');
+        } catch (error) {
+            console.error('Error cargando detalle de solicitud:', error);
+            this.dashboard.showError('Error cargando detalles de la solicitud');
+        }
     }
 }
 
