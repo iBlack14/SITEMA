@@ -19,6 +19,7 @@ async function verDetalleExpediente(expedienteId) {
         }
 
         const expediente = data.data || data; // por si tu API entrega {success, data:{...}}
+        const partesProcesales = data.partes_procesales || [];
 
         // Helper para asignar textContent de forma segura (evita crash si el elemento no existe en el DOM)
         const setText = (id, value) => {
@@ -51,9 +52,27 @@ async function verDetalleExpediente(expedienteId) {
         setText('detalle-colegio', expediente.colegio_abogados || expediente.colegioAbogados || 'No especificado');
         setText('detalle-casilla', expediente.casilla_electronica || expediente.casillaElectronica || 'No especificado');
 
-        // Partes procesales
-        setText('detalle-demandante', expediente.demandante || 'No especificado');
-        setText('detalle-demandado', expediente.demandado || 'No especificado');
+        // Partes procesales - Demandante
+        setText('detalle-demandante', expediente.demandante_nombre || 'No especificado');
+        setText('detalle-demandante-dni', expediente.demandante_dni || 'No especificado');
+        setText('detalle-demandante-email', expediente.demandante_correo || 'No especificado');
+        setText('detalle-demandante-telefono', expediente.demandante_telefono || 'No especificado');
+        setText('detalle-demandante-domicilio', expediente.demandante_domicilio || 'No especificado');
+        
+        // Buscar representante legal del demandante en partes_procesales
+        const demandanteParte = partesProcesales.find(p => p.tipo_parte === 'demandante');
+        setText('detalle-demandante-representante', demandanteParte?.representante_legal || 'No especificado');
+
+        // Partes procesales - Demandado
+        setText('detalle-demandado', expediente.demandado_nombre || 'No especificado');
+        setText('detalle-demandado-dni', expediente.demandado_dni || 'No especificado');
+        setText('detalle-demandado-email', expediente.demandado_correo || 'No especificado');
+        setText('detalle-demandado-telefono', expediente.demandado_telefono || 'No especificado');
+        setText('detalle-demandado-domicilio', expediente.demandado_domicilio || 'No especificado');
+        
+        // Buscar representante legal del demandado en partes_procesales
+        const demandadoParte = partesProcesales.find(p => p.tipo_parte === 'demandado');
+        setText('detalle-demandado-representante', demandadoParte?.representante_legal || 'No especificado');
 
         // Documentos
         if (typeof cargarDocumentosExpediente === 'function') {
