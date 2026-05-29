@@ -41,17 +41,6 @@ async function verDetalleExpediente(expedienteId) {
         setText('detalle-estado', expediente.estado || 'Nuevo');
         setText('detalle-sumilla', expediente.sumilla || 'Sin sumilla');
 
-        // Presentante
-        setText('detalle-tipo-presentante', expediente.tipo_presentante || 'No especificado');
-        setText('detalle-presentante', expediente.presentante || 'No especificado');
-        setText('detalle-documento', expediente.documento || expediente.colegiatura || 'No especificado');
-        setText('detalle-email', expediente.email || expediente.correo || 'No especificado'); // ID correcto en index.html
-        setText('detalle-telefono', expediente.telefono || 'No especificado');
-        setText('detalle-domicilio', expediente.domicilio || 'No especificado');
-        setText('detalle-colegiatura', expediente.colegiatura || 'No especificado');
-        setText('detalle-colegio', expediente.colegio_abogados || expediente.colegioAbogados || 'No especificado');
-        setText('detalle-casilla', expediente.casilla_electronica || expediente.casillaElectronica || 'No especificado');
-
         // Partes procesales - Demandante
         setText('detalle-demandante', expediente.demandante_nombre || 'No especificado');
         setText('detalle-demandante-dni', expediente.demandante_dni || 'No especificado');
