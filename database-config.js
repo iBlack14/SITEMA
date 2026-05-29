@@ -662,6 +662,50 @@ async function inicializarBaseDatos(reset = false) {
                 console.log('✅ Columna documentos agregada a expedientes');
             }
 
+            // ── Columnas de Demandante para expedientes ──
+            if (!(await columnaExiste('expedientes', 'demandante_nombre'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN demandante_nombre VARCHAR(200) NULL');
+                console.log('✅ Columna demandante_nombre agregada a expedientes');
+            }
+            if (!(await columnaExiste('expedientes', 'demandante_dni'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN demandante_dni VARCHAR(20) NULL');
+                console.log('✅ Columna demandante_dni agregada a expedientes');
+            }
+            if (!(await columnaExiste('expedientes', 'demandante_correo'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN demandante_correo VARCHAR(100) NULL');
+                console.log('✅ Columna demandante_correo agregada a expedientes');
+            }
+            if (!(await columnaExiste('expedientes', 'demandante_telefono'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN demandante_telefono VARCHAR(20) NULL');
+                console.log('✅ Columna demandante_telefono agregada a expedientes');
+            }
+            if (!(await columnaExiste('expedientes', 'demandante_domicilio'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN demandante_domicilio TEXT NULL');
+                console.log('✅ Columna demandante_domicilio agregada a expedientes');
+            }
+
+            // ── Columnas de Demandado para expedientes ──
+            if (!(await columnaExiste('expedientes', 'demandado_nombre'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN demandado_nombre VARCHAR(200) NULL');
+                console.log('✅ Columna demandado_nombre agregada a expedientes');
+            }
+            if (!(await columnaExiste('expedientes', 'demandado_dni'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN demandado_dni VARCHAR(20) NULL');
+                console.log('✅ Columna demandado_dni agregada a expedientes');
+            }
+            if (!(await columnaExiste('expedientes', 'demandado_correo'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN demandado_correo VARCHAR(100) NULL');
+                console.log('✅ Columna demandado_correo agregada a expedientes');
+            }
+            if (!(await columnaExiste('expedientes', 'demandado_telefono'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN demandado_telefono VARCHAR(20) NULL');
+                console.log('✅ Columna demandado_telefono agregada a expedientes');
+            }
+            if (!(await columnaExiste('expedientes', 'demandado_domicilio'))) {
+                await query('ALTER TABLE expedientes ADD COLUMN demandado_domicilio TEXT NULL');
+                console.log('✅ Columna demandado_domicilio agregada a expedientes');
+            }
+
             // ── Columna archivo_adjunto para notificaciones ──
             if (!(await columnaExiste('notificaciones', 'archivo_adjunto'))) {
                 await query('ALTER TABLE notificaciones ADD COLUMN archivo_adjunto JSON AFTER solicitud_id');

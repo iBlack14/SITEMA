@@ -28,6 +28,18 @@ class ExpedienteModel {
                 casilla_fisica,
                 oficina_casilla,
                 casilla_electronica,
+                // Demandante
+                demandante_nombre,
+                demandante_dni,
+                demandante_correo,
+                demandante_telefono,
+                demandante_domicilio,
+                // Demandado
+                demandado_nombre,
+                demandado_dni,
+                demandado_correo,
+                demandado_telefono,
+                demandado_domicilio,
                 estado = 'Nuevo',
                 observaciones = ''
             } = datosExpediente;
@@ -38,8 +50,11 @@ class ExpedienteModel {
                     proceso, materia, cuantia, moneda, indeterminado, sumilla,
                     tipo_presentante, presentante, documento, correo, telefono, domicilio,
                     colegiatura, colegio_abogados, casilla_fisica, oficina_casilla,
-                    casilla_electronica, estado, observaciones, documentos
-                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+                    casilla_electronica,
+                    demandante_nombre, demandante_dni, demandante_correo, demandante_telefono, demandante_domicilio,
+                    demandado_nombre, demandado_dni, demandado_correo, demandado_telefono, demandado_domicilio,
+                    estado, observaciones, documentos
+                ) VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
             `;
 
             // Generar ID único para el expediente — máx 20 chars (VARCHAR(20) en BD)
@@ -75,6 +90,18 @@ class ExpedienteModel {
                 casilla_fisica || null,
                 oficina_casilla || null,
                 casilla_electronica || null,
+                // Demandante
+                demandante_nombre || null,
+                demandante_dni || null,
+                demandante_correo || null,
+                demandante_telefono || null,
+                demandante_domicilio || null,
+                // Demandado
+                demandado_nombre || null,
+                demandado_dni || null,
+                demandado_correo || null,
+                demandado_telefono || null,
+                demandado_domicilio || null,
                 estado,
                 observaciones,
                 datosExpediente.documentos || null
@@ -213,6 +240,12 @@ class ExpedienteModel {
                 'documento_identidad', 'correo', 'telefono', 'domicilio',
                 'colegiatura', 'colegio_abogados', 'casilla_electronica',
                 'estado', 'observaciones',
+                // Demandante
+                'demandante_nombre', 'demandante_dni', 'demandante_correo',
+                'demandante_telefono', 'demandante_domicilio',
+                // Demandado
+                'demandado_nombre', 'demandado_dni', 'demandado_correo',
+                'demandado_telefono', 'demandado_domicilio',
                 // Campos CEJ (ya existen en la tabla BD)
                 'organo_jurisdiccional', 'distrito_judicial', 'juez',
                 'especialista_legal', 'etapa_procesal', 'ubicacion',

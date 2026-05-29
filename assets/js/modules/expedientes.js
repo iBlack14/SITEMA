@@ -123,6 +123,32 @@ class ExpedientesModule {
                     </div>
                 </div>` : ''}
 
+                <!-- Demandante -->
+                ${exp.demandante_nombre ? `
+                <div style="background:#f0fdf4; border:1px solid #bbf7d0; border-radius:14px; padding:20px; margin-bottom:16px;">
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#166534; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid #bbf7d0;">⚖️ Datos del Demandante</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                        ${campo('Nombre / Razón Social', exp.demandante_nombre)}
+                        ${campo('DNI / RUC', exp.demandante_dni)}
+                        ${campo('Correo Electrónico', exp.demandante_correo)}
+                        ${campo('Teléfono', exp.demandante_telefono)}
+                        ${campo('Domicilio', exp.demandante_domicilio)}
+                    </div>
+                </div>` : ''}
+
+                <!-- Demandado -->
+                ${exp.demandado_nombre ? `
+                <div style="background:#fff1f2; border:1px solid #fecdd3; border-radius:14px; padding:20px; margin-bottom:16px;">
+                    <div style="font-size:11px; font-weight:700; text-transform:uppercase; letter-spacing:1px; color:#9f1239; margin-bottom:14px; padding-bottom:10px; border-bottom:1px solid #fecdd3;">🏢 Datos del Demandado / Contraparte</div>
+                    <div style="display:grid; grid-template-columns:1fr 1fr; gap:14px;">
+                        ${campo('Nombre / Razón Social', exp.demandado_nombre)}
+                        ${campo('DNI / RUC', exp.demandado_dni)}
+                        ${campo('Correo Electrónico', exp.demandado_correo)}
+                        ${campo('Teléfono', exp.demandado_telefono)}
+                        ${campo('Domicilio', exp.demandado_domicilio)}
+                    </div>
+                </div>` : ''}
+
                 <div style="display:flex; justify-content:flex-end; margin-top:8px;">
                     <button class="btn btn-secondary" onclick="if(typeof closeAllModals==='function')closeAllModals();else window.dashboardApp.closeAllModals();"
                         style="padding:10px 28px; font-size:13px; font-weight:600; border-radius:10px;">
@@ -223,7 +249,65 @@ class ExpedientesModule {
                     </div>
                 </div>
 
-                <!-- Sección 3: Datos de Presentante -->
+                <!-- Sección 3: Datos del Demandante -->
+                <div class="form-section" style="margin-bottom: 24px;">
+                    <h4 style="color: var(--color-primary); border-bottom: 2px solid rgba(212, 175, 55, 0.2); padding-bottom: 8px; margin-bottom: 16px;">⚖️ Datos del Demandante</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label class="stat-label">Nombre Completo / Razón Social</label>
+                            <input type="text" id="exp-demandante-nombre" class="form-input" placeholder="Nombre o razón social del demandante" required>
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">DNI / RUC</label>
+                            <input type="text" id="exp-demandante-dni" class="form-input" placeholder="00000000">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label class="stat-label">Correo Electrónico</label>
+                            <input type="email" id="exp-demandante-correo" class="form-input" placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">Teléfono / WhatsApp</label>
+                            <input type="tel" id="exp-demandante-telefono" class="form-input" placeholder="+51 900...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="stat-label">Domicilio / Dirección</label>
+                        <input type="text" id="exp-demandante-domicilio" class="form-input" placeholder="Dirección completa del demandante">
+                    </div>
+                </div>
+
+                <!-- Sección 4: Datos del Demandado -->
+                <div class="form-section" style="margin-bottom: 24px;">
+                    <h4 style="color: var(--color-primary); border-bottom: 2px solid rgba(212, 175, 55, 0.2); padding-bottom: 8px; margin-bottom: 16px;">🏢 Datos del Demandado / Contraparte</h4>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label class="stat-label">Nombre Completo / Razón Social</label>
+                            <input type="text" id="exp-demandado-nombre" class="form-input" placeholder="Nombre o razón social del demandado">
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">DNI / RUC</label>
+                            <input type="text" id="exp-demandado-dni" class="form-input" placeholder="00000000">
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
+                        <div class="form-group">
+                            <label class="stat-label">Correo Electrónico</label>
+                            <input type="email" id="exp-demandado-correo" class="form-input" placeholder="correo@ejemplo.com">
+                        </div>
+                        <div class="form-group">
+                            <label class="stat-label">Teléfono</label>
+                            <input type="tel" id="exp-demandado-telefono" class="form-input" placeholder="+51 900...">
+                        </div>
+                    </div>
+                    <div class="form-group">
+                        <label class="stat-label">Domicilio / Dirección</label>
+                        <input type="text" id="exp-demandado-domicilio" class="form-input" placeholder="Dirección completa del demandado">
+                    </div>
+                </div>
+
+                <!-- Sección 5: Datos de Presentante -->
                 <div class="form-section" style="margin-bottom: 24px;">
                     <h4 style="color: var(--color-primary); border-bottom: 2px solid rgba(212, 175, 55, 0.2); padding-bottom: 8px; margin-bottom: 16px;">👤 Datos de Presentante</h4>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px; margin-bottom: 16px;">
@@ -265,7 +349,7 @@ class ExpedientesModule {
                     </div>
                 </div>
 
-                <!-- Sección 4: Documentos -->
+                <!-- Sección 6: Documentos -->
                 <div class="form-section" style="margin-bottom: 24px; padding: 15px; background: rgba(212, 175, 55, 0.05); border-radius: 12px; border: 1px dashed var(--color-primary);">
                     <h4 style="color: var(--color-primary); margin-bottom: 12px; font-size: 14px;">📄 Documentos Adjuntos (Máx 5MB - PDF Firmado)</h4>
                     <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 20px;">
@@ -336,6 +420,20 @@ class ExpedientesModule {
             formData.append('casilla_fisica', document.getElementById('exp-casilla-f').value);
             formData.append('casilla_electronica', document.getElementById('exp-casilla-e').value);
             formData.append('usuario_id', sessionStorage.getItem('userId') || '2');
+
+            // Demandante
+            formData.append('demandante_nombre', document.getElementById('exp-demandante-nombre').value);
+            formData.append('demandante_dni', document.getElementById('exp-demandante-dni').value);
+            formData.append('demandante_correo', document.getElementById('exp-demandante-correo').value);
+            formData.append('demandante_telefono', document.getElementById('exp-demandante-telefono').value);
+            formData.append('demandante_domicilio', document.getElementById('exp-demandante-domicilio').value);
+
+            // Demandado
+            formData.append('demandado_nombre', document.getElementById('exp-demandado-nombre').value);
+            formData.append('demandado_dni', document.getElementById('exp-demandado-dni').value);
+            formData.append('demandado_correo', document.getElementById('exp-demandado-correo').value);
+            formData.append('demandado_telefono', document.getElementById('exp-demandado-telefono').value);
+            formData.append('demandado_domicilio', document.getElementById('exp-demandado-domicilio').value);
 
             // Files
             const fileP = document.getElementById('exp-file-p');
