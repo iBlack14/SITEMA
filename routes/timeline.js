@@ -377,11 +377,28 @@ router.get('/seguimiento-completo/:codigo', verificarAuth, async (req, res) => {
                 return res.status(403).json({ success: false, error: 'Acceso denegado: Este expediente no le pertenece.' });
             }
 
-            // Partes procesales
-            const partes = await query(
-                'SELECT * FROM partes_procesales WHERE expediente_id = ? ORDER BY tipo_parte, id',
-                [exp.id]
-            );
+            // Partes procesales (usar datos del expediente directamente)
+            const partes = [];
+            if (exp.demandante_nombre) {
+                partes.push({
+                    tipo_parte: 'demandante',
+                    nombre_completo: exp.demandante_nombre,
+                    documento_identidad: exp.demandante_dni,
+                    telefono: exp.demandante_telefono,
+                    correo: exp.demandante_correo,
+                    domicilio: exp.demandante_domicilio
+                });
+            }
+            if (exp.demandado_nombre) {
+                partes.push({
+                    tipo_parte: 'demandado',
+                    nombre_completo: exp.demandado_nombre,
+                    documento_identidad: exp.demandado_dni,
+                    telefono: exp.demandado_telefono,
+                    correo: exp.demandado_correo,
+                    domicilio: exp.demandado_domicilio
+                });
+            }
 
             // Timeline unificado (nueva tabla)
             const timeline = await query(`
@@ -458,7 +475,7 @@ router.get('/seguimiento-completo/:codigo', verificarAuth, async (req, res) => {
                 partes.push({
                     tipo_parte: 'demandante',
                     nombre_completo: mp.demandante.nombre || mp.demandante.razon_social,
-                    documento_identidad: mp.demandante.dni || mp.demandante.ruc || mp.demandante.documento,
+                    documento_identidad: mp.demandante.dni || mp.demandante.ruc || mp.demandante.documento || mp.demandante.documento_numero,
                     telefono: mp.demandante.telefono,
                     correo: mp.demandante.correo,
                     domicilio: mp.demandante.domicilio
@@ -468,7 +485,7 @@ router.get('/seguimiento-completo/:codigo', verificarAuth, async (req, res) => {
                 partes.push({
                     tipo_parte: 'demandado',
                     nombre_completo: mp.demandado.nombre || mp.demandado.razon_social,
-                    documento_identidad: mp.demandado.dni || mp.demandado.ruc || mp.demandado.documento,
+                    documento_identidad: mp.demandado.dni || mp.demandado.ruc || mp.demandado.documento || mp.demandado.documento_numero,
                     telefono: mp.demandado.telefono,
                     correo: mp.demandado.correo,
                     domicilio: mp.demandado.domicilio
