@@ -44,24 +44,11 @@ const upload = multer({
         files: 20 // Máximo 20 archivos
     },
     fileFilter: (req, file, cb) => {
-        const allowedExtensions = /pdf|doc|docx|jpg|jpeg|png/;
-        const extname = allowedExtensions.test(path.extname(file.originalname).toLowerCase());
+        const allowedTypes = /pdf|doc|docx|jpg|jpeg|png/;
+        const extname = allowedTypes.test(path.extname(file.originalname).toLowerCase());
+        const mimetype = allowedTypes.test(file.mimetype);
 
-        // MIME types permitidos (incluyendo variantes de Word)
-        const allowedMimeTypes = [
-            'application/pdf',
-            'application/msword',
-            'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-            'application/vnd.ms-word',
-            'application/octet-stream', // Algunos archivos Word pueden tener este MIME type
-            'image/jpeg',
-            'image/jpg',
-            'image/png'
-        ];
-
-        const mimetype = allowedMimeTypes.includes(file.mimetype);
-
-        if (extname && (mimetype || file.mimetype === 'application/octet-stream')) {
+        if (mimetype && extname) {
             return cb(null, true);
         } else {
             cb(new Error('Solo se permiten archivos PDF, DOC, DOCX, JPG, PNG'));
